@@ -721,5 +721,39 @@
       "logoText": "We keep the current logo: customers know it, and changing it would delay the launch.",
       "phone": "Test checkout on an old phone"
     }
+  },
+  "assistant": {
+    "ask": "Ask",
+    "askHint": "Ask Humcase (Ctrl+J)",
+    "title": "Ask Humcase",
+    "intro": "Ask a question: Humcase answers from your cases and cites its sources.",
+    "suggest": {
+      "decide": "What is waiting for my decision?",
+      "stale": "What has been left open for over a week?",
+      "week": "Sum up my week"
+    },
+    "placeholder": "Your question…",
+    "followUp": "Ask a follow-up…",
+    "send": "Ask",
+    "searching": "Searching your cases…",
+    "sources": "Sources",
+    "openSource": "Open the case {{title}}",
+    "sent_one": "Sent to {{service}}: {{count}} case excerpt.",
+    "sent_other": "Sent to {{service}}: {{count}} case excerpts.",
+    "keep": "Keep as a case",
+    "kept": "Kept in the Inbox: open it",
+    "copy": "Copy",
+    "restart": "New conversation",
+    "close": "Close",
+    "notFound": "Nothing in your cases on this.",
+    "newCaseFromQuestion": "Create a case with this question",
+    "noAi": "No AI connected: here are the cases closest to your question.",
+    "actionSubCase": "Create the sub-case “{{title}}” in “{{parent}}”?",
+    "create": "Create",
+    "actionDone": "Sub-case created: open it",
+    "error": "No answer: {{error}}",
+    "mockNoAi": "Mockup: without AI",
+    "closest": "Closest cases",
+    "connectAi": "Connect an AI"
   }
 }

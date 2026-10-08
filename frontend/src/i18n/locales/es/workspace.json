@@ -773,5 +773,40 @@
       "logoText": "Mantenemos el logotipo actual: los clientes lo conocen y cambiarlo retrasaría el lanzamiento.",
       "phone": "Probar el pago en un móvil antiguo"
     }
+  },
+  "assistant": {
+    "ask": "Preguntar",
+    "askHint": "Preguntar a Humcase (Ctrl+J)",
+    "title": "Preguntar a Humcase",
+    "intro": "Haz una pregunta: Humcase responde a partir de tus casos y cita sus fuentes.",
+    "suggest": {
+      "decide": "¿Qué espera mi decisión?",
+      "stale": "¿Qué lleva abierto más de una semana?",
+      "week": "Resume mi semana"
+    },
+    "placeholder": "Tu pregunta…",
+    "followUp": "Hacer otra pregunta…",
+    "send": "Preguntar",
+    "searching": "Buscando en tus casos…",
+    "sources": "Fuentes",
+    "openSource": "Abrir el caso {{title}}",
+    "sent_one": "Enviado a {{service}}: {{count}} extracto de caso.",
+    "sent_many": "Enviado a {{service}}: {{count}} extractos de casos.",
+    "sent_other": "Enviado a {{service}}: {{count}} extractos de casos.",
+    "keep": "Guardar como caso",
+    "kept": "Guardado en la Bandeja de entrada: abrirlo",
+    "copy": "Copiar",
+    "restart": "Nueva conversación",
+    "close": "Cerrar",
+    "notFound": "Nada en tus casos sobre esto.",
+    "newCaseFromQuestion": "Crear un caso con esta pregunta",
+    "noAi": "Ninguna IA conectada: estos son los casos más cercanos a tu pregunta.",
+    "actionSubCase": "¿Crear el subcaso «{{title}}» en «{{parent}}»?",
+    "create": "Crear",
+    "actionDone": "Subcaso creado: abrirlo",
+    "error": "Sin respuesta: {{error}}",
+    "mockNoAi": "Maqueta: sin IA",
+    "closest": "Casos más cercanos",
+    "connectAi": "Conectar una IA"
   }
 }

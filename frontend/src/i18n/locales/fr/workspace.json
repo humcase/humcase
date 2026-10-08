@@ -773,5 +773,40 @@
       "logoText": "On garde le logo actuel : les clients le reconnaissent, et le changer retarderait le lancement.",
       "phone": "Tester le paiement sur un vieux téléphone"
     }
+  },
+  "assistant": {
+    "ask": "Demander",
+    "askHint": "Demander à Humcase (Ctrl+J)",
+    "title": "Demander à Humcase",
+    "intro": "Posez une question : Humcase répond à partir de vos cases et cite ses sources.",
+    "suggest": {
+      "decide": "Qu’est-ce qui attend ma décision ?",
+      "stale": "Qu’est-ce qui traîne depuis plus d’une semaine ?",
+      "week": "Résume ma semaine"
+    },
+    "placeholder": "Votre question…",
+    "followUp": "Poser une autre question…",
+    "send": "Demander",
+    "searching": "Recherche dans vos cases…",
+    "sources": "Sources",
+    "openSource": "Ouvrir la case {{title}}",
+    "sent_one": "Envoyé à {{service}} : {{count}} extrait de case.",
+    "sent_many": "Envoyé à {{service}} : {{count}} extraits de cases.",
+    "sent_other": "Envoyé à {{service}} : {{count}} extraits de cases.",
+    "keep": "Garder comme case",
+    "kept": "Gardée dans la Réception : l’ouvrir",
+    "copy": "Copier",
+    "restart": "Nouvelle conversation",
+    "close": "Fermer",
+    "notFound": "Rien dans vos cases sur ce sujet.",
+    "newCaseFromQuestion": "Créer une case avec cette question",
+    "noAi": "Aucune IA branchée : voici les cases les plus proches de votre question.",
+    "actionSubCase": "Créer la sous-case « {{title}} » dans « {{parent}} » ?",
+    "create": "Créer",
+    "actionDone": "Sous-case créée : l’ouvrir",
+    "error": "Pas de réponse : {{error}}",
+    "mockNoAi": "Maquette : sans IA",
+    "closest": "Cases les plus proches",
+    "connectAi": "Brancher une IA"
   }
 }

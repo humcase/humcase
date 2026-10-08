@@ -773,5 +773,40 @@
       "logoText": "Teniamo il logo attuale: i clienti lo conoscono e cambiarlo ritarderebbe il lancio.",
       "phone": "Testare il checkout su un vecchio telefono"
     }
+  },
+  "assistant": {
+    "ask": "Chiedi",
+    "askHint": "Chiedi a Humcase (Ctrl+J)",
+    "title": "Chiedi a Humcase",
+    "intro": "Fai una domanda: Humcase risponde a partire dai tuoi casi e cita le fonti.",
+    "suggest": {
+      "decide": "Cosa aspetta la mia decisione?",
+      "stale": "Cosa è aperto da più di una settimana?",
+      "week": "Riassumi la mia settimana"
+    },
+    "placeholder": "La tua domanda…",
+    "followUp": "Fai un’altra domanda…",
+    "send": "Chiedi",
+    "searching": "Ricerca nei tuoi casi…",
+    "sources": "Fonti",
+    "openSource": "Apri il caso {{title}}",
+    "sent_one": "Inviato a {{service}}: {{count}} estratto di caso.",
+    "sent_many": "Inviato a {{service}}: {{count}} estratti di casi.",
+    "sent_other": "Inviato a {{service}}: {{count}} estratti di casi.",
+    "keep": "Tieni come caso",
+    "kept": "Tenuto nell’Inbox: aprilo",
+    "copy": "Copia",
+    "restart": "Nuova conversazione",
+    "close": "Chiudi",
+    "notFound": "Niente nei tuoi casi su questo.",
+    "newCaseFromQuestion": "Crea un caso con questa domanda",
+    "noAi": "Nessuna IA collegata: ecco i casi più vicini alla tua domanda.",
+    "actionSubCase": "Creare il sottocaso «{{title}}» in «{{parent}}»?",
+    "create": "Crea",
+    "actionDone": "Sottocaso creato: aprilo",
+    "error": "Nessuna risposta: {{error}}",
+    "mockNoAi": "Bozza: senza IA",
+    "closest": "Casi più vicini",
+    "connectAi": "Collega un’IA"
   }
 }

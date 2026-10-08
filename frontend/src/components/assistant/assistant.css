@@ -1,0 +1,83 @@
+/* "Ask Humcase": a column on the right of the workspace (a drawer on narrow windows). */
+.workspace-app.workspace-app--assistant { grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr) minmax(340px, 400px); }
+
+.assistant-panel {
+  display: flex; flex-direction: column; min-height: 0; height: 100dvh;
+  border-left: 1px solid var(--workspace-line); background: var(--workspace-surface);
+}
+.assistant-panel__head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--workspace-space-3);
+  min-height: 64px; padding: 0 var(--workspace-space-4) 0 var(--workspace-space-5); border-bottom: 1px solid var(--workspace-line);
+}
+.assistant-panel__titles { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.assistant-panel__titles h2 { margin: 0; font-size: 15px; font-weight: 600; color: var(--workspace-ink); }
+.assistant-panel__scope {
+  color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .09em; text-transform: uppercase;
+}
+.assistant-panel__head-actions { display: flex; gap: var(--workspace-space-1); }
+
+.assistant-panel__thread { flex: 1; min-height: 0; overflow-y: auto; padding: var(--workspace-space-5); display: flex; flex-direction: column; gap: var(--workspace-space-6); }
+.assistant-panel__intro p { margin: 0 0 var(--workspace-space-4); color: var(--workspace-text-secondary); line-height: 1.5; }
+.assistant-panel__suggestions { display: flex; flex-direction: column; gap: var(--workspace-space-2); }
+.assistant-panel__suggestion {
+  text-align: left; padding: var(--workspace-space-2) var(--workspace-space-3); border: 1px solid var(--workspace-card-border);
+  border-radius: var(--workspace-radius-control); background: var(--workspace-canvas); color: var(--workspace-ink); font: inherit; cursor: pointer;
+}
+.assistant-panel__suggestion:hover { border-color: var(--workspace-card-hover-border); }
+
+.assistant-turn { display: flex; flex-direction: column; gap: var(--workspace-space-3); }
+.assistant-turn__question {
+  align-self: flex-end; max-width: 88%; margin: 0; padding: var(--workspace-space-2) var(--workspace-space-3);
+  border-radius: var(--workspace-radius-card); background: var(--workspace-muted-surface); color: var(--workspace-ink); line-height: 1.45; white-space: pre-wrap; text-wrap: pretty;
+}
+.assistant-turn__pending { display: flex; align-items: center; gap: var(--workspace-space-2); margin: 0; color: var(--workspace-text-muted); }
+.assistant-turn__error { margin: 0; color: var(--workspace-danger, var(--workspace-action)); }
+
+.assistant-answer { display: flex; flex-direction: column; gap: var(--workspace-space-3); }
+.assistant-answer__text { margin: 0; color: var(--workspace-ink); line-height: 1.6; text-wrap: pretty; }
+.assistant-answer__note { margin: 0; color: var(--workspace-text-secondary); }
+.assistant-cite {
+  display: inline-grid; place-items: center; min-width: 18px; height: 18px; margin: 0 2px 0 3px; padding: 0 4px; vertical-align: 2px;
+  border: 1px solid var(--workspace-card-border); border-radius: 5px; background: var(--workspace-canvas);
+  color: var(--workspace-action); font-family: var(--workspace-font-mono); font-size: 10.5px; font-weight: 500; line-height: 1; cursor: pointer;
+}
+.assistant-cite:hover { border-color: var(--workspace-action); }
+
+.assistant-sources h3 {
+  margin: 0 0 var(--workspace-space-2); color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 10.5px;
+  font-weight: 500; letter-spacing: .09em; text-transform: uppercase;
+}
+.assistant-sources ol { display: flex; flex-direction: column; gap: var(--workspace-space-2); margin: 0; padding: 0; list-style: none; }
+.assistant-sources li { display: flex; gap: var(--workspace-space-2); align-items: flex-start; }
+.assistant-sources__number { flex: none; width: 18px; color: var(--workspace-action); font-family: var(--workspace-font-mono); font-size: 11px; line-height: 1.6; text-align: center; }
+.assistant-sources__title { display: block; padding: 0; border: 0; background: none; color: var(--workspace-ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.assistant-sources__title:hover { color: var(--workspace-action); text-decoration: underline; }
+.assistant-sources__passage { display: block; margin-top: 2px; color: var(--workspace-text-muted); font-size: 13px; line-height: 1.45; quotes: "“" "”"; }
+:lang(fr) .assistant-sources__passage { quotes: "«\00a0" "\00a0»"; }
+
+.assistant-action {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--workspace-space-3); padding: var(--workspace-space-3);
+  border: 1px dashed var(--workspace-card-border); border-radius: var(--workspace-radius-card);
+}
+.assistant-action p { margin: 0; color: var(--workspace-text-secondary); font-size: 13.5px; line-height: 1.45; }
+.assistant-answer__foot { display: flex; align-items: center; gap: var(--workspace-space-2); flex-wrap: wrap; }
+.assistant-answer__sent { margin: 0; color: var(--workspace-text-muted); font-size: 12px; }
+
+.assistant-panel__composer {
+  display: flex; align-items: flex-end; gap: var(--workspace-space-2); padding: var(--workspace-space-3) var(--workspace-space-4) var(--workspace-space-4);
+  border-top: 1px solid var(--workspace-line);
+}
+.assistant-panel__composer textarea {
+  flex: 1; min-height: 44px; max-height: 160px; resize: none; padding: var(--workspace-space-2) var(--workspace-space-3);
+  border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-control); background: var(--workspace-canvas); color: var(--workspace-ink); line-height: 1.45;
+}
+.assistant-panel__composer textarea:focus { outline: 2px solid var(--workspace-action); outline-offset: -1px; }
+.assistant-panel__dev { padding: 0 var(--workspace-space-4) var(--workspace-space-3); color: var(--workspace-text-muted); font-size: 12px; }
+
+/* Narrow windows: the panel slides over the page instead of taking a column. */
+@media (max-width: 1100px) {
+  .workspace-app.workspace-app--assistant { grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr); }
+  .assistant-panel { position: fixed; z-index: 70; top: 0; right: 0; width: min(400px, 100vw); box-shadow: var(--workspace-shadow-raised, 0 8px 32px rgb(0 0 0 / .3)); }
+}
+@media (max-width: 850px) { .workspace-app.workspace-app--assistant { grid-template-columns: minmax(0, 1fr); } }

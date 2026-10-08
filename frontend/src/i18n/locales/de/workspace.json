@@ -721,5 +721,39 @@
       "logoText": "Wir behalten das aktuelle Logo: Die Kunden kennen es, und eine Änderung würde den Start verzögern.",
       "phone": "Checkout auf einem alten Handy testen"
     }
+  },
+  "assistant": {
+    "ask": "Fragen",
+    "askHint": "Humcase fragen (Strg+J)",
+    "title": "Humcase fragen",
+    "intro": "Stell eine Frage: Humcase antwortet aus deinen Fällen und nennt seine Quellen.",
+    "suggest": {
+      "decide": "Was wartet auf meine Entscheidung?",
+      "stale": "Was ist seit über einer Woche offen?",
+      "week": "Fass meine Woche zusammen"
+    },
+    "placeholder": "Deine Frage…",
+    "followUp": "Weitere Frage stellen…",
+    "send": "Fragen",
+    "searching": "Suche in deinen Fällen…",
+    "sources": "Quellen",
+    "openSource": "Fall {{title}} öffnen",
+    "sent_one": "An {{service}} gesendet: {{count}} Auszug aus einem Fall.",
+    "sent_other": "An {{service}} gesendet: {{count}} Auszüge aus Fällen.",
+    "keep": "Als Fall behalten",
+    "kept": "Im Eingang behalten: öffnen",
+    "copy": "Kopieren",
+    "restart": "Neues Gespräch",
+    "close": "Schließen",
+    "notFound": "Nichts dazu in deinen Fällen.",
+    "newCaseFromQuestion": "Einen Fall mit dieser Frage anlegen",
+    "noAi": "Keine KI verbunden: hier die Fälle, die deiner Frage am nächsten sind.",
+    "actionSubCase": "Unterfall „{{title}}“ in „{{parent}}“ anlegen?",
+    "create": "Anlegen",
+    "actionDone": "Unterfall angelegt: öffnen",
+    "error": "Keine Antwort: {{error}}",
+    "mockNoAi": "Entwurf: ohne KI",
+    "closest": "Nächste Fälle",
+    "connectAi": "Eine KI verbinden"
   }
 }
