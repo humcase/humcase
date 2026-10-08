@@ -203,7 +203,12 @@
     "pathLabel": "Percorso del caso",
     "subCasesBadge_one": "{{count}} sottocaso",
     "subCasesBadge_many": "{{count}} sottocasi",
-    "subCasesBadge_other": "{{count}} sottocasi"
+    "subCasesBadge_other": "{{count}} sottocasi",
+    "provenanceKind": {
+      "ask": "Risposta di Humcase",
+      "source": "Fonte",
+      "germinated": "Fai germogliare"
+    }
   },
   "review": {
     "declaredBy": "Risultato dichiarato da {{actor}}",

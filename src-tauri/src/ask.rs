@@ -32,7 +32,23 @@ const QUESTION_MAX: usize = 1000;
 const PREVIOUS_ANSWER_MAX: usize = 1200;
 const SUB_CASE_TITLE_MAX: usize = 120;
 
-const SYSTEM_PROMPT: &str = "You answer a person's question about their own work, using only the cases (their notes, tasks, decisions) given in the user message as JSON. Each case has numbered excerpts, the first one being its title; `overview` lists the latest cases of the space in one line each (title excerpt, nature, status, decision state, last change, due day). `conversation` holds the previous exchanges: use it to understand a follow-up question. Rules: answer in the language of the question, briefly (one to four sentences). Every sentence names in `excerpt` the id of the excerpt that states that very fact; a fact read from a case's nature, status, decision state, last change or due day names that case's title excerpt. A sentence without an excerpt is not shown, so do not write one. A case without a due day has no deadline. Never state anything the excerpts do not say: no outside knowledge, no guess, no advice, and no reason, cause or judgment that is not written in the cases. Never write excerpt ids or case numbers in `text`. A case with status resolved and decision `to_review` is a result waiting for the person's decision; `rework_requested` means the person asked for it to be redone. If the cases do not answer the question, set `found` to false and `sentences` to an empty list. `sub_case` proposes one next step only when the question or the cases clearly call for an action that has no case yet: a short title and the number of the case it belongs in; otherwise null.";
+/// Version of the instruction below, recorded with each answer and in the bench's results.
+const PROMPT_VERSION: &str = "ask.v7";
+
+/// Local journal of the checks: numbers only (no question, no text), next to the database.
+pub const JOURNAL_FILE: &str = "ask-journal.jsonl";
+const JOURNAL_MAX_SIZE: u64 = 1024 * 1024;
+
+const SYSTEM_PROMPT: &str = "You answer a person's question about their own work, using only the cases (their notes, tasks, decisions) given in the user message as JSON. Each case has numbered excerpts, the first one being its title; `overview` lists the latest cases of the space in one line each (title excerpt, kind, state, last change, due day). `conversation` holds the previous exchanges: use it to understand a follow-up question.
+Rules:
+1. Answer in the language of the question, in one to five short sentences.
+2. Give the substance: the proposal, figure, date, name or reason the cases state, not only where things stand. When several cases answer, use each of them.
+3. If the cases answer only part of the question, answer that part; set `found` to false only when they answer nothing of it.
+4. Keep the cases' own certainty: a proposal stays a proposal, what is still to decide stays open, a question stays a question. Never say who wrote, proposed or decided something (\"you proposed\") unless the excerpt names them.
+5. Speak as the person would: name a case only by its subject (\"the choice of the supplier\"), never as \"the case\", and say its state in plain words (\"waits for your decision\", \"in progress\"); never write the words of the data (kind, state, excerpt, case number). A case without a due day has no deadline.
+6. Every sentence names in `excerpt` the id of the excerpt that states that very fact; a fact read from a case's kind, state, last change or due day names that case's title excerpt. A sentence without an excerpt is not shown, so do not write one.
+7. Never state anything the excerpts do not say: no outside knowledge, no guess, no advice, no reason, cause or judgment that is not written in the cases, and no link between two cases that their text does not make.
+8. `sub_case`: when the question asks what is missing, what remains or what to do next, and your answer names an action that has no case of its own yet, propose that action (the person decides with one click, so propose it rather than leave it out): a short title in the language of the question and the number of the case it belongs in. Otherwise null: never for a question about facts, prices, dates or where things stand, and never for a decision the person takes on an existing case.";
 
 /// A previous exchange of the conversation, as the interface sends it.
 #[derive(Debug, Clone, Deserialize)]
@@ -173,9 +189,8 @@ impl Reading {
                 json!({
                     "case": i + 1,
                     "project": case.project,
-                    "nature": case.nature,
-                    "status": case.status,
-                    "decision": case.decision,
+                    "kind": case.nature,
+                    "state": state_words(&case.status, &case.decision),
                     "last_change": case.updated,
                     "due": case.due,
                     "excerpts": lines,
@@ -192,9 +207,8 @@ impl Reading {
                     "case": offset + i + 1,
                     "title": { "id": number(case, &case.title), "text": case.title },
                     "project": case.project,
-                    "nature": case.nature,
-                    "status": case.status,
-                    "decision": case.decision,
+                    "kind": case.nature,
+                    "state": state_words(&case.status, &case.decision),
                     "last_change": case.updated,
                     "due": case.due,
                 })
@@ -229,11 +243,24 @@ fn without_references(text: &str) -> String {
     static REFERENCE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
     let reference = REFERENCE.get_or_init(|| {
         regex::Regex::new(
-            r"(?i)\s*[(\[]\s*(?:ids?|excerpts?|extraits?|extractos?|trechos?|estratt[oi]|auszug|auszüge|cases?|cas|casos?|cas[oi]|fall|fälle)\s*[#:n°]*\s*\d+(?:\s*(?:,|and|et|y|e|und)\s*\d+)*\s*[)\]]",
+            r"(?i)\s*[(\[]\s*(?:(?:ids?|excerpts?|extraits?|extractos?|trechos?|estratt[oi]|auszug|auszüge|cases?|cas|casos?|cas[oi]|fall|fälle)\s*[#:n°]*\s*\d+(?:\s*(?:,|and|et|y|e|und)\s*\d+)*|to_review|rework_requested|accepted_changed|in_progress)\s*[)\]]",
         )
         .expect("valid pattern")
     });
     reference.replace_all(text, "").into_owned()
+}
+
+/// The state of a case as the person says it: the AI copied raw words ("resolved",
+/// "to_review") into its answers when given the status and the decision state.
+fn state_words(status: &str, decision: &str) -> &'static str {
+    match (status, decision) {
+        (_, "to_review") => "result waiting for the person's decision",
+        (_, "rework_requested") => "the person asked for it to be redone",
+        (_, "accepted" | "accepted_changed") => "done, accepted by the person",
+        ("resolved", _) => "done",
+        ("in_progress", _) => "in progress",
+        _ => "to do",
+    }
 }
 
 fn clip(text: &str, max: usize) -> String {
@@ -260,6 +287,10 @@ fn search_words(text: &str) -> Vec<String> {
         .collect()
 }
 
+/// A word of this length found nowhere is searched by its first `COMPOUND_START` letters.
+const COMPOUND_MIN: usize = 10;
+const COMPOUND_START: usize = 7;
+
 /// Scope of the projects read: `work`, `private`, or `unassigned` for the projects without a
 /// space; all of them when `None`.
 const UNASSIGNED: &str = "unassigned";
@@ -275,7 +306,16 @@ fn by_words(conn: &Connection, query: &str, space: Option<&str>) -> Result<Vec<S
             search_query: Some(word.clone()),
             ..Default::default()
         };
-        let page = queries::list_notes_page(conn, &filter, 0, 30, false)?;
+        let mut page = queries::list_notes_page(conn, &filter, 0, 30, false)?;
+        // A long word found nowhere may be a compound ("Beratungsstunde"): its start is searched.
+        if page.notes.is_empty() && word.chars().count() >= COMPOUND_MIN {
+            let start: String = word.chars().take(COMPOUND_START).collect();
+            let filter = NoteListFilter {
+                search_query: Some(start),
+                ..filter
+            };
+            page = queries::list_notes_page(conn, &filter, 0, 30, false)?;
+        }
         for (rank, note) in page.notes.into_iter().enumerate() {
             let in_title = note.title.to_lowercase().contains(&word);
             let entry = score.entry(note.id).or_insert((0.0, rank));
@@ -747,6 +787,34 @@ fn ready_provider(
         .map(|p| (p.id.clone(), p.label.clone()))
 }
 
+/// Records what the check kept of an answer, numbers only: how many sentences the AI wrote and
+/// how many were dropped tell whether it invents (the person reads the file; nothing leaves).
+fn record_check(db_path: &Path, answer: &Answer, cases_sent: usize) {
+    let Some(folder) = db_path.parent() else {
+        return;
+    };
+    let millis = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_millis() as u64)
+        .unwrap_or(0);
+    let entry = json!({
+        "at_unix_ms": millis,
+        "prompt": PROMPT_VERSION,
+        "kind": answer.kind,
+        "sentences": answer.parts.len(),
+        "dropped": answer.dropped,
+        "sources": answer.sources.len(),
+        "passages": answer.sources.iter().map(|s| s.passages.len()).sum::<usize>(),
+        "cases_sent": cases_sent,
+        "sub_case": answer.action.is_some(),
+    });
+    if let Err(e) =
+        crate::dictation_journal::append(&folder.join(JOURNAL_FILE), &entry, JOURNAL_MAX_SIZE)
+    {
+        eprintln!("ask check not recorded ({e})");
+    }
+}
+
 /// Answers `question` from the cases of `space`. The database lock is never held during the
 /// call to the AI.
 #[allow(clippy::too_many_arguments)]
@@ -826,6 +894,7 @@ pub async fn ask(
         service: label,
         excerpts: reading.case_count(),
     });
+    record_check(db_path, &answer, reading.case_count());
     Ok(answer)
 }
 
@@ -1047,6 +1116,26 @@ mod tests {
     }
 
     #[test]
+    fn the_state_is_sent_in_plain_words() {
+        assert_eq!(
+            state_words("resolved", "to_review"),
+            "result waiting for the person's decision"
+        );
+        assert_eq!(state_words("resolved", "none"), "done");
+        assert_eq!(
+            state_words("open", "rework_requested"),
+            "the person asked for it to be redone"
+        );
+        assert_eq!(state_words("in_progress", "none"), "in progress");
+        assert_eq!(state_words("open", "none"), "to do");
+        let message = reading().message("What is open?", &[]);
+        assert!(
+            !message.to_string().contains("\"status\""),
+            "no raw status sent"
+        );
+    }
+
+    #[test]
     fn references_to_the_message_are_left_out_of_the_text() {
         assert_eq!(
             without_references("The comparison (id 4) waits for you (excerpt 11, 12)."),
@@ -1059,6 +1148,10 @@ mod tests {
         assert_eq!(
             without_references("Step (page 4) stays."),
             "Step (page 4) stays."
+        );
+        assert_eq!(
+            without_references("It awaits your decision (to_review)."),
+            "It awaits your decision."
         );
     }
 
@@ -1237,6 +1330,15 @@ mod tests {
     }
 
     #[test]
+    fn a_compound_word_finds_the_case_holding_its_start() {
+        let conn = db();
+        let work = project(&conn, "Office", crate::models::project::ProjectSpace::Work);
+        let fee = add(&conn, &work, "Stundensatz für Beratung", "Ab Februar 95 €.");
+        let found = by_words(&conn, "Was kostet eine Beratungsstunde?", Some("work")).unwrap();
+        assert_eq!(found, vec![fee]);
+    }
+
+    #[test]
     fn a_follow_up_is_searched_with_the_previous_question_and_cited_cases() {
         let conn = db();
         let work = project(&conn, "Shop", crate::models::project::ProjectSpace::Work);
@@ -1256,5 +1358,292 @@ mod tests {
         let ids: Vec<&str> = reading.detailed.iter().map(|c| c.id.as_str()).collect();
         assert!(ids.contains(&providers.as_str()));
         assert!(ids.contains(&cited.as_str()));
+    }
+
+    #[test]
+    fn a_check_is_journaled_as_numbers_only() {
+        let folder = tempfile::tempdir().unwrap();
+        let db_path = folder.path().join("humcase.db");
+        let answer = check(
+            raw(r#"{"found": true, "sentences": [
+                {"text": "Address and payment on one page.", "excerpt": 2},
+                {"text": "Invented.", "excerpt": null}
+            ], "sub_case": null}"#),
+            &reading(),
+        );
+        record_check(&db_path, &answer, 3);
+        let line = std::fs::read_to_string(folder.path().join(JOURNAL_FILE)).unwrap();
+        let entry: Value = serde_json::from_str(line.trim()).unwrap();
+        assert_eq!(entry["sentences"], 1);
+        assert_eq!(entry["dropped"], 1);
+        assert_eq!(entry["cases_sent"], 3);
+        assert!(
+            !line.contains("Address"),
+            "no text of the cases nor of the answer"
+        );
+    }
+
+    /// Measures Ask Humcase on `ask_eval_cases.json` (six languages) with real calls: per question
+    /// the cases cited against the expected ones, phrases that would turn a proposal into a
+    /// decision, "not found" when it should be, sub-cases proposed, sentences dropped by the check,
+    /// tokens and estimated cost. Provider from `ASK_EVAL_PROVIDER` (Cerebras), model from
+    /// `ASK_EVAL_MODEL`, instruction from the file `ASK_EVAL_PROMPT` to compare another version;
+    /// the results go to `ASK_EVAL_OUT`. Search by meaning is not used.
+    /// `cargo test ask_eval -- --ignored --nocapture`
+    #[test]
+    #[ignore = "real AI calls"]
+    fn ask_eval() {
+        use crate::db::journal::{self, Actor};
+        let bench: Value = serde_json::from_str(include_str!("ask_eval_cases.json")).unwrap();
+        let provider = std::env::var("ASK_EVAL_PROVIDER").unwrap_or_else(|_| "cerebras".into());
+        // Another instruction to compare with, from a file (`ASK_EVAL_PROMPT`).
+        let (prompt, version) = match std::env::var("ASK_EVAL_PROMPT") {
+            Ok(path) => (std::fs::read_to_string(&path).unwrap(), path),
+            Err(_) => (SYSTEM_PROMPT.to_string(), PROMPT_VERSION.to_string()),
+        };
+        let folder = tempfile::tempdir().unwrap();
+        let usage_path = folder.path().join("eval.db");
+        let mut results = Vec::new();
+        let (mut questions, mut kind_ok, mut full_recall, mut recall_sum) = (0, 0, 0, 0.0);
+        let (mut forbidden, mut dropped, mut sentences) = (0, 0, 0);
+        let (mut sub_expected, mut sub_proposed, mut sub_unexpected) = (0, 0, 0);
+        let mut errors = 0;
+        let (mut facts_expected, mut facts_missing, mut jargon_hits) = (0, 0, 0);
+        for base in bench["bases"].as_array().unwrap() {
+            let conn = db();
+            journal::install(&conn, &Actor::Human).unwrap();
+            let work = project(&conn, "Work", crate::models::project::ProjectSpace::Work);
+            let mut ids: HashMap<String, String> = HashMap::new();
+            for case in base["cases"].as_array().unwrap() {
+                let id = queries::create_note(
+                    &conn,
+                    crate::models::note::CreateNoteInput {
+                        project_id: work.clone(),
+                        title: case["title"].as_str().unwrap().into(),
+                        content: Some(case["content"].as_str().unwrap().into()),
+                        note_type: serde_json::from_value(case["nature"].clone()).unwrap(),
+                        priority: None,
+                        git_branch: None,
+                        tags: None,
+                        due_at: None,
+                        raw_content: None,
+                    },
+                )
+                .unwrap();
+                let status = case["status"].as_str().unwrap();
+                if case["agent_resolved"].as_bool() == Some(true) {
+                    journal::set_actor(&conn, &Actor::Agent(Some("Codex".into()))).unwrap();
+                }
+                conn.execute(
+                    "UPDATE notes SET status = ?2 WHERE id = ?1",
+                    params![id, status],
+                )
+                .unwrap();
+                journal::set_actor(&conn, &Actor::Human).unwrap();
+                if let Some(days) = case["due_in_days"].as_i64() {
+                    conn.execute(
+                        "UPDATE notes SET due_at = date('now', 'localtime', ?2) WHERE id = ?1",
+                        params![id, format!("+{days} days")],
+                    )
+                    .unwrap();
+                }
+                ids.insert(case["key"].as_str().unwrap().into(), id);
+            }
+            // Dates last: every write above moved them to now.
+            for case in base["cases"].as_array().unwrap() {
+                let days = case["days_ago"].as_i64().unwrap_or(0);
+                conn.execute(
+                    "UPDATE notes SET updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?2),
+                                      created_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?2)
+                      WHERE id = ?1",
+                    params![ids[case["key"].as_str().unwrap()], format!("-{days} days")],
+                )
+                .unwrap();
+            }
+            let key_of = |id: &str| {
+                ids.iter()
+                    .find(|(_, v)| v.as_str() == id)
+                    .map(|(k, _)| k.clone())
+                    .unwrap_or_else(|| id.to_string())
+            };
+            for item in base["questions"].as_array().unwrap() {
+                let question = item["q"].as_str().unwrap();
+                let previous: Vec<PreviousTurn> = item["previous"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .map(|p| PreviousTurn {
+                        question: p["question"].as_str().unwrap().into(),
+                        answer: p["answer"].as_str().unwrap().into(),
+                        source_ids: p["cites"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .map(|k| ids[k.as_str().unwrap()].clone())
+                            .collect(),
+                    })
+                    .collect();
+                let mut reading = read(&conn, question, &previous, Some("work"), &[]).unwrap();
+                let message = reading.message(question, &previous);
+                let started = std::time::Instant::now();
+                // A free tier refuses bursts (HTTP 429): wait and ask again, never count it.
+                let mut answer = Err(String::new());
+                for wait in [0, 5, 10, 20, 40] {
+                    std::thread::sleep(std::time::Duration::from_secs(wait));
+                    answer = tauri::async_runtime::block_on(crate::commands::ai::call_llm_json(
+                        &prompt,
+                        message.clone(),
+                        Some(provider.clone()),
+                        std::env::var("ASK_EVAL_MODEL").ok(),
+                        "answer",
+                        answer_schema(),
+                        &usage_path,
+                        crate::ai_usage::operation::ASK,
+                    ));
+                    if !answer.as_ref().is_err_and(|e| e.contains("429")) {
+                        break;
+                    }
+                }
+                let answer = answer
+                    .and_then(|text| parse_answer(&text))
+                    .map(|raw| check(raw, &reading));
+                let seconds = started.elapsed().as_secs_f32();
+                let answer = match answer {
+                    Ok(answer) => answer,
+                    Err(e) => {
+                        println!("{} «{question}»: {e}", base["lang"]);
+                        errors += 1;
+                        continue;
+                    }
+                };
+                let expect: Vec<String> = item["expect"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|k| k.as_str().unwrap().to_string())
+                    .collect();
+                let cited: Vec<String> =
+                    answer.sources.iter().map(|s| key_of(&s.note_id)).collect();
+                let not_found = item["not_found"].as_bool() == Some(true);
+                let right_kind = if not_found {
+                    answer.kind == AnswerKind::NotFound
+                } else {
+                    answer.kind == AnswerKind::Answer
+                };
+                let found = expect.iter().filter(|k| cited.contains(k)).count();
+                let recall = if expect.is_empty() {
+                    1.0
+                } else {
+                    found as f64 / expect.len() as f64
+                };
+                let text: String = answer.parts.iter().map(|p| p.text.as_str()).collect();
+                // No-break spaces read as spaces ("4 000 €").
+                let lower = text.to_lowercase().replace(['\u{a0}', '\u{202f}'], " ");
+                let hits: Vec<&str> = item["forbid"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|f| f.as_str())
+                    .filter(|f| lower.contains(f))
+                    .collect();
+                let missing: Vec<String> = item["must"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|fact| fact.as_array())
+                    .filter(|spellings| {
+                        !spellings
+                            .iter()
+                            .filter_map(|f| f.as_str())
+                            .any(|f| lower.contains(f))
+                    })
+                    .map(|spellings| spellings[0].as_str().unwrap_or_default().to_string())
+                    .collect();
+                let jargon: Vec<&str> = base["jargon"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .filter_map(|f| f.as_str())
+                    .filter(|f| lower.contains(f))
+                    .collect();
+                facts_expected += item["must"].as_array().map_or(0, Vec::len);
+                facts_missing += missing.len();
+                jargon_hits += jargon.len();
+                questions += 1;
+                kind_ok += usize::from(right_kind);
+                full_recall += usize::from(recall == 1.0);
+                recall_sum += recall;
+                forbidden += hits.len();
+                dropped += answer.dropped;
+                sentences += answer.parts.len();
+                let wants_sub = item["sub_case"].as_bool() == Some(true);
+                sub_expected += usize::from(wants_sub);
+                sub_proposed += usize::from(wants_sub && answer.action.is_some());
+                sub_unexpected += usize::from(!wants_sub && answer.action.is_some());
+                let extra: Vec<&String> = cited.iter().filter(|k| !expect.contains(k)).collect();
+                let missed = if recall < 1.0 {
+                    format!("MISSED {}/{} ", expect.len() - found, expect.len())
+                } else {
+                    String::new()
+                };
+                println!(
+                    "\n== {} «{question}» ({seconds:.1} s) {}{missed}",
+                    base["lang"],
+                    if right_kind { "" } else { "WRONG KIND " },
+                );
+                println!("   {text}");
+                println!(
+                    "   cited {cited:?}, extra {extra:?}, dropped {}, forbidden {hits:?}, facts missing {missing:?}, jargon {jargon:?}, sub-case {}",
+                    answer.dropped,
+                    answer.action.as_ref().map_or("-".into(), |a| format!(
+                        "«{}» in {}",
+                        a.title,
+                        key_of(&a.parent_id)
+                    ))
+                );
+                results.push(json!({
+                    "lang": base["lang"], "question": question, "seconds": seconds,
+                    "kind": answer.kind, "right_kind": right_kind, "expect": expect, "cited": cited,
+                    "recall": recall, "forbidden": hits, "facts_missing": missing, "jargon": jargon, "dropped": answer.dropped, "text": text,
+                    "sub_case": answer.action.as_ref().map(|a| json!({ "title": a.title, "in": key_of(&a.parent_id) })),
+                }));
+            }
+        }
+        let usage: Vec<_> = crate::ai_usage::read(&usage_path, 0)
+            .into_iter()
+            .filter(|u| u.ok)
+            .collect();
+        let input: u64 = usage.iter().filter_map(|u| u.input_tokens).sum();
+        let output: u64 = usage.iter().filter_map(|u| u.output_tokens).sum();
+        let cost: f64 = usage
+            .iter()
+            .filter_map(|u| {
+                let tokens = crate::ai_usage::TokenUsage {
+                    input_tokens: u.input_tokens,
+                    output_tokens: u.output_tokens,
+                    ..Default::default()
+                };
+                crate::ai_usage::token_cost(&u.provider, &u.model, &tokens)
+            })
+            .sum();
+        let summary = json!({
+            "prompt": version, "provider": provider, "questions": questions, "errors": errors,
+            "right_kind": kind_ok, "full_recall": full_recall,
+            "mean_recall": recall_sum / questions as f64, "forbidden": forbidden,
+            "facts_expected": facts_expected, "facts_missing": facts_missing, "jargon": jargon_hits,
+            "sentences": sentences, "dropped": dropped,
+            "sub_case_expected": sub_expected, "sub_case_proposed": sub_proposed,
+            "sub_case_unexpected": sub_unexpected,
+            "calls": usage.len(), "input_tokens": input, "output_tokens": output, "cost_usd": cost,
+        });
+        println!("\n{}", serde_json::to_string_pretty(&summary).unwrap());
+        if let Ok(out) = std::env::var("ASK_EVAL_OUT") {
+            std::fs::write(
+                out,
+                serde_json::to_string_pretty(&json!({ "summary": summary, "results": results }))
+                    .unwrap(),
+            )
+            .unwrap();
+        }
     }
 }

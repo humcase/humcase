@@ -113,6 +113,17 @@ describe('NoteSubCases', () => {
     expect(screen.getByText('Trois hôtels retenus.')).toBeTruthy();
     expect(screen.getByText(/Ajoutée par claude/)).toBeTruthy();
   });
+
+  it('names the provenances Humcase writes in the language of the interface', async () => {
+    mockApi.getCaseContext.mockResolvedValue({ path: [], provenance: [
+      { id: 'pr1', note_id: 'voyage', kind: 'ask', label: 'Humcase · Cerebras', url: null, excerpt: 'Où en est le voyage ?', agent: null, created_at: '2026-10-08T10:00:00.000Z' },
+      { id: 'pr2', note_id: 'voyage', kind: 'source', label: 'Hôtels', url: null, excerpt: 'Trois hôtels retenus.', agent: null, created_at: '2026-10-08T10:00:00.000Z' },
+    ] });
+    render(<NoteSubCases note={voyage} allNotes={allNotes} onOpenNote={vi.fn()} onChanged={vi.fn()} onBeforeWrite={vi.fn()} />);
+    expect(await screen.findByText('Réponse de Humcase')).toBeTruthy();
+    expect(screen.getByText('Source')).toBeTruthy();
+    expect(screen.queryByText('ask')).toBeNull();
+  });
 });
 
 describe('CasePath', () => {
