@@ -959,6 +959,26 @@ pub async fn summarize(
     provider: Option<String>,
     model: Option<String>,
 ) -> Result<ReflectSummary, String> {
+    summarize_with_effort(
+        db, db_path, data_dir, sense, subject_id, turns, space, provider, model, None,
+    )
+    .await
+}
+
+/// [`summarize`] sending `reasoning_effort` to the model when given (the bench compares models).
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn summarize_with_effort(
+    db: &std::sync::Mutex<Connection>,
+    db_path: &Path,
+    data_dir: &Path,
+    sense: Option<std::sync::Arc<crate::meaning::Sense>>,
+    subject_id: Option<String>,
+    turns: Vec<ReflectPreviousTurn>,
+    space: Option<String>,
+    provider: Option<String>,
+    model: Option<String>,
+    effort: Option<&str>,
+) -> Result<ReflectSummary, String> {
     let providers = crate::providers::providers_info().cleanup;
     let (provider_id, label) = require_ai(&providers, provider.as_deref())?;
     let turns = clean_turns(turns);
@@ -980,7 +1000,7 @@ pub async fn summarize(
         )?
     };
     let message = context.message(&turns, true);
-    let text = crate::commands::ai::call_llm_json(
+    let text = crate::commands::ai::call_llm_json_effort(
         SUMMARY_PROMPT,
         message,
         Some(provider_id),
@@ -989,6 +1009,7 @@ pub async fn summarize(
         summary_schema(),
         db_path,
         crate::ai_usage::operation::REFLECT,
+        effort,
     )
     .await?;
     let raw: RawSummary = parse_text(&text, |v| {

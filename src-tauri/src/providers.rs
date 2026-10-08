@@ -74,6 +74,17 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_editable: false,
     },
     LlmProvider {
+        id: "mistral",
+        label: "Mistral",
+        base_url: "https://api.mistral.ai/v1/chat/completions",
+        key_env: "MISTRAL_API_KEY",
+        default_model: "mistral-large-4",
+        model_env: "MISTRAL_MODEL",
+        url_env: "",
+        needs_key: true,
+        url_editable: false,
+    },
+    LlmProvider {
         id: "ollama",
         label: "Ollama (local)",
         base_url: "http://127.0.0.1:11434/v1/chat/completions",
@@ -333,11 +344,24 @@ pub fn stt_key(id: &str) -> Result<String, String> {
     key.ok_or_else(|| missing_key_error(f.key_env))
 }
 
+/// The text of a message `content`: a string, or the list of typed chunks some providers send
+/// (Mistral: `thinking` chunks, then `text` chunks); only the `text` chunks are the answer.
+pub fn content_text(content: &serde_json::Value) -> String {
+    match content {
+        serde_json::Value::String(text) => text.clone(),
+        serde_json::Value::Array(chunks) => chunks
+            .iter()
+            .filter(|chunk| chunk["type"] == "text")
+            .filter_map(|chunk| chunk["text"].as_str())
+            .collect::<Vec<_>>()
+            .join(""),
+        _ => String::new(),
+    }
+}
+
 /// Extracts the cleaned text from an **OpenAI-compatible** completion response.
 pub fn extract_content(data: &serde_json::Value) -> Result<String, String> {
-    data["choices"][0]["message"]["content"]
-        .as_str()
-        .map(str::to_string)
+    Some(content_text(&data["choices"][0]["message"]["content"]))
         .filter(|s| !s.trim().is_empty())
         .ok_or_else(|| crate::tr!("ai.provider.emptyResponse"))
 }
@@ -509,6 +533,21 @@ pub fn providers_info() -> ProvidersInfo {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_content_made_of_chunks_gives_its_text_chunks_only() {
+        let data = serde_json::json!({ "choices": [{ "message": { "content": [
+            { "type": "thinking", "thinking": [{ "type": "text", "text": "reasoning" }] },
+            { "type": "text", "text": "{\"a\":" },
+            { "type": "text", "text": "1}" }
+        ] } }] });
+        assert_eq!(extract_content(&data).unwrap(), "{\"a\":1}");
+        let plain = serde_json::json!({ "choices": [{ "message": { "content": "hello" } }] });
+        assert_eq!(extract_content(&plain).unwrap(), "hello");
+        let only_thinking = serde_json::json!({ "choices": [{ "message": { "content": [
+            { "type": "thinking", "thinking": [] }] } }] });
+        assert!(extract_content(&only_thinking).is_err());
+    }
 
     fn empty_env(_: &str) -> Option<String> {
         None

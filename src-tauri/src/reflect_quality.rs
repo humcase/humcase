@@ -13,12 +13,43 @@
 //! (text of every conversation; the same data goes to `<out>.json`).
 
 use crate::reflect::{
-    reply_with_effort, summarize, ReflectPreviousTurn, ReflectReply, ReflectSummary,
+    reply_with_effort, summarize_with_effort, ReflectPreviousTurn, ReflectReply, ReflectSummary,
 };
 use serde_json::{json, Value};
 use std::path::Path;
 
 const OPERATION: &str = "reflect_eval";
+
+/// Everything the bench has spent so far (partner, simulated person, judge), in millionths of a
+/// dollar, and the cap that stops it (`REFLECT_QUALITY_CAP`, dollars, 1.10 by default): once the
+/// total passes the cap, the next call panics and the situations still running are left out.
+static SPENT_MICRO: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
+fn add_spent(usd: f64) {
+    SPENT_MICRO.fetch_add(
+        (usd.max(0.0) * 1e6) as u64,
+        std::sync::atomic::Ordering::Relaxed,
+    );
+}
+
+fn spent_usd() -> f64 {
+    SPENT_MICRO.load(std::sync::atomic::Ordering::Relaxed) as f64 / 1e6
+}
+
+fn cap_usd() -> f64 {
+    std::env::var("REFLECT_QUALITY_CAP")
+        .ok()
+        .and_then(|c| c.parse().ok())
+        .unwrap_or(1.10)
+}
+
+fn check_cap() {
+    assert!(
+        spent_usd() <= cap_usd(),
+        "cost cap reached: ${:.3} spent",
+        spent_usd()
+    );
+}
 
 /// An item of the rubric: the judge answers yes/no flags, the score is computed here (1 when
 /// every positive flag is true and no negative flag is), which keeps a reasoning judge from
@@ -165,6 +196,7 @@ fn eval_call(
     effort: Option<&str>,
     db_path: &Path,
 ) -> Result<(Value, Spent), String> {
+    check_cap();
     let resolved = crate::providers::resolve_llm("cerebras", None)?;
     let mut body = json!({
         "model": resolved.model,
@@ -218,6 +250,7 @@ fn eval_call(
         let tokens = crate::ai_usage::TokenUsage::from_response(&data);
         let usd = crate::ai_usage::token_cost("cerebras", &resolved.model, &tokens).unwrap_or(0.0);
         let secs = started.elapsed().as_secs_f64();
+        add_spent(usd);
         crate::ai_usage::record(
             db_path,
             &crate::ai_usage::UsageEntry {
@@ -315,15 +348,22 @@ fn grades_of(value: &Value, specs: &[ItemSpec]) -> Grades {
 struct Config {
     turns: usize,
     judge_effort: Option<String>,
+    /// The partner under test (the simulated person and the judge stay on Cerebras).
+    partner_provider: String,
+    partner_model: Option<String>,
+    /// `reasoning_effort` sent to the partner (nothing by default).
+    partner_effort: Option<String>,
 }
 
 /// The reply of the partner against the real AI: asked again on HTTP 429.
 fn partner_reply(
+    config: &Config,
     db: &std::sync::Mutex<rusqlite::Connection>,
     db_path: &Path,
     subject: Option<String>,
     turns: &[ReflectPreviousTurn],
 ) -> (ReflectReply, Spent) {
+    check_cap();
     let before = crate::ask::tests::usage_totals(db_path);
     let started = std::time::Instant::now();
     let mut result = Err(String::new());
@@ -337,9 +377,9 @@ fn partner_reply(
             subject.clone(),
             turns.to_vec(),
             Some("work".into()),
-            Some("cerebras".into()),
-            None,
-            None,
+            Some(config.partner_provider.clone()),
+            config.partner_model.clone(),
+            config.partner_effort.as_deref(),
         ));
         if !result.as_ref().is_err_and(|e| e.contains("429")) {
             break;
@@ -347,6 +387,7 @@ fn partner_reply(
     }
     let reply = result.expect("the partner replies");
     let after = crate::ask::tests::usage_totals(db_path);
+    add_spent(after.2 - before.2);
     (
         reply,
         Spent {
@@ -520,7 +561,7 @@ fn run_situation(situation: &Value, config: &Config) -> Value {
     let mut records = Vec::new();
     let (mut judge_cost, mut person_cost) = (0.0, 0.0);
     for index in 0..config.turns {
-        let (reply, spent) = partner_reply(&db, &db_path, subject.clone(), &turns);
+        let (reply, spent) = partner_reply(config, &db, &db_path, subject.clone(), &turns);
         let before = dialog(&turns);
         let (grades, judged) =
             judge_reply(situation, &before, &reply_json(&reply), config, &db_path);
@@ -554,7 +595,7 @@ fn run_situation(situation: &Value, config: &Config) -> Value {
     let mut summary = Err(String::new());
     for wait in [0u64, 5, 10, 20, 40, 60, 90] {
         std::thread::sleep(std::time::Duration::from_secs(wait));
-        summary = tauri::async_runtime::block_on(summarize(
+        summary = tauri::async_runtime::block_on(summarize_with_effort(
             &db,
             &db_path,
             folder.path(),
@@ -562,8 +603,9 @@ fn run_situation(situation: &Value, config: &Config) -> Value {
             subject.clone(),
             turns.clone(),
             Some("work".into()),
-            Some("cerebras".into()),
-            None,
+            Some(config.partner_provider.clone()),
+            config.partner_model.clone(),
+            config.partner_effort.as_deref(),
         ));
         if !summary.as_ref().is_err_and(|e| e.contains("429")) {
             break;
@@ -571,6 +613,7 @@ fn run_situation(situation: &Value, config: &Config) -> Value {
     }
     let summary = summary.expect("the summary is made");
     let summary_usd = crate::ask::tests::usage_totals(&db_path).2 - before;
+    add_spent(summary_usd);
     let summary_secs = started.elapsed().as_secs_f64();
     let final_dialog = dialog(&turns);
     let (summary_grades, judged) = judge_summary(
@@ -758,6 +801,18 @@ fn reflect_quality() {
             std::env::var("REFLECT_QUALITY_JUDGE_EFFORT").unwrap_or_else(|_| "low".into()),
         )
         .filter(|e| e != "default"),
+        partner_provider: std::env::var("REFLECT_QUALITY_PARTNER_PROVIDER")
+            .unwrap_or_else(|_| "cerebras".into()),
+        partner_model: std::env::var("REFLECT_QUALITY_PARTNER_MODEL").ok(),
+        partner_effort: std::env::var("REFLECT_QUALITY_PARTNER_EFFORT").ok(),
+    });
+    // The situations a comparison reads in full come first, in case the cap stops the run.
+    let mut situations = situations;
+    situations.sort_by_key(|s| {
+        let id = s["id"].as_str().unwrap_or("");
+        !["bathroom", "pottery", "renovation"]
+            .iter()
+            .any(|p| id.starts_with(p))
     });
     let parallel: usize = std::env::var("REFLECT_QUALITY_PARALLEL")
         .ok()
@@ -768,6 +823,10 @@ fn reflect_quality() {
         records = rejudge(&bench, &path, &config, &situations);
     } else {
         for chunk in situations.chunks(parallel.max(1)) {
+            if spent_usd() > cap_usd() {
+                println!("\nCost cap reached: the remaining situations are not run.");
+                break;
+            }
             let handles: Vec<_> = chunk
                 .iter()
                 .cloned()
@@ -846,6 +905,12 @@ A situation failed (rate limit?): it is left out."
         "judge_usd": judge_usd,
         "person_usd": person_usd,
         "total_usd": reply_usd + summary_usd + judge_usd + person_usd,
+        "spent_usd_counter": spent_usd(),
+        "partner": format!(
+            "{}/{}",
+            config.partner_provider,
+            config.partner_model.as_deref().unwrap_or("default")
+        ),
     });
     println!("\n{}", serde_json::to_string_pretty(&report).unwrap());
     if let Ok(out) = std::env::var("REFLECT_QUALITY_OUT") {
@@ -860,4 +925,70 @@ A situation failed (rate limit?): it is left out."
         )
         .unwrap();
     }
+}
+
+/// One call of each shape the reply path uses, against `REFLECT_QUALITY_PARTNER_PROVIDER`
+/// (mistral): a strict JSON schema answer, a tool call chosen by the model (`auto`) and a tool
+/// call forced by name, with the tokens recorded. About a tenth of a cent.
+/// `cargo test mistral_smoke -- --ignored --nocapture`
+#[test]
+#[ignore = "real AI calls"]
+fn mistral_smoke() {
+    let provider = std::env::var("REFLECT_QUALITY_PARTNER_PROVIDER").unwrap_or("mistral".into());
+    let model = std::env::var("REFLECT_QUALITY_PARTNER_MODEL").ok();
+    let folder = tempfile::tempdir().unwrap();
+    let db_path = folder.path().join("smoke.db");
+    let schema = json!({
+        "type": "object",
+        "properties": {
+            "restated": { "type": ["string", "null"] },
+            "links": { "type": "array", "items": { "type": "object",
+                "properties": { "kind": { "type": "string", "enum": ["supports", "decided", "conflicts"] },
+                                "excerpt": { "type": "integer" } },
+                "required": ["kind", "excerpt"], "additionalProperties": false } },
+            "question": { "type": "string" }
+        },
+        "required": ["restated", "links", "question"],
+        "additionalProperties": false
+    });
+    let text = tauri::async_runtime::block_on(crate::commands::ai::call_llm_json_effort(
+        "Restate the message and ask one question. Link nothing.",
+        json!({ "latest": "I want to open on Sundays." }),
+        Some(provider.clone()),
+        model.clone(),
+        "reply",
+        schema,
+        &db_path,
+        OPERATION,
+        None,
+    ));
+    println!("json schema call: {text:?}");
+    let tools = json!([{ "type": "function", "function": {
+        "name": "search_cases", "description": "Search the cases.",
+        "parameters": { "type": "object", "properties": { "query": { "type": "string" } },
+                        "required": ["query"], "additionalProperties": false } } }]);
+    let messages = vec![
+        json!({ "role": "system", "content": "Search the cases before answering." }),
+        json!({ "role": "user", "content": "What did we decide about Sundays?" }),
+    ];
+    for (name, choice) in [
+        ("auto", json!("auto")),
+        ("named", crate::ask::named_tool_choice("search_cases")),
+    ] {
+        let reply = tauri::async_runtime::block_on(crate::commands::ai::call_llm_chat(
+            &messages,
+            &tools,
+            &choice,
+            Some(provider.clone()),
+            model.clone(),
+            &db_path,
+            OPERATION,
+            None,
+        ));
+        println!("tool call ({name}): {reply:?}");
+    }
+    let usage = crate::ask::tests::usage_totals(&db_path);
+    println!("tokens in {} out {} cost ${:.5}", usage.0, usage.1, usage.2);
+    let entries = crate::ai_usage::read(&db_path, 0);
+    println!("recorded calls: {}", entries.len());
 }

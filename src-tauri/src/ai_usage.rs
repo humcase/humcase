@@ -73,7 +73,8 @@ pub struct TokenPrice {
 /// estimate: its tokens are still counted. Sources: cerebras.ai/pricing (relayed by
 /// pricepertoken.com and morphllm.com, the page renders its table in script),
 /// developers.openai.com/api/docs/pricing. Groq stopped publishing per-token prices for its
-/// Llama models in August 2026. TypeSafe (docs.typesafe.ai/models, read on 2026-10-04): Jev 1.13
+/// Llama models in August 2026. Mistral (docs.mistral.ai/models/mistral-large-4-0, read on
+/// 2026-10-08): Mistral Large 4 at $1.36 per million input tokens and $4.18 output, list price. TypeSafe (docs.typesafe.ai/models, read on 2026-10-04): Jev 1.13
 /// at $0.042 per million input tokens, output not billed.
 pub fn token_price(provider: &str, model: &str) -> Option<TokenPrice> {
     let (input, output) = match (provider, model) {
@@ -81,6 +82,8 @@ pub fn token_price(provider: &str, model: &str) -> Option<TokenPrice> {
         ("cerebras", "gpt-oss-120b") => (0.35, 0.75),
         ("cerebras", "qwen-3.8-27b") => (0.99, 1.49),
         ("openai", "gpt-4o-mini") | ("openrouter", "openai/gpt-4o-mini") => (0.15, 0.60),
+        // Public preview since 2026-10-06; the list price, not the launch sale (0.68 / 2.09).
+        ("mistral", "mistral-large-4") => (1.36, 4.18),
         ("ollama", _) => (0.0, 0.0),
         _ => return None,
     };

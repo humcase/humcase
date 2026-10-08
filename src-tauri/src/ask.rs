@@ -1196,8 +1196,8 @@ where
         let tool_calls = reply["tool_calls"].as_array().cloned().unwrap_or_default();
         if tool_calls.is_empty() {
             // The model wrote its answer as text instead of calling the final function.
-            let text = reply["content"].as_str().unwrap_or_default();
-            if let Some(Ok(raw)) = json_object_in(text).map(&parse) {
+            let text = crate::providers::content_text(&reply["content"]);
+            if let Some(Ok(raw)) = json_object_in(&text).map(&parse) {
                 return Ok(AgentOutcome {
                     raw,
                     calls: call,
