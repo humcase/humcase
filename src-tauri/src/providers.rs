@@ -94,6 +94,18 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         default_effort: Some("none"),
     },
     LlmProvider {
+        id: "anthropic",
+        label: "Anthropic",
+        base_url: "https://api.anthropic.com/v1/messages",
+        key_env: "ANTHROPIC_API_KEY",
+        default_model: "claude-haiku-5-5",
+        model_env: "ANTHROPIC_MODEL",
+        url_env: "",
+        needs_key: true,
+        url_editable: false,
+        default_effort: None,
+    },
+    LlmProvider {
         id: "ollama",
         label: "Ollama (local)",
         base_url: "http://127.0.0.1:11434/v1/chat/completions",
@@ -309,7 +321,10 @@ pub fn normalize_llm_url(input: &str) -> Result<String, String> {
 
 /// Model-list endpoint (`GET .../models`) next to a completion endpoint.
 pub fn models_url(completion_url: &str) -> String {
-    match completion_url.strip_suffix("/chat/completions") {
+    match completion_url
+        .strip_suffix("/chat/completions")
+        .or_else(|| completion_url.strip_suffix("/messages"))
+    {
         Some(base) => format!("{base}/models"),
         None => format!("{}/models", completion_url.trim_end_matches('/')),
     }

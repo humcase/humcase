@@ -131,7 +131,7 @@
     "testFailed": "Connessione non riuscita: {{error}}",
     "ready": "Connesso.",
     "notReady": "Non ancora connesso: aggiungi una chiave o un indirizzo, poi prova la connessione.",
-    "recommendations": "Compatibili: Groq, Cerebras, OpenAI, OpenRouter, Mistral (chiave API) · Ollama, LM Studio (locale)."
+    "recommendations": "Compatibili: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (chiave API) · Ollama, LM Studio (locale)."
   },
   "agent": {
     "heading": "Agenti",

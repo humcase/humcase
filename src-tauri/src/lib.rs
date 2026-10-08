@@ -2,6 +2,7 @@ pub mod agent_hooks;
 pub mod agents_seen;
 pub mod ai_settings;
 pub mod ai_usage;
+pub mod anthropic;
 pub mod ask;
 pub mod backup;
 pub mod commands;

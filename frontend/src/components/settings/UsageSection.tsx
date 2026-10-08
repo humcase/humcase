@@ -13,7 +13,7 @@ import { currentDateLocale } from '../../i18n';
 
 /** Brand names of the providers; only "custom" is translated. */
 const PROVIDER_NAMES: Record<string, string> = {
-  cerebras: 'Cerebras', deepgram: 'Deepgram', openai: 'OpenAI', groq: 'Groq', openrouter: 'OpenRouter', mistral: 'Mistral', ollama: 'Ollama', typesafe: 'TypeSafe',
+  cerebras: 'Cerebras', deepgram: 'Deepgram', openai: 'OpenAI', groq: 'Groq', openrouter: 'OpenRouter', mistral: 'Mistral', anthropic: 'Anthropic', ollama: 'Ollama', typesafe: 'TypeSafe',
 };
 
 // One per operation of `ai_usage::operation` (src-tauri), checked by the test.

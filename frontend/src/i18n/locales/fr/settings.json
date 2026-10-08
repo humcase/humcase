@@ -131,7 +131,7 @@
     "testFailed": "Échec de la connexion : {{error}}",
     "ready": "Branchée.",
     "notReady": "Pas encore branchée : ajoutez une clé ou une adresse, puis testez la connexion.",
-    "recommendations": "Compatibles : Groq, Cerebras, OpenAI, OpenRouter, Mistral (clé API) · Ollama, LM Studio (local)."
+    "recommendations": "Compatibles : Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (clé API) · Ollama, LM Studio (local)."
   },
   "agent": {
     "heading": "Agents",
