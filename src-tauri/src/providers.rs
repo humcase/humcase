@@ -26,6 +26,10 @@ pub struct LlmProvider {
     pub needs_key: bool,
     /// `true`: the server address can be entered in the application (local model, custom server).
     pub url_editable: bool,
+    /// `reasoning_effort` sent with the default model when the caller gives none (`None` = the
+    /// model's own default). Mistral Large 4 reasons by default and then outlasts the client's
+    /// timeout on a reply; its documented values are `high` and `none`.
+    pub default_effort: Option<&'static str>,
 }
 
 pub const LLM_PROVIDERS: &[LlmProvider] = &[
@@ -39,6 +43,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "openai",
@@ -50,6 +55,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "groq",
@@ -61,6 +67,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "openrouter",
@@ -72,6 +79,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "mistral",
@@ -83,6 +91,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: Some("none"),
     },
     LlmProvider {
         id: "ollama",
@@ -94,6 +103,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: false,
         url_editable: true,
+        default_effort: None,
     },
     LlmProvider {
         id: "custom",
@@ -105,6 +115,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "CUSTOM_LLM_BASE_URL",
         needs_key: false,
         url_editable: true,
+        default_effort: None,
     },
 ];
 
@@ -342,6 +353,17 @@ pub fn stt_key(id: &str) -> Result<String, String> {
     let f = find_stt_provider(id)?;
     let (key, _) = crate::ai_settings::effective_key(id, f.key_env, |k| std::env::var(k).ok());
     key.ok_or_else(|| missing_key_error(f.key_env))
+}
+
+/// The `reasoning_effort` to send: the caller's, or the provider's default for its default model
+/// (another model may not accept that value).
+pub fn effort_for<'a>(provider_id: &str, model: &str, asked: Option<&'a str>) -> Option<&'a str> {
+    asked.or_else(|| {
+        LLM_PROVIDERS
+            .iter()
+            .find(|p| p.id == provider_id && p.default_model == model)
+            .and_then(|p| p.default_effort)
+    })
 }
 
 /// The text of a message `content`: a string, or the list of typed chunks some providers send
@@ -768,5 +790,21 @@ mod tests {
             f.key_source,
             KeyProvenance::App | KeyProvenance::Env | KeyProvenance::None
         )));
+    }
+
+    #[test]
+    fn mistral_large_4_does_not_reason_unless_asked() {
+        assert_eq!(effort_for("mistral", "mistral-large-4", None), Some("none"));
+        assert_eq!(
+            effort_for("mistral", "mistral-large-4", Some("high")),
+            Some("high")
+        );
+        // Another model may refuse the value: nothing is sent for it.
+        assert_eq!(effort_for("mistral", "mistral-small-latest", None), None);
+        assert_eq!(effort_for("cerebras", "gpt-oss-120b", None), None);
+        assert_eq!(
+            effort_for("cerebras", "gpt-oss-120b", Some("low")),
+            Some("low")
+        );
     }
 }

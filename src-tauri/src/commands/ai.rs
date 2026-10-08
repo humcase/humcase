@@ -343,7 +343,7 @@ async fn call_llm_with(
             { "role": "user", "content": user_content.to_string() }
         ]
     });
-    if let Some(effort) = reasoning_effort {
+    if let Some(effort) = providers::effort_for(&provider_id, &resolved.model, reasoning_effort) {
         body["reasoning_effort"] = serde_json::Value::from(effort);
     }
     if let Some(format) = response_format {
@@ -433,7 +433,7 @@ pub(crate) async fn call_llm_chat(
         "tool_choice": tool_choice,
     });
     let mut body = body;
-    if let Some(effort) = reasoning_effort {
+    if let Some(effort) = providers::effort_for(&provider_id, &resolved.model, reasoning_effort) {
         body["reasoning_effort"] = serde_json::Value::from(effort);
     }
     let client = llm_client()?;
