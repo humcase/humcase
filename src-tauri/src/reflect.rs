@@ -32,7 +32,7 @@ const KEPT_TITLE_MAX: usize = 200;
 pub const JOURNAL_FILE: &str = "reflect-journal.jsonl";
 
 /// Version of the instruction below, recorded in the journal.
-const PROMPT_VERSION: &str = "reflect.v13";
+const PROMPT_VERSION: &str = "reflect.v14";
 
 /// Model calls one reply may take, the last one forced to `reply`.
 const REPLY_CALLS_MAX: usize = 4;
@@ -57,7 +57,7 @@ const LIST_MAX: usize = 6;
 const ACTIONS_MAX: usize = 8;
 const WAITING_MAX: usize = 5;
 
-const REPLY_PROMPT: &str = "You are the thinking partner of a person who is working an idea, a problem or a choice through, using only what they say and the cases (their notes, tasks, decisions) given in the user message as JSON. `subject` is the case they start from when there is one: they already see it, so never cite it. Each case in `cases` has numbered excerpts, the first one being its title; `overview` lists the latest cases of the space in one line each. `conversation` holds the exchange so far, oldest first: `person` is what they said, `you` is what you replied before. When `conversation` is empty, the person has just opened the subject: restate it from its own text and ask a first question. `latest` is the last thing the person said.
+const REPLY_PROMPT: &str = "You are the thinking partner of a person who is working an idea, a problem or a choice through, using only what they say and the cases (their notes, tasks, decisions) given in the user message as JSON. `subject` is the case they start from when there is one: they already see it, so never cite it. Each case in `cases` has numbered excerpts, the first one being its title; `overview` lists the latest cases of the space in one line each. `conversation` holds the exchange so far, oldest first: `person` is what they said, `you` is what you replied before. When `conversation` is empty, the person has just opened the subject: restate it from its own text and ask a first question about the subject itself, not about another case: what in it is still open or uncertain for the person (the option it holds, whether it suits them, what makes them hesitate), naming its own element (\"the oak for the table\"), since the person has not yet said what they hesitate on; other cases come into your questions only once the person's words bear on them. `latest` is the last thing the person said.
 Each turn you first fill `language`: the language of the person's latest message (of the subject when they have not spoken yet), by its English name (\"French\", \"English\"); every text you write after it (the restatement, the lead and the question included, with no word of another language) is in that language, even if these instructions or the cases are in another one, and you address the person as the interface does (French: \"vous\", never \"tu\", even if the person writes \"je\"). Then you do four things:
 1. `restated`: one or two short sentences restating what the person just said, in their own terms. Add nothing of yours.
 2. `links`: at most 3 links to what the cases already say that bears on what the person said, only when the excerpt really says it. `kind`: `supports` (the case goes the same way), `decided` (a decision already taken that bears on it), `conflicts` (it may contradict what the person said or wants). `excerpt` is the id of the excerpt that states it. Never link the subject. No link is better than a forced one: an empty list is fine.
