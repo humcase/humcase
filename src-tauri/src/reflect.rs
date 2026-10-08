@@ -293,7 +293,7 @@ fn first_question(text: &str) -> String {
 
 /// Holds the AI's reply to what was sent. A link stands only if the excerpt it names was really
 /// sent and is not a sentence of the subject (already shown); a kind that does not exist or a
-/// link beyond the third is dropped; every drop is counted. Two links to one case become one
+/// link beyond the third or naming only a case's title is dropped; every drop is counted. Two links to one case become one
 /// source with both sentences. The question is cut to its first.
 fn check_reply(raw: RawReply, reading: &Reading, subject_id: Option<&str>) -> ReflectReply {
     let mut links: Vec<ReflectLink> = Vec::new();
@@ -319,7 +319,8 @@ fn check_reply(raw: RawReply, reading: &Reading, subject_id: Option<&str>) -> Re
             }
             continue;
         }
-        if links.len() >= LINKS_MAX {
+        // A case's title alone shows nothing of what it says: a link needs one of its sentences.
+        if passage == title || links.len() >= LINKS_MAX {
             dropped += 1;
             continue;
         }
@@ -328,11 +329,7 @@ fn check_reply(raw: RawReply, reading: &Reading, subject_id: Option<&str>) -> Re
             source: Source {
                 note_id: note_id.clone(),
                 title: title.clone(),
-                passages: if passage == title {
-                    Vec::new()
-                } else {
-                    vec![passage.clone()]
-                },
+                passages: vec![passage.clone()],
             },
         });
     }
@@ -1091,6 +1088,21 @@ mod tests {
         assert_eq!(reply.links.len(), LINKS_MAX);
         assert_eq!(reply.dropped, 1);
         assert!(reply.links.iter().all(|l| l.source.note_id != "d"));
+    }
+
+    // Without it, a case shows up as a link with nothing of what it says.
+    #[test]
+    fn a_link_naming_only_a_title_is_dropped() {
+        let reply = check_reply(
+            raw(
+                json!({ "restated": null, "links": [{ "kind": "supports", "excerpt": 1 }],
+                "lead": null, "question": "Why?", "offer_summary": false }),
+            ),
+            &reading(),
+            None,
+        );
+        assert!(reply.links.is_empty());
+        assert_eq!(reply.dropped, 1);
     }
 
     #[test]
