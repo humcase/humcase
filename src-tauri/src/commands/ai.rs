@@ -261,6 +261,34 @@ pub(crate) async fn call_llm_json(
     db_path: &std::path::Path,
     operation: &str,
 ) -> Result<String, String> {
+    call_llm_json_effort(
+        system_prompt,
+        user_content,
+        provider,
+        model,
+        schema_name,
+        schema,
+        db_path,
+        operation,
+        None,
+    )
+    .await
+}
+
+/// [`call_llm_json`] sending `reasoning_effort` (`low`, `medium` or `high`, for the reasoning
+/// models that take it) when given.
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn call_llm_json_effort(
+    system_prompt: &str,
+    user_content: serde_json::Value,
+    provider: Option<String>,
+    model: Option<String>,
+    schema_name: &str,
+    schema: serde_json::Value,
+    db_path: &std::path::Path,
+    operation: &str,
+    reasoning_effort: Option<&str>,
+) -> Result<String, String> {
     let format = serde_json::json!({
         "type": "json_schema",
         "json_schema": { "name": schema_name, "strict": true, "schema": schema }
@@ -271,7 +299,7 @@ pub(crate) async fn call_llm_json(
         user_content.clone(),
         provider.clone(),
         model.clone(),
-        None,
+        reasoning_effort,
         Some(&format),
         Some(log),
     )
@@ -283,7 +311,7 @@ pub(crate) async fn call_llm_json(
             user_content,
             provider,
             model,
-            None,
+            reasoning_effort,
             Some(log),
         )
         .await
@@ -385,6 +413,7 @@ fn record_usage(
 /// `messages` and returns the assistant's message, which holds text and/or `tool_calls`. Same
 /// client, key handling and consumption record as the other calls; an error carries the HTTP
 /// status when the provider answered one (a provider that refuses tools answers 400 or 422).
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn call_llm_chat(
     messages: &[serde_json::Value],
     tools: &serde_json::Value,
@@ -393,6 +422,7 @@ pub(crate) async fn call_llm_chat(
     model: Option<String>,
     db_path: &std::path::Path,
     operation: &str,
+    reasoning_effort: Option<&str>,
 ) -> Result<serde_json::Value, (String, Option<u16>)> {
     let provider_id = provider.unwrap_or_else(|| "cerebras".to_string());
     let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;
@@ -402,6 +432,10 @@ pub(crate) async fn call_llm_chat(
         "tools": tools,
         "tool_choice": tool_choice,
     });
+    let mut body = body;
+    if let Some(effort) = reasoning_effort {
+        body["reasoning_effort"] = serde_json::Value::from(effort);
+    }
     let client = llm_client()?;
     let mut request = client.post(&resolved.url).json(&body);
     if let Some(key) = resolved.key {

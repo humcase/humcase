@@ -161,9 +161,25 @@ pub(crate) struct Reading {
     pub(crate) excerpts: HashMap<usize, (String, String, String)>,
     /// Next excerpt id to give: tools continue the numbering of the first message.
     pub(crate) next_id: usize,
+    /// Say a result waiting for the person's decision as a proposal not chosen (the thinking
+    /// partner: a proposal told as "waits for the decision" was spoken of as chosen).
+    pub(crate) proposals_not_chosen: bool,
 }
 
+/// How a result waiting for the person's decision is told when it must not read as chosen.
+const PROPOSAL_NOT_CHOSEN: &str =
+    "a proposal, not chosen: it waits for the person's decision, nothing in it is decided";
+
 impl Reading {
+    /// The state of a case in plain words, as sent.
+    pub(crate) fn state_of(&self, case: &Case) -> &'static str {
+        if self.proposals_not_chosen && case.decision == "to_review" {
+            PROPOSAL_NOT_CHOSEN
+        } else {
+            state_words(&case.status, &case.decision)
+        }
+    }
+
     pub(crate) fn case_count(&self) -> usize {
         let ids: HashSet<&str> = self
             .detailed
@@ -227,7 +243,7 @@ impl Reading {
                     "case": i + 1,
                     "project": case.project,
                     "kind": case.nature,
-                    "state": state_words(&case.status, &case.decision),
+                    "state": self.state_of(case),
                     "last_change": case.updated,
                     "due": case.due,
                     "excerpts": lines,
@@ -245,7 +261,7 @@ impl Reading {
                     "title": { "id": number(case, &case.title), "text": case.title },
                     "project": case.project,
                     "kind": case.nature,
-                    "state": state_words(&case.status, &case.decision),
+                    "state": self.state_of(case),
                     "last_change": case.updated,
                     "due": case.due,
                 })
@@ -983,7 +999,7 @@ fn case_for_tool(reading: &mut Reading, case: &Case) -> Value {
         "case": number,
         "project": case.project,
         "kind": case.nature,
-        "state": state_words(&case.status, &case.decision),
+        "state": reading.state_of(case),
         "last_change": case.updated,
         "due": case.due,
         "excerpts": excerpts,
@@ -1237,6 +1253,7 @@ pub(crate) fn json_object_in(text: &str) -> Option<Value> {
 }
 
 /// One turn of the conversation with the AI chosen in Settings.
+#[allow(clippy::too_many_arguments)]
 pub(crate) async fn chat_turn(
     messages: Vec<Value>,
     tool_choice: Value,
@@ -1245,6 +1262,7 @@ pub(crate) async fn chat_turn(
     model: Option<String>,
     db_path: &Path,
     operation: &str,
+    reasoning_effort: Option<&str>,
 ) -> Result<Value, (String, Option<u16>)> {
     crate::commands::ai::call_llm_chat(
         &messages,
@@ -1254,6 +1272,7 @@ pub(crate) async fn chat_turn(
         model,
         db_path,
         operation,
+        reasoning_effort,
     )
     .await
 }
@@ -1420,6 +1439,7 @@ pub async fn ask(
                     model.clone(),
                     db_path,
                     crate::ai_usage::operation::ASK,
+                    None,
                 )
             },
         )
@@ -2664,7 +2684,7 @@ pub(crate) mod tests {
     }
 
     /// Tokens and cost of the calls recorded so far.
-    fn usage_totals(path: &Path) -> (u64, u64, f64) {
+    pub(crate) fn usage_totals(path: &Path) -> (u64, u64, f64) {
         let usage: Vec<_> = crate::ai_usage::read(path, 0)
             .into_iter()
             .filter(|u| u.ok)
@@ -2888,6 +2908,7 @@ pub(crate) mod tests {
                                         model.clone(),
                                         usage_ref,
                                         crate::ai_usage::operation::ASK,
+                                        None,
                                     )
                                     .await;
                                     if !reply.as_ref().is_err_and(|(e, _)| e.contains("429")) {

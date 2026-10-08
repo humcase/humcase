@@ -14,9 +14,9 @@
 
 use crate::ask::{
     agent_tool, agent_tools_with, chat_turn, clip, json_object_in, load_case, meaning_hits,
-    project_names, read, reading_is_strong, ready_provider, run_agent_with, state_words,
-    without_references, AgentFailure, Case, PreviousTurn, Reading, Sent, Source,
-    AGENT_READ_SENTENCES, JOURNAL_MAX_SIZE, PASSAGES_MAX, PREVIOUS_ANSWER_MAX, QUESTION_MAX,
+    project_names, read, reading_is_strong, ready_provider, run_agent_with, without_references,
+    words_of, AgentFailure, Case, PreviousTurn, Reading, Sent, Source, AGENT_READ_SENTENCES,
+    JOURNAL_MAX_SIZE, PASSAGES_MAX, PREVIOUS_ANSWER_MAX, QUESTION_MAX,
 };
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
@@ -32,10 +32,12 @@ const KEPT_TITLE_MAX: usize = 200;
 pub const JOURNAL_FILE: &str = "reflect-journal.jsonl";
 
 /// Version of the instruction below, recorded in the journal.
-const PROMPT_VERSION: &str = "reflect.v8";
+const PROMPT_VERSION: &str = "reflect.v9";
 
 /// Model calls one reply may take, the last one forced to `reply`.
 const REPLY_CALLS_MAX: usize = 4;
+/// An answer of up to this many significant words can be told from a question that repeats it.
+const SETTLED_ANSWER_WORDS: usize = 6;
 /// Links one reply carries.
 const LINKS_MAX: usize = 3;
 /// Turns of the conversation the AI reads (the latest ones).
@@ -58,7 +60,8 @@ Each turn you do four things, in the language of the person, always addressing t
 When a direction has clearly emerged from the conversation (the person made their choice, or named their next steps), set `offer_summary` to true and make your question ask whether the person wants a summary of it, instead of opening a new subject; otherwise false.
 Rules:
 - Address the person directly as the interface does: \"vous\" in French, \"tú\" in Spanish, \"du\" in German, \"você\" in Portuguese, \"tu\" in Italian; keep it for the whole conversation, restatement of the subject included.
-- Say that something was chosen, retained or decided only when an excerpt or the person says so; a proposal or a suggestion written in a case is not a choice (\"Stripe is proposed\", never \"Stripe, already chosen\").
+- Say that something was chosen, retained or decided only when an excerpt or the person says so; a proposal or a suggestion written in a case is not a choice (\"Stripe is proposed\", never \"Stripe, already chosen\"). A case whose state says it is a proposal not chosen has nothing chosen in it yet: never call its option chosen, retained, decided or planned (not \"the payment solution chosen\", not \"confirm the choice of X\"); say it is proposed and still to decide, or say nothing of it.
+- `settled` lists the questions you asked that the person has already answered, with their answer. Those points are closed: never ask about them again, not in other words and not by laying out their options again (now or later, with or without), and do not ask what to do about the answer itself (when, how) unless it leaves something open. Take the answer as given and ask about what is still open. If `not_this_question` is present, your previous attempt asked it and it repeats a closed point: ask another question.
 - You never decide for the person. A proposal stays a proposal, what is still to decide stays open, a question stays a question. Never say who wrote, proposed or decided something (\"you proposed\") unless the excerpt names them.
 - Speak as the person would: name a case only by its subject (\"the choice of the supplier\"), never as \"the case\", and say its state in plain words (\"waits for your decision\", \"in progress\"); never write the words of the data (kind, state, excerpt, case number, supports, decided, conflicts).
 - Never state anything the excerpts and the conversation do not say: no outside knowledge, no guess, no advice of your own beyond the lead, no reason, cause or judgment that is not written, and no link between two cases that their text does not make.";
@@ -344,6 +347,21 @@ fn check_reply(raw: RawReply, reading: &Reading, subject_id: Option<&str>) -> Re
     }
 }
 
+/// Whether a question asks again about a point the person just settled: it holds most of the
+/// words of a short answer (two at least). A question about what the answer leaves open holds
+/// few of them; a language-free check on the words, not on a list of phrases.
+fn repeats_settled(question: &str, settled: &[(String, String)]) -> bool {
+    let words = words_of(question);
+    settled.iter().any(|(_, answer)| {
+        let answer = words_of(answer);
+        let shared = words.intersection(&answer).count();
+        !answer.is_empty()
+            && answer.len() <= SETTLED_ANSWER_WORDS
+            && shared >= 2
+            && shared * 2 >= answer.len()
+    })
+}
+
 /// A title compared without case, accents' marks aside, or punctuation.
 fn normalized(text: &str) -> String {
     text.chars()
@@ -527,6 +545,7 @@ fn prepare(
         source_ids: linked,
     }];
     let mut reading = read(conn, &query, &earlier, space, meaning_ids)?;
+    reading.proposals_not_chosen = true;
     if let Some(subject) = &subject {
         reading.detailed.retain(|c| c.id != subject.id);
         reading.overview.retain(|c| c.id != subject.id);
@@ -537,6 +556,39 @@ fn prepare(
         latest: latest_said(turns),
         query,
     })
+}
+
+/// The last question a text asks: from the start of its sentence to its `?`.
+fn last_question(text: &str) -> Option<String> {
+    let chars: Vec<char> = text.chars().collect();
+    let end = chars.iter().rposition(|c| *c == '?')?;
+    let start = (0..end)
+        .rev()
+        .find(|&i| match chars[i] {
+            '!' | '?' | '\n' | '¿' => true,
+            '.' => chars.get(i + 1).is_none_or(|next| next.is_whitespace()),
+            _ => false,
+        })
+        .map_or(0, |i| if chars[i] == '¿' { i } else { i + 1 });
+    let question: String = chars[start..=end].iter().collect();
+    let question = question.trim().to_string();
+    (!question.is_empty()).then_some(question)
+}
+
+/// The questions the partner asked that the person answered next, with their answer: what is
+/// settled in the conversation.
+fn settled_pairs(turns: &[ReflectPreviousTurn]) -> Vec<(String, String)> {
+    let mut pairs = Vec::new();
+    let mut asked: Option<String> = None;
+    for turn in turns {
+        if let (Some(said), Some(question)) = (&turn.said, asked.take()) {
+            pairs.push((question, said.clone()));
+        }
+        if let Some(reply) = &turn.reply {
+            asked = last_question(reply);
+        }
+    }
+    pairs
 }
 
 fn conversation(turns: &[ReflectPreviousTurn]) -> Vec<Value> {
@@ -563,7 +615,7 @@ impl Context {
                 "title": c.title,
                 "project": c.project,
                 "kind": c.nature,
-                "state": state_words(&c.status, &c.decision),
+                "state": self.reading.state_of(c),
                 "last_change": c.updated,
                 "due": c.due,
                 "text": c.sentences,
@@ -571,6 +623,11 @@ impl Context {
         });
         object.insert("subject".into(), subject.unwrap_or(Value::Null));
         object.insert("conversation".into(), Value::Array(conversation(turns)));
+        let settled: Vec<Value> = settled_pairs(turns)
+            .into_iter()
+            .map(|(asked, answer)| json!({ "you_asked": asked, "person_answered": answer }))
+            .collect();
+        object.insert("settled".into(), Value::Array(settled));
         if !summary {
             object.insert("latest".into(), json!(self.latest));
         }
@@ -650,6 +707,9 @@ fn record(db_path: &Path, kind: &str, calls: usize, links: usize, dropped: usize
     }
 }
 
+/// `reasoning_effort` sent with the reply calls: nothing (the default of the model).
+const REPLY_EFFORT: Option<&str> = None;
+
 /// The next reply of the partner. The database lock is never held during a call to the AI.
 /// `Err` carries the text to show: no AI connected, or a subject that cannot be read.
 #[allow(clippy::too_many_arguments)]
@@ -663,6 +723,35 @@ pub async fn reply(
     space: Option<String>,
     provider: Option<String>,
     model: Option<String>,
+) -> Result<ReflectReply, String> {
+    reply_with_effort(
+        db,
+        db_path,
+        data_dir,
+        sense,
+        subject_id,
+        turns,
+        space,
+        provider,
+        model,
+        REPLY_EFFORT,
+    )
+    .await
+}
+
+/// [`reply`] sending `reasoning_effort` to the model when given (the bench compares settings).
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn reply_with_effort(
+    db: &std::sync::Mutex<Connection>,
+    db_path: &Path,
+    data_dir: &Path,
+    sense: Option<std::sync::Arc<crate::meaning::Sense>>,
+    subject_id: Option<String>,
+    turns: Vec<ReflectPreviousTurn>,
+    space: Option<String>,
+    provider: Option<String>,
+    model: Option<String>,
+    effort: Option<&str>,
 ) -> Result<ReflectReply, String> {
     let providers = crate::providers::providers_info().cleanup;
     let (provider_id, label) = require_ai(&providers, provider.as_deref())?;
@@ -703,6 +792,7 @@ pub async fn reply(
                     model.clone(),
                     db_path,
                     crate::ai_usage::operation::REFLECT,
+                    effort,
                 )
             },
         )
@@ -713,25 +803,51 @@ pub async fn reply(
             Err(AgentFailure::Failed(error)) => return Err(error),
         }
     }
-    let (raw, calls) = match outcome {
+    let single = |message: Value| {
+        crate::commands::ai::call_llm_json_effort(
+            REPLY_PROMPT,
+            message,
+            Some(provider_id.clone()),
+            model.clone(),
+            "reply",
+            reply_schema(),
+            db_path,
+            crate::ai_usage::operation::REFLECT,
+            effort,
+        )
+    };
+    let (raw, mut calls) = match outcome {
         Some(done) => (done.raw, done.calls),
-        None => {
-            let text = crate::commands::ai::call_llm_json(
-                REPLY_PROMPT,
-                message,
-                Some(provider_id),
-                model,
-                "reply",
-                reply_schema(),
-                db_path,
-                crate::ai_usage::operation::REFLECT,
-            )
-            .await?;
-            (parse_text(&text, parse_reply)?, 1)
-        }
+        None => (parse_text(&single(message.clone()).await?, parse_reply)?, 1),
     };
     let subject_id = context.subject.as_ref().map(|c| c.id.as_str());
     let mut reply = check_reply(raw, &context.reading, subject_id);
+    // A question that asks again about a point the person just settled is asked once more,
+    // told not to: one extra call, only then.
+    let settled = settled_pairs(&turns);
+    #[cfg(test)]
+    let settled = if tests::NO_RETRY.load(std::sync::atomic::Ordering::Relaxed) {
+        Vec::new()
+    } else {
+        settled
+    };
+    if let Some(repeated) = reply
+        .question
+        .clone()
+        .filter(|q| repeats_settled(q, &settled))
+    {
+        let mut again = message;
+        again["not_this_question"] = json!(repeated);
+        if let Ok(text) = single(again).await {
+            if let Ok(raw) = parse_text(&text, parse_reply) {
+                let retried = check_reply(raw, &context.reading, subject_id);
+                if retried.question.is_some() {
+                    reply = retried;
+                    calls += 1;
+                }
+            }
+        }
+    }
     reply.sent = Some(Sent {
         service: label,
         excerpts: context.reading.case_count(),
@@ -1400,6 +1516,97 @@ Three fixed amounts.
         assert_eq!(latest_said(&turns), "said 19");
     }
 
+    #[test]
+    fn the_questions_the_person_answered_are_settled() {
+        assert_eq!(
+            last_question("Vous gardez 4.5 mètres. Proposez-vous un montant libre ? Ou pas ?"),
+            Some("Ou pas ?".to_string())
+        );
+        assert_eq!(
+            last_question("Bien. ¿Quieres un monto libre o solo fijos?"),
+            Some("¿Quieres un monto libre o solo fijos?".to_string())
+        );
+        assert_eq!(last_question("No question here."), None);
+        let turns = vec![
+            turn_said("Cards."),
+            ReflectPreviousTurn {
+                said: None,
+                reply: Some("You want cards. Which amounts?".into()),
+                source_ids: vec![],
+            },
+            turn_said("20 and 50."),
+            ReflectPreviousTurn {
+                said: None,
+                reply: Some("Fixed amounts. A free amount too?".into()),
+                source_ids: vec![],
+            },
+        ];
+        // The last question is still waiting for its answer: not settled.
+        assert_eq!(
+            settled_pairs(&turns),
+            vec![("Which amounts?".to_string(), "20 and 50.".to_string())]
+        );
+    }
+
+    // Without this check, a question asking again about the point just answered is shown.
+    #[test]
+    fn a_question_holding_most_words_of_a_short_answer_repeats_it() {
+        let settled = vec![(
+            "Proposez-vous seulement ces montants fixes, ou aussi un montant libre ?".to_string(),
+            "Le montant libre plus tard.".to_string(),
+        )];
+        assert!(repeats_settled(
+            "Souhaitez-vous définir dès maintenant les conditions pour introduire le montant libre ?",
+            &settled
+        ));
+        assert!(!repeats_settled(
+            "Souhaitez-vous maintenant choisir la solution de paiement des cartes ?",
+            &settled
+        ));
+        assert!(
+            !repeats_settled("Un résumé du montant ?", &settled),
+            "one word is not enough"
+        );
+        let long = vec![(
+            "Q ?".to_string(),
+            "Je prends le devis le moins cher sous quatre mille euros et j'appelle le vendeur cette semaine."
+                .to_string(),
+        )];
+        assert!(
+            !repeats_settled("Quel vendeur appeler cette semaine ?", &long),
+            "a long answer is not told apart"
+        );
+    }
+
+    // Without the plain wording, a result waiting for a decision reads as settled.
+    #[test]
+    fn a_result_waiting_for_a_decision_is_sent_as_a_proposal_not_chosen() {
+        let conn = db();
+        let ids = crate::ask::tests::build_base(&conn, &defects_base());
+        let subject = load_subject(&conn, Some(&ids["cards"]), Some("work")).unwrap();
+        let turns = vec![turn_said(
+            "Les cartes cadeaux passent par le paiement de la boutique.",
+        )];
+        let query = search_text(subject.as_ref(), &turns, false);
+        let mut context = prepare(&conn, subject, &turns, Some("work"), &[], query).unwrap();
+        let message = context.message(&turns, false);
+        let states: Vec<String> = message["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .chain(message["overview"].as_array().unwrap())
+            .map(|c| c["state"].as_str().unwrap().to_string())
+            .collect();
+        assert!(
+            states.iter().any(|s| s.contains("not chosen")),
+            "{states:?}"
+        );
+        assert!(!states
+            .iter()
+            .any(|s| s == "result waiting for the person's decision"));
+        assert_eq!(message["settled"], json!([]));
+    }
+
     // ---- Real check (Cerebras) ----
 
     fn passage_is_in(passage: &str, title: &str, content: &str) -> bool {
@@ -1618,6 +1825,300 @@ Three fixed amounts.
             "lead_on_the_hesitation": lead_found,
             "model_calls": usage.len(),
             "cost_usd": cost,
+        });
+        println!("\n{}", serde_json::to_string_pretty(&report).unwrap());
+        if let Ok(out) = std::env::var("REFLECT_EVAL_OUT") {
+            std::fs::write(
+                out,
+                serde_json::to_string_pretty(&json!({ "report": report, "results": results }))
+                    .unwrap(),
+            )
+            .unwrap();
+        }
+    }
+
+    // ---- Defects measured with real calls ----
+
+    /// Set by the bench to measure the settled points without the second attempt.
+    pub(super) static NO_RETRY: std::sync::atomic::AtomicBool =
+        std::sync::atomic::AtomicBool::new(false);
+
+    /// A small French space for the two defects: three cases holding "Proposition : X", waiting
+    /// for the person's decision, and two cases the person's questions turn on.
+    fn defects_base() -> Value {
+        json!({ "lang": "fr", "cases": [
+            { "key": "pay", "title": "Choix de la solution de paiement", "nature": "research",
+              "status": "resolved", "agent_resolved": true,
+              "content": "Trois solutions de paiement comparées : Stripe, PayPal et Mollie.\n\nProposition : Stripe pour le paiement, avec un bouton PayPal à côté.\n\nLe choix reste à faire." },
+            { "key": "clay", "title": "Choisir le fournisseur d'argile", "nature": "research",
+              "status": "resolved", "agent_resolved": true,
+              "content": "Trois fournisseurs comparés : Ceradel, Solargil et Terres du Sud.\n\nProposition : Solargil, livraison en 48 h et 10 % moins cher que les autres.\n\nLe choix reste à faire." },
+            { "key": "venue", "title": "Lieu du stage d'été", "nature": "research",
+              "status": "resolved", "agent_resolved": true,
+              "content": "Deux lieux comparés : la salle des Tilleuls et le gymnase municipal.\n\nProposition : la salle des Tilleuls, 120 € la journée.\n\nÀ décider avant fin mai." },
+            { "key": "cards", "title": "Cartes cadeaux", "nature": "idea", "status": "open",
+              "content": "Vendre des cartes cadeaux dans la boutique en ligne.\n\nPrévoir des montants fixes de 20, 50 et 100 €." },
+            { "key": "camp", "title": "Stage d'été pour enfants", "nature": "idea", "status": "open",
+              "content": "Un stage de cinq jours en juillet pour les 8 à 12 ans.\n\nIl faudrait un deuxième animateur pour encadrer le groupe." }
+        ] })
+    }
+
+    /// Words next to `x` in `text` that say it was chosen, retained or decided, unless a negation
+    /// or "to decide" is in the same window. A rough per-language check, printed with the reply
+    /// for a human to judge.
+    fn presents_as_chosen(text: &str, x: &str) -> bool {
+        let text = text.to_lowercase();
+        let words: Vec<&str> = text
+            .split(|c: char| !c.is_alphanumeric())
+            .filter(|w| !w.is_empty())
+            .collect();
+        let chosen = [
+            "choisi",
+            "choisie",
+            "retenu",
+            "retenue",
+            "décidé",
+            "décidée",
+            "déjà",
+            "validé",
+            "validée",
+            "arrêté",
+            "sélectionné",
+            "adopté",
+            "adoptée",
+        ];
+        let doubt = [
+            "pas",
+            "encore",
+            "reste",
+            "décider",
+            "attend",
+            "attente",
+            "proposition",
+            "proposé",
+            "proposée",
+            "suggéré",
+            "envisagé",
+            "si",
+            "ou",
+        ];
+        words.iter().enumerate().any(|(i, w)| {
+            if !w.contains(x) {
+                return false;
+            }
+            let window = &words[i.saturating_sub(8)..(i + 9).min(words.len())];
+            window.iter().any(|w| chosen.contains(w)) && !window.iter().any(|w| doubt.contains(w))
+        })
+    }
+
+    /// Words (significant, from the question and the answer) the new question repeats.
+    fn repeats(question: &str, asked: &str, answer: &str, subject: &str) -> (usize, usize) {
+        let new = crate::ask::words_of(question);
+        let subject = crate::ask::words_of(subject);
+        let from_answer = new.intersection(&crate::ask::words_of(answer)).count();
+        let from_asked = new
+            .intersection(&crate::ask::words_of(asked))
+            .filter(|w| !subject.contains(*w))
+            .count();
+        (from_answer, from_asked)
+    }
+
+    /// One reply of the partner against the real AI; `effort` is sent as `reasoning_effort`.
+    #[allow(clippy::too_many_arguments)]
+    fn play(
+        db: &std::sync::Mutex<Connection>,
+        db_path: &Path,
+        subject: Option<String>,
+        turns: Vec<ReflectPreviousTurn>,
+        effort: Option<&str>,
+    ) -> (ReflectReply, f64, f64, usize, usize) {
+        let before = crate::ask::tests::usage_totals(db_path);
+        let started = std::time::Instant::now();
+        // A free tier refuses bursts (HTTP 429): wait and ask again.
+        let mut result = Err(String::new());
+        for wait in [0u64, 5, 10, 20, 40] {
+            std::thread::sleep(std::time::Duration::from_secs(wait));
+            result = tauri::async_runtime::block_on(super::reply_with_effort(
+                db,
+                db_path,
+                db_path.parent().unwrap(),
+                None,
+                subject.clone(),
+                turns.clone(),
+                Some("work".into()),
+                Some("cerebras".into()),
+                None,
+                effort,
+            ));
+            if !result.as_ref().is_err_and(|e| e.contains("429")) {
+                break;
+            }
+        }
+        let reply = result.unwrap();
+        let seconds = started.elapsed().as_secs_f64();
+        let after = crate::ask::tests::usage_totals(db_path);
+        let calls = std::fs::read_to_string(db_path.parent().unwrap().join(JOURNAL_FILE))
+            .ok()
+            .and_then(|t| t.lines().last().map(str::to_string))
+            .and_then(|l| serde_json::from_str::<Value>(&l).ok())
+            .and_then(|e| e["calls"].as_u64())
+            .unwrap_or(0) as usize;
+        (
+            reply,
+            seconds,
+            after.2 - before.2,
+            (after.1 - before.1) as usize,
+            calls,
+        )
+    }
+
+    /// Measures the two defects seen in the real app, with real calls, `REFLECT_EVAL_RUNS` times
+    /// (3) each: (a) a proposal waiting for the person's decision presented as chosen, (b) a
+    /// question the person just answered, asked again. Also replays the four scenarios of
+    /// `reflect_eval` once. `REFLECT_EVAL_EFFORT` (`high`; default: nothing sent, which is
+    /// "medium" for gpt-oss-120b). Prints every reply in full.
+    /// `cargo test reflect_defects -- --ignored --nocapture`
+    #[test]
+    #[ignore = "real AI calls"]
+    fn reflect_defects() {
+        let effort = std::env::var("REFLECT_EVAL_EFFORT").ok();
+        let effort = effort.as_deref().filter(|e| *e != "default");
+        let runs: usize = std::env::var("REFLECT_EVAL_RUNS")
+            .ok()
+            .and_then(|r| r.parse().ok())
+            .unwrap_or(3);
+        let conn = db();
+        let ids = crate::ask::tests::build_base(&conn, &defects_base());
+        let folder = tempfile::tempdir().unwrap();
+        let db_path = folder.path().join("eval.db");
+        let db = std::sync::Mutex::new(conn);
+        let said = turn_said;
+        let reply_turn = |text: &str| ReflectPreviousTurn {
+            said: None,
+            reply: Some(text.into()),
+            source_ids: Vec::new(),
+        };
+        // (a) proposals: name, subject, what the person says, the proposed thing
+        let proposals: Vec<(&str, Option<&str>, &str, &str)> = vec![
+            ("a1 payment", Some("cards"),
+             "Les cartes cadeaux doivent passer par le même paiement que la boutique. Qu'est-ce que je dois prévoir de ce côté-là ?", "stripe"),
+            ("a2 clay", None,
+             "Je passe commande d'argile cette semaine. On a retenu quel fournisseur déjà ?", "solargil"),
+            ("a3 venue", Some("camp"),
+             "Je prépare le courrier aux parents pour le stage d'été. Le lieu est déjà choisi, non ?", "tilleuls"),
+        ];
+        // (b) answered questions: name, subject, turns, (asked, answer)
+        let answered: Vec<(&str, Option<&str>, Vec<ReflectPreviousTurn>)> = vec![
+            ("b1 free amount", Some("cards"), vec![
+                said("Je veux lancer des cartes cadeaux dans la boutique."),
+                reply_turn("Vous voulez lancer des cartes cadeaux dans la boutique. Quels montants voulez-vous proposer ?"),
+                said("Les montants fixes du cas, 20, 50 et 100 €."),
+                reply_turn("Vous gardez les montants fixes de 20, 50 et 100 €. Proposez-vous seulement ces montants fixes, ou aussi un montant libre ?"),
+                said("Le montant libre plus tard."),
+            ]),
+            ("b2 with the shop", Some("cards"), vec![
+                said("Je prépare le lancement des cartes cadeaux."),
+                reply_turn("Vous préparez le lancement des cartes cadeaux. Voulez-vous les lancer immédiatement avec la boutique, ou après le lancement de la boutique ?"),
+                said("Avec la boutique."),
+            ]),
+            ("b3 twelve children", Some("camp"), vec![
+                said("Je prépare le stage d'été pour les enfants."),
+                reply_turn("Vous préparez le stage d'été pour les enfants. Combien d'enfants voulez-vous accueillir au maximum ?"),
+                said("Douze enfants maximum."),
+                reply_turn("Vous limitez le stage à douze enfants. Le deuxième animateur est-il déjà trouvé ?"),
+                said("Pas encore, je m'en occupe la semaine prochaine."),
+            ]),
+        ];
+        if std::env::var("REFLECT_EVAL_NO_RETRY").is_ok() {
+            NO_RETRY.store(true, std::sync::atomic::Ordering::Relaxed);
+        }
+        let only = std::env::var("REFLECT_EVAL_ONLY").ok();
+        let wanted = |name: &str| {
+            only.as_deref()
+                .is_none_or(|o| o.split(',').any(|p| name.starts_with(p)))
+        };
+        let proposals: Vec<_> = proposals.into_iter().filter(|p| wanted(p.0)).collect();
+        let answered: Vec<_> = answered.into_iter().filter(|p| wanted(p.0)).collect();
+        let (mut chosen_flags, mut again_flags, mut replies) = (0, 0, 0);
+        let (mut seconds, mut cost, mut out_tokens) = (0.0, 0.0, 0);
+        let mut results = Vec::new();
+        for (name, subject, text, x) in &proposals {
+            for run in 1..=runs {
+                let (reply, secs, usd, out, calls) = play(
+                    &db,
+                    &db_path,
+                    subject.map(|k| ids[k].clone()),
+                    vec![said(text)],
+                    effort,
+                );
+                let all = [&reply.restated, &reply.lead, &reply.question]
+                    .iter()
+                    .filter_map(|t| t.as_deref())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let flag = presents_as_chosen(&all, x);
+                chosen_flags += usize::from(flag);
+                replies += 1;
+                seconds += secs;
+                cost += usd;
+                out_tokens += out;
+                println!(
+                    "\n--- {name} run {run}: {}  ({secs:.1} s, ${usd:.4}, {out} out tokens, {calls} calls)",
+                    if flag { "FLAGGED as chosen" } else { "ok" }
+                );
+                println!(
+                    "restated: {:?}\nlead: {:?}\nquestion: {:?}",
+                    reply.restated, reply.lead, reply.question
+                );
+                results.push(json!({ "scenario": name, "run": run, "flag": flag, "reply": reply }));
+            }
+        }
+        for (name, subject, turns) in &answered {
+            let (asked, answer) = settled_pairs(&clean_turns(turns.clone())).pop().unwrap();
+            let subject_text = subject
+                .map(|k| {
+                    let base = defects_base();
+                    base["cases"]
+                        .as_array()
+                        .unwrap()
+                        .iter()
+                        .find(|c| c["key"] == k)
+                        .unwrap()["title"]
+                        .as_str()
+                        .unwrap()
+                        .to_string()
+                })
+                .unwrap_or_default();
+            for run in 1..=runs {
+                let (reply, secs, usd, out, calls) = play(
+                    &db,
+                    &db_path,
+                    subject.map(|k| ids[k].clone()),
+                    turns.clone(),
+                    effort,
+                );
+                let question = reply.question.clone().unwrap_or_default();
+                let (from_answer, from_asked) = repeats(&question, &asked, &answer, &subject_text);
+                let flag = from_answer >= 2;
+                again_flags += usize::from(flag);
+                replies += 1;
+                seconds += secs;
+                cost += usd;
+                out_tokens += out;
+                println!("\n--- {name} run {run}: {}  (shares {from_answer} with the answer, {from_asked} with the old question; {secs:.1} s, ${usd:.4}, {out} out tokens, {calls} calls)", if flag { "FLAGGED as asked again" } else { "ok" });
+                println!("asked before: {asked}\nanswer: {answer}\nrestated: {:?}\nlead: {:?}\nquestion: {:?}", reply.restated, reply.lead, reply.question);
+                results.push(json!({ "scenario": name, "run": run, "flag": flag, "reply": reply }));
+            }
+        }
+        let report = json!({
+            "effort": effort.unwrap_or("default"),
+            "runs_per_scenario": runs,
+            "chosen_flags": format!("{chosen_flags}/{}", proposals.len() * runs),
+            "asked_again_flags": format!("{again_flags}/{}", answered.len() * runs),
+            "mean_seconds": seconds / replies as f64,
+            "mean_cost_usd": cost / replies as f64,
+            "mean_output_tokens": out_tokens / replies,
+            "total_cost_usd": cost,
         });
         println!("\n{}", serde_json::to_string_pretty(&report).unwrap());
         if let Ok(out) = std::env::var("REFLECT_EVAL_OUT") {
