@@ -820,6 +820,8 @@ pub(crate) async fn reply_with_effort(
 ) -> Result<ReflectReply, String> {
     let providers = crate::providers::providers_info().cleanup;
     let (provider_id, label) = require_ai(&providers, provider.as_deref())?;
+    // A model chosen for another provider means nothing to the one found ready.
+    let model = model.filter(|_| provider.as_deref() == Some(provider_id.as_str()));
     let turns = clean_turns(turns);
     let subject = {
         let conn = db.lock().map_err(|e| e.to_string())?;
@@ -981,6 +983,8 @@ pub(crate) async fn summarize_with_effort(
 ) -> Result<ReflectSummary, String> {
     let providers = crate::providers::providers_info().cleanup;
     let (provider_id, label) = require_ai(&providers, provider.as_deref())?;
+    // A model chosen for another provider means nothing to the one found ready.
+    let model = model.filter(|_| provider.as_deref() == Some(provider_id.as_str()));
     let turns = clean_turns(turns);
     let subject = {
         let conn = db.lock().map_err(|e| e.to_string())?;

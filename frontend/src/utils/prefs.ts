@@ -203,6 +203,11 @@ export function getAiCleanProvider(): string {
   return localStorage.getItem(KEYS.aiCleanProvider) || DEFAULT_AI_CLEAN_PROVIDER;
 }
 
+/** Whether the person chose a cleanup provider in Settings (otherwise the first ready one is used). */
+export function hasAiCleanChoice(): boolean {
+  return Boolean(localStorage.getItem(KEYS.aiCleanProvider));
+}
+
 export function setAiCleanProvider(id: string) {
   localStorage.setItem(KEYS.aiCleanProvider, id);
   notifyPrefsChanged();

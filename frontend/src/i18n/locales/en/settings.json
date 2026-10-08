@@ -128,7 +128,7 @@
     "testFailed": "Connection failed: {{error}}",
     "ready": "Connected.",
     "notReady": "Not connected yet: add a key or an address, then test the connection.",
-    "recommendations": "Supported: Groq, Cerebras, OpenAI, OpenRouter (API key) · Ollama, LM Studio (local)."
+    "recommendations": "Supported: Groq, Cerebras, OpenAI, OpenRouter, Mistral (API key) · Ollama, LM Studio (local)."
   },
   "agent": {
     "heading": "Agents",

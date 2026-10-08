@@ -1405,6 +1405,8 @@ pub async fn ask(
     let Some((provider_id, label)) = ready_provider(&providers, provider.as_deref()) else {
         return Ok(closest(&reading, &question));
     };
+    // A model chosen for another provider means nothing to the one found ready.
+    let model = model.filter(|_| provider.as_deref() == Some(provider_id.as_str()));
     if reading.detailed.is_empty() && reading.overview.is_empty() {
         return Ok(Answer::empty(AnswerKind::NotFound));
     }

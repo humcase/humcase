@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/tauriApi';
 import type { AiProvidersInfo } from '../../types';
-import { getAiCleanProvider, getAiModel, getAiSttProvider, getDictationAutoStructure, getDictationLanguage, setAiCleanProvider, setAiModel, setAiSttProvider, setDictationAutoStructure, setDictationLanguage, type DictationLanguage } from '../../utils/prefs';
-import { notifyAiConfigChanged } from '../../hooks/useAiReady';
+import { getAiCleanProvider, getAiModel, hasAiCleanChoice, getAiSttProvider, getDictationAutoStructure, getDictationLanguage, setAiCleanProvider, setAiModel, setAiSttProvider, setDictationAutoStructure, setDictationLanguage, type DictationLanguage } from '../../utils/prefs';
+import { effectiveCleanProvider, notifyAiConfigChanged } from '../../hooks/useAiReady';
 import { aiErrorMessage } from '../../utils/aiErrors';
 
 /**
@@ -45,7 +45,15 @@ export function useAiProviders() {
     api
       .listAiProviders()
       .then(list => {
-        if (!disposed) { setProviders(list); setProvidersFailed(false); }
+        if (disposed) return;
+        setProviders(list);
+        setProvidersFailed(false);
+        // Nothing chosen yet: show the AI the engine uses, the first one whose key is set.
+        if (!hasAiCleanChoice()) {
+          const used = effectiveCleanProvider(list.cleanup, getAiCleanProvider());
+          setCleanProvider(used);
+          setCleanModel(getAiModel(used));
+        }
       })
       .catch(e => {
         console.error('AI providers unavailable', e);

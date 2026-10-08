@@ -108,13 +108,20 @@ fn resolve_frame<'a>(frame: Option<&'a str>, text: &str) -> &'a str {
     }
 }
 
-/// First AI provider ready in Humcase's settings (a key, or a local server address).
+/// First AI provider ready in Humcase's settings (a key, or a local server address chosen):
+/// the local server is never taken by default, since its address is always known.
 pub(crate) fn first_ready_provider() -> Option<String> {
-    providers::providers_info()
-        .cleanup
-        .into_iter()
-        .find(|provider| provider.ready)
-        .map(|provider| provider.id)
+    crate::ask::ready_provider(&providers::providers_info().cleanup, None).map(|(id, _)| id)
+}
+
+/// The provider to call: the one asked when it is ready, else the first other ready one (a key
+/// set for another AI is used without choosing it), else the one asked, whose error says what
+/// is missing.
+pub(crate) fn pick_provider(asked: Option<String>) -> String {
+    crate::ask::ready_provider(&providers::providers_info().cleanup, asked.as_deref())
+        .map(|(id, _)| id)
+        .or(asked)
+        .unwrap_or_else(|| "cerebras".to_string())
 }
 
 /// Structuring asked by an agent (MCP and CLI `structure_note`): Humcase structures the case
@@ -332,7 +339,10 @@ async fn call_llm_with(
     response_format: Option<&serde_json::Value>,
     log: Option<UsageLog<'_>>,
 ) -> Result<LlmAnswer, (String, Option<u16>)> {
-    let provider_id = provider.unwrap_or_else(|| "cerebras".to_string());
+    let asked = provider.clone();
+    let provider_id = pick_provider(provider);
+    // A model chosen for another provider means nothing to this one.
+    let model = model.filter(|_| asked.as_deref().is_none_or(|id| id == provider_id));
     // Error propagated as is: a missing key keeps its stable code
     // (`providers::MISSING_KEY_CODE`), which the interface tests without reading the translated text.
     let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;
@@ -424,7 +434,10 @@ pub(crate) async fn call_llm_chat(
     operation: &str,
     reasoning_effort: Option<&str>,
 ) -> Result<serde_json::Value, (String, Option<u16>)> {
-    let provider_id = provider.unwrap_or_else(|| "cerebras".to_string());
+    let asked = provider.clone();
+    let provider_id = pick_provider(provider);
+    // A model chosen for another provider means nothing to this one.
+    let model = model.filter(|_| asked.as_deref().is_none_or(|id| id == provider_id));
     let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;
     let body = serde_json::json!({
         "model": resolved.model,
