@@ -738,8 +738,8 @@
     "searching": "Suche in deinen Fällen…",
     "sources": "Quellen",
     "openSource": "Fall {{title}} öffnen",
-    "sent_one": "An {{service}} gesendet: {{count}} Auszug aus einem Fall.",
-    "sent_other": "An {{service}} gesendet: {{count}} Auszüge aus Fällen.",
+    "sent_one": "An {{service}} gesendet: Auszüge aus {{count}} Fall.",
+    "sent_other": "An {{service}} gesendet: Auszüge aus {{count}} Fällen.",
     "keep": "Als Fall behalten",
     "kept": "Im Eingang behalten: öffnen",
     "copy": "Kopieren",
@@ -752,8 +752,8 @@
     "create": "Anlegen",
     "actionDone": "Unterfall angelegt: öffnen",
     "error": "Keine Antwort: {{error}}",
-    "mockNoAi": "Entwurf: ohne KI",
     "closest": "Nächste Fälle",
-    "connectAi": "Eine KI verbinden"
+    "connectAi": "Eine KI verbinden",
+    "keptSource": "{{title}}: „{{passage}}“"
   }
 }

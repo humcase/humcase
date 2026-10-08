@@ -369,5 +369,8 @@
     "alreadyAnswered": "Dieser Vorschlag existiert nicht mehr oder wurde schon beantwortet.",
     "otherGone": "Der andere Fall existiert nicht mehr.",
     "weeks": "Dauer nicht angeboten: {{weeks}} Wochen."
+  },
+  "ask": {
+    "unreadable": "Unlesbare Antwort der KI: {{error}}"
   }
 }

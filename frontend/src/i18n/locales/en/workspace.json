@@ -738,8 +738,8 @@
     "searching": "Searching your cases…",
     "sources": "Sources",
     "openSource": "Open the case {{title}}",
-    "sent_one": "Sent to {{service}}: {{count}} case excerpt.",
-    "sent_other": "Sent to {{service}}: {{count}} case excerpts.",
+    "sent_one": "Sent to {{service}}: excerpts of {{count}} case.",
+    "sent_other": "Sent to {{service}}: excerpts of {{count}} cases.",
     "keep": "Keep as a case",
     "kept": "Kept in the Inbox: open it",
     "copy": "Copy",
@@ -752,8 +752,8 @@
     "create": "Create",
     "actionDone": "Sub-case created: open it",
     "error": "No answer: {{error}}",
-    "mockNoAi": "Mockup: without AI",
     "closest": "Closest cases",
-    "connectAi": "Connect an AI"
+    "connectAi": "Connect an AI",
+    "keptSource": "{{title}}: “{{passage}}”"
   }
 }

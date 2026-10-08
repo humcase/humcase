@@ -250,7 +250,8 @@
       "check_proposals": "Proposals read (TypeSafe)",
       "check_decisions": "Decisions read (TypeSafe)",
       "check_gather": "Cases to file together read (TypeSafe)",
-      "check_profile": "Profile suggestions read (TypeSafe)"
+      "check_profile": "Profile suggestions read (TypeSafe)",
+      "ask": "Questions to Humcase"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} session",

@@ -790,9 +790,9 @@
     "searching": "Buscando nos seus casos…",
     "sources": "Fontes",
     "openSource": "Abrir o caso {{title}}",
-    "sent_one": "Enviado a {{service}}: {{count}} trecho de caso.",
-    "sent_many": "Enviado a {{service}}: {{count}} trechos de casos.",
-    "sent_other": "Enviado a {{service}}: {{count}} trechos de casos.",
+    "sent_one": "Enviado para {{service}}: trechos de {{count}} caso.",
+    "sent_many": "Enviado para {{service}}: trechos de {{count}} casos.",
+    "sent_other": "Enviado para {{service}}: trechos de {{count}} casos.",
     "keep": "Guardar como caso",
     "kept": "Guardado na Caixa de entrada: abrir",
     "copy": "Copiar",
@@ -805,8 +805,8 @@
     "create": "Criar",
     "actionDone": "Subcaso criado: abrir",
     "error": "Sem resposta: {{error}}",
-    "mockNoAi": "Maquete: sem IA",
     "closest": "Casos mais próximos",
-    "connectAi": "Conectar uma IA"
+    "connectAi": "Conectar uma IA",
+    "keptSource": "{{title}}: “{{passage}}”"
   }
 }

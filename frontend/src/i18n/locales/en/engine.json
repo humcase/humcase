@@ -369,5 +369,8 @@
     "alreadyAnswered": "This proposal is gone or was already answered.",
     "otherGone": "The other case is gone.",
     "weeks": "Duration not offered: {{weeks}} weeks."
+  },
+  "ask": {
+    "unreadable": "Unreadable answer from the AI: {{error}}"
   }
 }

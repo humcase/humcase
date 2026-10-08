@@ -369,5 +369,8 @@
     "alreadyAnswered": "Esta propuesta ya no existe o ya se respondió.",
     "otherGone": "El otro caso ya no existe.",
     "weeks": "Duración no ofrecida: {{weeks}} semanas."
+  },
+  "ask": {
+    "unreadable": "Respuesta de la IA ilegible: {{error}}"
   }
 }

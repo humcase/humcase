@@ -790,9 +790,9 @@
     "searching": "Recherche dans vos cases…",
     "sources": "Sources",
     "openSource": "Ouvrir la case {{title}}",
-    "sent_one": "Envoyé à {{service}} : {{count}} extrait de case.",
-    "sent_many": "Envoyé à {{service}} : {{count}} extraits de cases.",
-    "sent_other": "Envoyé à {{service}} : {{count}} extraits de cases.",
+    "sent_one": "Envoyé à {{service}} : des extraits de {{count}} case.",
+    "sent_many": "Envoyé à {{service}} : des extraits de {{count}} cases.",
+    "sent_other": "Envoyé à {{service}} : des extraits de {{count}} cases.",
     "keep": "Garder comme case",
     "kept": "Gardée dans la Réception : l’ouvrir",
     "copy": "Copier",
@@ -805,8 +805,8 @@
     "create": "Créer",
     "actionDone": "Sous-case créée : l’ouvrir",
     "error": "Pas de réponse : {{error}}",
-    "mockNoAi": "Maquette : sans IA",
     "closest": "Cases les plus proches",
-    "connectAi": "Brancher une IA"
+    "connectAi": "Brancher une IA",
+    "keptSource": "{{title}} : « {{passage}} »"
   }
 }

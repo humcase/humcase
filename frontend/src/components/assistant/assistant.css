@@ -73,7 +73,6 @@
   border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-control); background: var(--workspace-canvas); color: var(--workspace-ink); line-height: 1.45;
 }
 .assistant-panel__composer textarea:focus { outline: 2px solid var(--workspace-action); outline-offset: -1px; }
-.assistant-panel__dev { padding: 0 var(--workspace-space-4) var(--workspace-space-3); color: var(--workspace-text-muted); font-size: 12px; }
 
 /* Narrow windows: the panel slides over the page instead of taking a column. */
 @media (max-width: 1100px) {

@@ -790,9 +790,9 @@
     "searching": "Ricerca nei tuoi casi…",
     "sources": "Fonti",
     "openSource": "Apri il caso {{title}}",
-    "sent_one": "Inviato a {{service}}: {{count}} estratto di caso.",
-    "sent_many": "Inviato a {{service}}: {{count}} estratti di casi.",
-    "sent_other": "Inviato a {{service}}: {{count}} estratti di casi.",
+    "sent_one": "Inviato a {{service}}: estratti di {{count}} caso.",
+    "sent_many": "Inviato a {{service}}: estratti di {{count}} casi.",
+    "sent_other": "Inviato a {{service}}: estratti di {{count}} casi.",
     "keep": "Tieni come caso",
     "kept": "Tenuto nell’Inbox: aprilo",
     "copy": "Copia",
@@ -805,8 +805,8 @@
     "create": "Crea",
     "actionDone": "Sottocaso creato: aprilo",
     "error": "Nessuna risposta: {{error}}",
-    "mockNoAi": "Bozza: senza IA",
     "closest": "Casi più vicini",
-    "connectAi": "Collega un’IA"
+    "connectAi": "Collega un’IA",
+    "keptSource": "{{title}}: «{{passage}}»"
   }
 }

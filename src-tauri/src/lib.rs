@@ -2,6 +2,7 @@ pub mod agent_hooks;
 pub mod agents_seen;
 pub mod ai_settings;
 pub mod ai_usage;
+pub mod ask;
 pub mod backup;
 pub mod commands;
 pub mod common_words;
@@ -277,6 +278,8 @@ pub fn run() {
             commands::nature_review,
             commands::answer_nature,
             commands::germinate_case,
+            commands::ask_cases,
+            commands::keep_answer,
             commands::list_proposals,
             commands::answer_proposals,
             commands::undo_proposals,

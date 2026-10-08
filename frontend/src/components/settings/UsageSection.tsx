@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { ArrowsMerge, CaretDown, ChartBar, Eraser, FolderOpen, Gavel, IdentificationCard, ListChecks, Microphone, Plant, Robot, Stack, Swap, TreeStructure } from '@phosphor-icons/react';
+import { ArrowsMerge, CaretDown, ChartBar, ChatCircleText, Eraser, FolderOpen, Gavel, IdentificationCard, ListChecks, Microphone, Plant, Robot, Stack, Swap, TreeStructure } from '@phosphor-icons/react';
 import { api } from '../../services/tauriApi';
 import { formatMinutes, periodDays, summarizeUsage, type ModelSummary, type OperationSummary, type UsagePeriod } from '../../utils/aiUsage';
 import { Button } from '../ui/Button';
@@ -20,6 +20,7 @@ const PROVIDER_NAMES: Record<string, string> = {
 const OPERATION_ICONS: Record<string, typeof Microphone> = {
   transcription: Microphone, integrate: ArrowsMerge, structure: TreeStructure, clean: Eraser, structure_agent: Robot, check_nature: Swap,
   germinate: Plant, check_proposals: ListChecks, check_decisions: Gavel, check_gather: Stack, check_profile: IdentificationCard,
+  ask: ChatCircleText,
 };
 
 function providerName(provider: string, t: TFunction): string {

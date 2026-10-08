@@ -42,6 +42,7 @@ import Legal from '../../../components/Legal.astro';
     <p>Certaines fonctions appellent un fournisseur en ligne, seulement si vous les activez et saisissez votre propre clé API :</p>
     <ul>
       <li>Structurer, Faire germer et nettoyage de la dictée : le service choisi (Cerebras, OpenAI, Groq, OpenRouter ou une adresse que vous indiquez) reçoit le texte de la case, jusqu’à 4 000 mots pour Faire germer ;</li>
+      <li>Demander à Humcase : ce même service reçoit votre question, les questions et réponses précédentes de la conversation, jusqu’à neuf phrases de chacune des sept cases les plus proches, et le titre, le projet, la nature, le statut et les dates de vos 25 cases les plus récentes de l’espace ;</li>
       <li>dictée vocale : Deepgram ;</li>
       <li>TypeSafe (Jev), pour vérifier les natures, Faire germer et À ranger : le titre et les 300 premiers mots des cases concernées, et pour Faire germer les passages proposés avec jusqu’à 1 500 caractères autour. Ce qui ressemble à un secret ou à une adresse e-mail est retiré.</li>
     </ul>

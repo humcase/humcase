@@ -7,8 +7,7 @@ import { InboxPreview } from './components/workspace/InboxPreview';
 import WorkspaceTopbar from './components/workspace/WorkspaceTopbar';
 import { AssistantPanel } from './components/assistant/AssistantPanel';
 import { keptAnswerMarkdown } from './components/assistant/keptAnswer';
-import { mockAssistantAnswer } from './dev/assistantMock';
-import type { AssistantEngine } from './types/assistant';
+import { previousTurn, type AssistantEngine } from './types/assistant';
 import NotesViewbar from './components/workspace/NotesViewbar';
 import { CaseFilterBar } from './components/workspace/CaseFilterBar';
 import InboxPlacement from './components/workspace/InboxPlacement';
@@ -34,7 +33,7 @@ import { resolveActiveNote } from './utils/selection';
 import { sortNotes, type NoteSort } from './utils/noteSort';
 import { isNoteStatus } from './utils/statuses';
 import { defaultTitle } from './utils/title';
-import { getLastProjectId, getMiniMode, setLastProjectId } from './utils/prefs';
+import { getAiCleanProvider, getAiModel, getLastProjectId, getMiniMode, setLastProjectId } from './utils/prefs';
 import type { Note, NoteStatus, NoteType, WorkspacePage } from './types';
 import { NatureView } from './components/workspace/NatureView';
 import { TidyView } from './components/workspace/Tidy';
@@ -165,16 +164,9 @@ function App() {
   // Notes view: show only archived notes ("Archived" button of the display bar).
   const [showArchived, setShowArchived] = useState(false);
   const [todayView, setTodayView] = useState(false);
-  // "Ask Humcase": in development only while it is a mockup (scripted answers, `dev/assistantMock.ts`).
+  // "Ask Humcase": answers from the cases of the space shown, with the AI chosen in Settings.
   const [assistantOpen, setAssistantOpen] = useState(false);
-  const [assistantNoAi, setAssistantNoAi] = useState(false);
-  const assistantNotesRef = useRef<Note[]>([]);
-  const assistantNoAiRef = useRef(false);
-  useEffect(() => { assistantNoAiRef.current = assistantNoAi; }, [assistantNoAi]);
-  const assistantEngine = useCallback<AssistantEngine>((question, previous) =>
-    mockAssistantAnswer(question, previous, assistantNotesRef.current, assistantNoAiRef.current), []);
   useEffect(() => {
-    if (!import.meta.env.DEV) return;
     const onKey = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); setAssistantOpen(open => !open); }
     };
@@ -496,7 +488,10 @@ function App() {
 
   // The cards page opens without parsing: excerpts are prepared in the idle moments of the window.
   useEffect(() => warmCardExcerpts(allScoped), [allScoped]);
-  useEffect(() => { assistantNotesRef.current = allScoped; }, [allScoped]);
+  const assistantEngine = useCallback<AssistantEngine>((question, previous) => {
+    const provider = getAiCleanProvider();
+    return api.askCases(question, previous.map(previousTurn), spacePreferences.scope === 'all' ? undefined : spacePreferences.scope, provider, getAiModel(provider) || undefined);
+  }, [spacePreferences.scope]);
   const notesForView = useMemo(() => viewMode === 'kanban' ? displayedNotes : sortNotes(displayedNotes, shownSort, searchRank), [viewMode, displayedNotes, shownSort, searchRank]);
   const boardRootCases = useMemo(() => sortNotes(topLevelProjectCases, noteSort), [topLevelProjectCases, noteSort]);
   const shortcutCounts = useMemo(() => countShortcuts(spaceCases), [spaceCases]);
@@ -676,7 +671,7 @@ function App() {
             onStandup={openStandup}
             onToggleTheme={toggleWorkspaceTheme}
             onToggleMini={toggleMiniMode}
-            onAsk={import.meta.env.DEV ? () => setAssistantOpen(open => !open) : undefined}
+            onAsk={() => setAssistantOpen(open => !open)}
             askOpen={assistantOpen}
           />
         )}
@@ -862,7 +857,7 @@ function App() {
           </>
         )}
       </div>
-      {import.meta.env.DEV && assistantOpen && !isMiniMode && (
+      {assistantOpen && !isMiniMode && (
         <AssistantPanel
           engine={assistantEngine}
           notes={allScoped}
@@ -870,16 +865,16 @@ function App() {
           onOpenNote={note => openNote(note)}
           onKeep={async (question, answer) => {
             const space: ProjectSpace = activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work';
-            const inboxId = await api.getOrCreateInbox(space);
-            const body = keptAnswerMarkdown(answer);
-            const id = await api.createNote({ project_id: inboxId, title: question, content: body, note_type: 'note' });
+            // A question nothing answered becomes a plain case; an answer is kept marked as one.
+            const id = answer.kind === 'answer'
+              ? await api.keepAnswer(space, question, keptAnswerMarkdown(answer, t('workspace.assistant.sources'), (title, passage) => t('workspace.assistant.keptSource', { title, passage })), answer.sent?.service, answer.sources.map(({ title, passages }) => ({ title, passages })))
+              : await api.createNote({ project_id: await api.getOrCreateInbox(space), title: question, content: '', note_type: 'note' });
             await loadNotes(); await loadProjects();
             return id;
           }}
           onCreateSubCase={async (parentId, title) => { const id = await api.createSubCase(parentId, title, 'todo'); await loadNotes(); return id; }}
           onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
           onClose={() => setAssistantOpen(false)}
-          devControls={<label className="flex items-center gap-2"><input type="checkbox" checked={assistantNoAi} onChange={event => setAssistantNoAi(event.target.checked)} />{t('workspace.assistant.mockNoAi')}</label>}
         />
       )}
 

@@ -12,7 +12,7 @@ import './assistant.css';
  * The conversation keeps its exchanges for the session only: the cases are the memory, an answer
  * worth keeping becomes a case. Nothing is written without a click.
  */
-export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, onCreateSubCase, onConnectAi, onClose, devControls }: {
+export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, onCreateSubCase, onConnectAi, onClose }: {
   engine: AssistantEngine;
   notes: Note[];
   scopeLabel: string;
@@ -23,8 +23,6 @@ export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, 
   /** Opens Settings on the AI services (shown when no AI is connected). */
   onConnectAi: () => void;
   onClose: () => void;
-  /** Development only (the mockup): extra controls under the composer. */
-  devControls?: React.ReactNode;
 }) {
   const { t } = useTranslation();
   const [turns, setTurns] = useState<AssistantTurn[]>([]);
@@ -96,7 +94,7 @@ export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, 
             {turn.error && <p className="assistant-turn__error" role="alert">{t('workspace.assistant.error', { error: turn.error })}</p>}
             {turn.answer && <Answer answer={turn.answer} turnId={turn.id} done={done} onOpen={open}
               onKeep={async () => { const id = await onKeep(turn.question, turn.answer!); mark(`keep-${turn.id}`, id); }}
-              onAction={async () => { const action = turn.answer!.action!; const id = await onCreateSubCase(action.parentId, action.title); mark(`action-${turn.id}`, id); }}
+              onAction={async () => { const action = turn.answer!.action!; const id = await onCreateSubCase(action.parent_id, action.title); mark(`action-${turn.id}`, id); }}
               onConnectAi={onConnectAi} />}
           </section>
         ))}
@@ -109,7 +107,6 @@ export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, 
           placeholder={turns.length ? t('workspace.assistant.followUp') : t('workspace.assistant.placeholder')} aria-label={t('workspace.assistant.placeholder')} />
         <Button type="submit" size="sm" disabled={!draft.trim() || pending}><PaperPlaneRight size={16} aria-hidden="true" />{t('workspace.assistant.send')}</Button>
       </form>
-      {devControls && <div className="assistant-panel__dev">{devControls}</div>}
     </aside>
   );
 }
@@ -136,7 +133,7 @@ function Answer({ answer, turnId, done, onOpen, onKeep, onAction, onConnectAi }:
         <p className="assistant-answer__text">
           {answer.parts.map((part, index) => (
             <span key={index}>{part.text}{part.cite && answer.sources[part.cite - 1] && (
-              <button type="button" className="assistant-cite" onClick={() => onOpen(answer.sources[part.cite! - 1].noteId)}
+              <button type="button" className="assistant-cite" onClick={() => onOpen(answer.sources[part.cite! - 1].note_id)}
                 aria-label={t('workspace.assistant.openSource', { title: answer.sources[part.cite - 1].title })}>{part.cite}</button>
             )}</span>
           ))}
@@ -148,11 +145,11 @@ function Answer({ answer, turnId, done, onOpen, onKeep, onAction, onConnectAi }:
           <h3>{answer.kind === 'no_ai' ? t('workspace.assistant.closest') : t('workspace.assistant.sources')}</h3>
           <ol>
             {answer.sources.map((source, index) => (
-              <li key={source.noteId}>
+              <li key={source.note_id}>
                 <span className="assistant-sources__number">{index + 1}</span>
                 <div>
-                  <button type="button" className="assistant-sources__title" onClick={() => onOpen(source.noteId)}>{source.title}</button>
-                  {source.passage && <q className="assistant-sources__passage">{source.passage}</q>}
+                  <button type="button" className="assistant-sources__title" onClick={() => onOpen(source.note_id)}>{source.title}</button>
+                  {source.passages.map(passage => <q key={passage} className="assistant-sources__passage">{passage}</q>)}
                 </div>
               </li>
             ))}
@@ -162,7 +159,7 @@ function Answer({ answer, turnId, done, onOpen, onKeep, onAction, onConnectAi }:
 
       {answer.action && (
         <div className="assistant-action">
-          <p>{t('workspace.assistant.actionSubCase', { title: answer.action.title, parent: answer.action.parentTitle })}</p>
+          <p>{t('workspace.assistant.actionSubCase', { title: answer.action.title, parent: answer.action.parent_title })}</p>
           {done[`action-${turnId}`]
             ? <Button variant="link" size="sm" onClick={() => onOpen(done[`action-${turnId}`])}>{t('workspace.assistant.actionDone')}</Button>
             : <Button variant="secondary" size="sm" disabled={busy !== null} onClick={() => void run('action', onAction)}><Plus size={15} aria-hidden="true" />{t('workspace.assistant.create')}</Button>}
