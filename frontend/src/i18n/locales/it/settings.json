@@ -257,7 +257,8 @@
       "check_decisions": "Decisioni lette (TypeSafe)",
       "check_gather": "Casi da riunire letti (TypeSafe)",
       "check_profile": "Suggerimenti di profilo letti (TypeSafe)",
-      "ask": "Domande a Humcase"
+      "ask": "Domande a Humcase",
+      "reflect": "Riflessioni con Humcase"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} sessione",

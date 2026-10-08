@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import i18n from '../i18n';
 import type { Activity, Brief, CaseEvent, CaseJournal, CaseReview, CaseContext, CasePosition, ContentKind, NoteType, Project, ProjectSpace, Note, NoteRelations, NoteRevision, CreateNoteInput, UpdateNoteInput, AiProvidersInfo, AiUsageRecord, AgentSeen, Recognition, MeaningHit, MeaningStatus, NatureReview, NatureReadingStatus, Germination, Proposal, ProposalAnswer, ProposalOutcome, TidyItem, TidyAnswer, TidyOutcome, TidySettings, Supersession, ProjectSummary, ProfileView, ProfileAnswer, ProfileOutcome, ProfileSettings, Nudge, NudgeAnswer } from '../types';
 import type { AssistantAnswer, AssistantPreviousTurn } from '../types/assistant';
+import type { ReflectPreviousTurn, ReflectReply, ReflectSummary } from '../types/reflect';
 
 export interface BackupArchivePreview {
   archive_sha256: string;
@@ -292,6 +293,17 @@ export const api = {
   },
 
   /** Keeps an answer as a case of the Inbox of `space`, marked so it is never read as a source. */
+  /** "Think it through": the partner's next reply (restates, links the cases with their passage,
+   * asks one question), about `subjectId` when the conversation started from a case. */
+  reflectReply: async (subjectId: string | undefined, turns: ReflectPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<ReflectReply> =>
+    await invoke('reflect_reply', { subjectId, turns, space, provider, model }),
+  /** Keeps the corrected summary inside the case thought about (the Inbox of `space` without one),
+   * marked as written by Humcase; the ticked actions become its task sub-cases. */
+  keepReflection: async (subjectId: string | undefined, space: ProjectSpace, title: string, content: string, service: string | undefined, actions: string[]): Promise<string> =>
+    await invoke('keep_reflection', { subjectId, space, title, content, service, actions }),
+  /** The summary proposed at the end of a conversation; nothing is written until it is kept. */
+  reflectSummarize: async (subjectId: string | undefined, turns: ReflectPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<ReflectSummary> =>
+    await invoke('reflect_summarize', { subjectId, turns, space, provider, model }),
   keepAnswer: async (space: ProjectSpace, question: string, content: string, service: string | undefined, sources: { title: string; passages: string[] }[]): Promise<string> => {
     return await invoke('keep_answer', { space, question, content, service, sources });
   },

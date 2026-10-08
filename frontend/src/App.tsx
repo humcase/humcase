@@ -5,7 +5,10 @@ import { TrashView, WorkspaceNotes } from './components/workspace';
 import { HomePage } from './components/workspace/HomePage';
 import { InboxPreview } from './components/workspace/InboxPreview';
 import WorkspaceTopbar from './components/workspace/WorkspaceTopbar';
-import { AssistantPanel } from './components/assistant/AssistantPanel';
+import { AssistantPanel, type AssistantMode } from './components/assistant/AssistantPanel';
+import { ReflectThread } from './components/assistant/ReflectThread';
+import { reflectSummaryMarkdown } from './components/assistant/reflectSummary';
+import { reflectPreviousTurns, type ReflectEngine, type ReflectSummary, type ReflectTurn } from './types/reflect';
 import { keptAnswerMarkdown } from './components/assistant/keptAnswer';
 import { previousTurn, type AssistantEngine } from './types/assistant';
 import NotesViewbar from './components/workspace/NotesViewbar';
@@ -166,6 +169,10 @@ function App() {
   const [todayView, setTodayView] = useState(false);
   // "Ask Humcase": answers from the cases of the space shown, with the AI chosen in Settings.
   const [assistantOpen, setAssistantOpen] = useState(false);
+  // "Think it through": the panel's second mode, started from a case or free.
+  const [assistantMode, setAssistantMode] = useState<AssistantMode>('ask');
+  const [reflectSubject, setReflectSubject] = useState<{ id: string; title: string } | null>(null);
+  const [reflectKey, setReflectKey] = useState(0);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); setAssistantOpen(open => !open); }
@@ -492,6 +499,24 @@ function App() {
     const provider = getAiCleanProvider();
     return api.askCases(question, previous.map(previousTurn), spacePreferences.scope === 'all' ? undefined : spacePreferences.scope, provider, getAiModel(provider) || undefined);
   }, [spacePreferences.scope]);
+  const reflectEngine = useMemo<ReflectEngine>(() => {
+    const space = spacePreferences.scope === 'all' ? undefined : spacePreferences.scope;
+    const choice = () => { const provider = getAiCleanProvider(); return [provider, getAiModel(provider) || undefined] as const; };
+    return {
+      reply: (subject, turns) => api.reflectReply(subject?.id, reflectPreviousTurns(turns), space, ...choice()),
+      summarize: (subject, turns) => api.reflectSummarize(subject?.id, reflectPreviousTurns(turns), space, ...choice()),
+    };
+  }, [spacePreferences.scope]);
+  // The kept summary: a case inside the case thought about (the Inbox otherwise), the whole
+  // conversation below it; the ticked actions become sub-cases of the case thought about.
+  const keepReflection = async (subject: { id: string; title: string } | null, summary: ReflectSummary, turns: ReflectTurn[]) => {
+    const content = reflectSummaryMarkdown(summary, turns, key => t(`workspace.assistant.reflect.${key}`));
+    const space: ProjectSpace = activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work';
+    const actions = summary.actions.filter(action => action.create && action.title.trim()).map(action => action.title.trim());
+    const id = await api.keepReflection(subject?.id, space, summary.title.trim(), content, summary.sent?.service, actions);
+    await loadNotes(); await loadProjects();
+    return id;
+  };
   const notesForView = useMemo(() => viewMode === 'kanban' ? displayedNotes : sortNotes(displayedNotes, shownSort, searchRank), [viewMode, displayedNotes, shownSort, searchRank]);
   const boardRootCases = useMemo(() => sortNotes(topLevelProjectCases, noteSort), [topLevelProjectCases, noteSort]);
   const shortcutCounts = useMemo(() => countShortcuts(spaceCases), [spaceCases]);
@@ -713,6 +738,7 @@ function App() {
                 onOpenRelatedNote={async target => { await loadNotes(); openNote(target); }}
                 germinateOnOpen={workspacePage === 'editor' && germinateNoteId === activeNoteId ? germinateNoteId : null}
                 onGerminateStarted={clearGerminateNoteId}
+                onReflect={target => { setReflectSubject({ id: target.id, title: target.title }); setReflectKey(key => key + 1); setAssistantMode('reflect'); setAssistantOpen(true); }}
                 focusOnOpen={workspacePage === 'editor' && focusNoteId !== null && focusNoteId === activeNoteId}
                 onBackToList={goBack}
               />
@@ -875,6 +901,20 @@ function App() {
           onCreateSubCase={async (parentId, title) => { const id = await api.createSubCase(parentId, title, 'todo'); await loadNotes(); return id; }}
           onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
           onClose={() => setAssistantOpen(false)}
+          mode={assistantMode}
+          onModeChange={setAssistantMode}
+          onRestartReflect={() => { setReflectSubject(null); setReflectKey(key => key + 1); }}
+          reflect={(
+            <ReflectThread key={reflectKey}
+              engine={reflectEngine}
+              notes={allScoped}
+              subject={reflectSubject}
+              candidate={workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? { id: activeNote.id, title: activeNote.title } : null}
+              onStart={subject => { setReflectSubject(subject); setReflectKey(key => key + 1); }}
+              onOpenNote={note => openNote(note)}
+              onKeep={keepReflection}
+              onClose={() => setAssistantOpen(false)} />
+          )}
         />
       )}
 

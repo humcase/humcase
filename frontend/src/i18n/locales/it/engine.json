@@ -372,5 +372,9 @@
   },
   "ask": {
     "unreadable": "Risposta dell’IA illeggibile: {{error}}"
+  },
+  "reflect": {
+    "noAi": "Collega un’IA nelle Impostazioni per riflettere con Humcase.",
+    "subjectUnavailable": "Questo caso non può essere usato come punto di partida."
   }
 }

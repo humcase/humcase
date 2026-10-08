@@ -372,5 +372,9 @@
   },
   "ask": {
     "unreadable": "Réponse de l’IA illisible : {{error}}"
+  },
+  "reflect": {
+    "noAi": "Connectez une IA dans Paramètres pour réfléchir avec Humcase.",
+    "subjectUnavailable": "Ce cas ne peut pas servir de point de départ."
   }
 }

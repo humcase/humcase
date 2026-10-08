@@ -28,6 +28,7 @@ pub mod operation {
     pub const CHECK_GATHER: &str = "check_gather";
     pub const CHECK_PROFILE: &str = "check_profile";
     pub const ASK: &str = "ask";
+    pub const REFLECT: &str = "reflect";
 }
 
 /// Day the prices below were read from the providers' pages.

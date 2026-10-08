@@ -42,7 +42,8 @@ import Legal from '../../components/Legal.astro';
     <p>Some features call an online provider, only when you turn them on and enter your own API key:</p>
     <ul>
       <li>Structure, Sprout and dictation cleanup: the service you choose (Cerebras, OpenAI, Groq, OpenRouter, or an address you set) receives the case’s text, up to 4,000 words for Sprout;</li>
-      <li>Ask Humcase: the same service receives your question, the earlier questions and answers of the conversation, up to nine sentences from each of the seven closest cases, and the title, project, nature, status and dates of your 25 most recent cases of the space;</li>
+      <li>Ask Humcase: the same service receives your question, the earlier questions and answers of the conversation, up to nine sentences from each of the seven closest cases, and the title, project, nature, status and dates of your 25 most recent cases of the space; when these do not answer, the further sentences of the cases it searches for;</li>
+      <li>Think it through: the same service receives what you say in the conversation, the case you start from, and the same kind of sentences and lines from your cases of the space;</li>
       <li>voice dictation: Deepgram;</li>
       <li>TypeSafe (Jev), to check natures, Sprout and To tidy: the title and first 300 words of the cases concerned, and for Sprout the proposed passages with up to 1,500 characters around them. What looks like a secret or an email address is removed.</li>
     </ul>

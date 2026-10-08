@@ -31,6 +31,8 @@ pub async fn ask_cases(
         space,
         provider,
         model,
+        // Tools only when the first reading is weak (measured: `ask_eval`, `ASK_EVAL_MODE=auto`).
+        ask::AskMode::Auto,
     )
     .await
 }

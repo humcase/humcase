@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowCounterClockwise, CircleNotch, Copy, PaperPlaneRight, Plus, X } from '@phosphor-icons/react';
 import { Button } from '../ui/Button';
 import { Hint } from '../ui/Hint';
+import { SegmentedControl } from '../ui/SegmentedControl';
 import type { AssistantAnswer, AssistantEngine, AssistantTurn } from '../../types/assistant';
 import type { Note } from '../../types';
+import { usePanelWidth } from './usePanelWidth';
 import './assistant.css';
 
 /**
@@ -12,7 +14,9 @@ import './assistant.css';
  * The conversation keeps its exchanges for the session only: the cases are the memory, an answer
  * worth keeping becomes a case. Nothing is written without a click.
  */
-export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, onCreateSubCase, onConnectAi, onClose }: {
+export type AssistantMode = 'ask' | 'reflect';
+
+export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, onCreateSubCase, onConnectAi, onClose, mode = 'ask', onModeChange, reflect, onRestartReflect }: {
   engine: AssistantEngine;
   notes: Note[];
   scopeLabel: string;
@@ -23,17 +27,23 @@ export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, 
   /** Opens Settings on the AI services (shown when no AI is connected). */
   onConnectAi: () => void;
   onClose: () => void;
+  /** "Think it through", next to "Ask" (the thread is kept while the other mode is shown). */
+  mode?: AssistantMode;
+  onModeChange?: (mode: AssistantMode) => void;
+  reflect?: ReactNode;
+  onRestartReflect?: () => void;
 }) {
   const { t } = useTranslation();
   const [turns, setTurns] = useState<AssistantTurn[]>([]);
   const [draft, setDraft] = useState('');
   const [pending, setPending] = useState(false);
   const [done, setDone] = useState<Record<string, string>>({});
+  const size = usePanelWidth();
   const nextId = useRef(1);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { inputRef.current?.focus(); }, []);
+  useEffect(() => { if (mode === 'ask') inputRef.current?.focus(); }, [mode]);
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'end' }); }, [turns, pending]);
 
   const ask = async (question: string) => {
@@ -65,18 +75,34 @@ export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, 
   const mark = (key: string, label: string) => setDone(state => ({ ...state, [key]: label }));
 
   return (
-    <aside className="assistant-panel" aria-label={t('workspace.assistant.title')}>
+    <aside className="assistant-panel" aria-label={t('workspace.assistant.title')} data-resizing={size.dragging}
+      style={size.width === null ? undefined : ({ '--assistant-width': `${size.width}px` } as CSSProperties)}>
+      <div className="assistant-panel__resize" role="separator" aria-orientation="vertical" tabIndex={0} data-dragging={size.dragging}
+        aria-label={t('workspace.assistant.resize')} aria-valuemin={size.min} aria-valuemax={size.max} aria-valuenow={size.width ?? undefined}
+        title={t('workspace.assistant.resizeHint')}
+        onPointerDown={size.onPointerDown} onKeyDown={size.onKeyDown} onDoubleClick={size.reset} />
       <header className="assistant-panel__head">
         <div className="assistant-panel__titles">
-          <h2>{t('workspace.assistant.title')}</h2>
+          <h2>{mode === 'reflect' ? t('workspace.assistant.reflect.title') : t('workspace.assistant.title')}</h2>
           <span className="assistant-panel__scope">{scopeLabel}</span>
         </div>
         <div className="assistant-panel__head-actions">
-          {turns.length > 0 && <Hint label={t('workspace.assistant.restart')}><Button variant="ghost" size="icon-sm" onClick={restart} aria-label={t('workspace.assistant.restart')}><ArrowCounterClockwise size={17} /></Button></Hint>}
+          {mode === 'ask' && turns.length > 0 && <Hint label={t('workspace.assistant.restart')}><Button variant="ghost" size="icon-sm" onClick={restart} aria-label={t('workspace.assistant.restart')}><ArrowCounterClockwise size={17} /></Button></Hint>}
+          {mode === 'reflect' && onRestartReflect && <Hint label={t('workspace.assistant.restart')}><Button variant="ghost" size="icon-sm" onClick={onRestartReflect} aria-label={t('workspace.assistant.restart')}><ArrowCounterClockwise size={17} /></Button></Hint>}
           <Hint label={t('workspace.assistant.close')}><Button variant="ghost" size="icon-sm" onClick={onClose} aria-label={t('workspace.assistant.close')}><X size={17} /></Button></Hint>
         </div>
       </header>
+      {reflect && onModeChange && (
+        <div className="assistant-panel__modes">
+          <SegmentedControl size="sm" label={t('workspace.assistant.modes')} value={mode} onValueChange={onModeChange} items={[
+            { value: 'ask', label: t('workspace.assistant.ask') },
+            { value: 'reflect', label: t('workspace.assistant.reflect.mode') },
+          ]} />
+        </div>
+      )}
+      {reflect && <div className="assistant-panel__mode" hidden={mode !== 'reflect'}>{reflect}</div>}
 
+      <div className="assistant-panel__mode" hidden={mode !== 'ask'}>
       <div className="assistant-panel__thread" aria-live="polite">
         {turns.length === 0 && (
           <div className="assistant-panel__intro">
@@ -107,6 +133,7 @@ export function AssistantPanel({ engine, notes, scopeLabel, onOpenNote, onKeep, 
           placeholder={turns.length ? t('workspace.assistant.followUp') : t('workspace.assistant.placeholder')} aria-label={t('workspace.assistant.placeholder')} />
         <Button type="submit" size="sm" disabled={!draft.trim() || pending}><PaperPlaneRight size={16} aria-hidden="true" />{t('workspace.assistant.send')}</Button>
       </form>
+      </div>
     </aside>
   );
 }

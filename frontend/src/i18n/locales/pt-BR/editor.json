@@ -330,5 +330,9 @@
     "conflictSure": "O Jev vê uma contradição entre os dois.",
     "notAConflict": "Não vai",
     "seeDecision": "Ver a decisão"
+  },
+  "reflect": {
+    "button": "Refletir",
+    "buttonTitle": "Refletir sobre este caso com o Humcase"
   }
 }

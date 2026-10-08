@@ -1,5 +1,5 @@
 {
-  "_comment": "Bench of Ask Humcase (ask.rs, ask_eval). Each base is one space of invented cases; `agent_resolved` cases wait for the person's decision; `days_ago` dates the last change; `due_in_days` sets a due day. Each question lists the cases a good answer cites (`expect`), the phrases that would make a proposal sound decided (`forbid`, lowercase), whether nothing should be found (`not_found`), and whether a next step is clearly missing (`sub_case`). `previous` makes it a follow-up. `must` lists facts a good answer states (each a list of accepted spellings, lowercase); `jargon` (per base) lists words of the data the person never uses (statuses, natures).",
+  "_comment": "Bench of Ask Humcase (ask.rs, ask_eval). Each base is one space of invented cases; `agent_resolved` cases wait for the person's decision; `days_ago` dates the last change; `due_in_days` sets a due day. Each question lists the cases a good answer cites (`expect`), the phrases that would make a proposal sound decided (`forbid`, lowercase), whether nothing should be found (`not_found`), and whether a next step is clearly missing (`sub_case`). `previous` makes it a follow-up. `must` lists facts a good answer states (each a list of accepted spellings, lowercase); `jargon` (per base) lists words of the data the person never uses (statuses, natures). `filler` (a count) adds that many recent, dull cases (\"Notes de réunion 12\") so that the older target cases fall outside the 25-line overview: the first reading cannot hold them and only a search with other words finds them (the question's words are not in the target case). `hard: true` groups those bases in the summary.",
   "bases": [
     {
       "lang": "fr",
@@ -735,6 +735,183 @@
         "risolto",
         "il caso ",
         "ricerca"
+      ]
+    },
+    {
+      "name": "fr-hard",
+      "hard": true,
+      "lang": "fr",
+      "filler": 35,
+      "cases": [
+        {
+          "key": "insurance",
+          "title": "Contrat RC Pro signé chez Axa",
+          "nature": "note",
+          "status": "resolved",
+          "days_ago": 45,
+          "content": "Contrat RC Pro signé chez Axa, prime annuelle 380 €.\n\nRenouvellement le 1er mars. Franchise de 500 € par sinistre."
+        },
+        {
+          "key": "move",
+          "title": "Visite des nouveaux locaux rue des Tilleuls",
+          "nature": "todo",
+          "status": "open",
+          "days_ago": 30,
+          "content": "Visite le 14 novembre à 10 h. Remise des clés prévue le 2 décembre.\n\nLe loyer passe à 1 150 € par mois."
+        },
+        {
+          "key": "accountant",
+          "title": "Expert-comptable : cabinet Fidelis",
+          "nature": "note",
+          "status": "resolved",
+          "days_ago": 60,
+          "content": "Interlocutrice : Mme Garnier.\n\nBilan à rendre avant le 30 avril, honoraires 1 200 € par an."
+        },
+        {
+          "key": "leave",
+          "title": "Congés d'août de l'équipe",
+          "nature": "note",
+          "status": "open",
+          "days_ago": 40,
+          "content": "Julie absente du 4 au 22 août, Marc du 11 au 29 août.\n\nSofia assure la permanence."
+        },
+        {
+          "key": "fair",
+          "title": "Stand du salon de décembre",
+          "nature": "todo",
+          "status": "in_progress",
+          "days_ago": 5,
+          "content": "Stand de 9 m² réservé au salon de décembre, coût 2 400 €.\n\nIl reste à choisir les affiches."
+        }
+      ],
+      "questions": [
+        {
+          "q": "Combien me coûte mon assurance chaque année ?",
+          "expect": [
+            "insurance"
+          ],
+          "must": [
+            [
+              "380"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est le déménagement ?",
+          "expect": [
+            "move"
+          ],
+          "must": [
+            [
+              "2 décembre",
+              "2 dec"
+            ]
+          ]
+        },
+        {
+          "q": "Qui s'occupe de ma gestion financière ?",
+          "expect": [
+            "accountant"
+          ],
+          "must": [
+            [
+              "garnier",
+              "fidelis"
+            ]
+          ]
+        },
+        {
+          "q": "Qui part en vacances cet été ?",
+          "expect": [
+            "leave"
+          ],
+          "must": [
+            [
+              "julie"
+            ],
+            [
+              "marc"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est le stand du salon de décembre ?",
+          "expect": [
+            "fair"
+          ],
+          "must": [
+            [
+              "2 400",
+              "2400"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est la demande de subvention ?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "le cas ",
+        "ce cas",
+        "résolu",
+        "statut"
+      ]
+    },
+    {
+      "name": "en-hard",
+      "hard": true,
+      "lang": "en",
+      "filler": 35,
+      "cases": [
+        {
+          "key": "cleaning",
+          "title": "Brightline Cleaning contract",
+          "nature": "note",
+          "status": "resolved",
+          "days_ago": 50,
+          "content": "Brightline Cleaning comes twice a week, 220 a month.\n\nThe contract renews in June."
+        },
+        {
+          "key": "desks",
+          "title": "Ergo Nordic order",
+          "nature": "todo",
+          "status": "open",
+          "days_ago": 35,
+          "content": "Six sit-stand desks ordered from Ergo Nordic.\n\nDelivery on March 3, assembly included."
+        }
+      ],
+      "questions": [
+        {
+          "q": "What does the janitorial service cost?",
+          "expect": [
+            "cleaning"
+          ],
+          "must": [
+            [
+              "220"
+            ]
+          ]
+        },
+        {
+          "q": "When does the new furniture arrive?",
+          "expect": [
+            "desks"
+          ],
+          "must": [
+            [
+              "march 3",
+              "3 march"
+            ]
+          ]
+        }
+      ],
+      "jargon": [
+        " resolved",
+        "research case",
+        "status",
+        "to_review"
       ]
     }
   ]

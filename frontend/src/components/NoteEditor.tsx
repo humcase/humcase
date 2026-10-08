@@ -70,11 +70,13 @@ interface NoteEditorProps {
   germinateOnOpen?: string | null;
   /** The sprouting asked by `germinateOnOpen` started. */
   onGerminateStarted?: () => void;
+  /** Think this case through with Humcase (the panel opens on the right). */
+  onReflect?: (note: Note) => void;
   /** The case was just created by the person: the cursor goes in its text. */
   focusOnOpen?: boolean;
 }
 
-export default function NoteEditor({ note, onNoteUpdated, isMiniMode, onBackToList, pathSlot = null, allNotes = [], onOpenRelatedNote, structuringContextLabel, onRegisterPrepareBackup, projects, germinateOnOpen = null, onGerminateStarted, focusOnOpen = false }: NoteEditorProps) {
+export default function NoteEditor({ note, onNoteUpdated, isMiniMode, onBackToList, pathSlot = null, allNotes = [], onOpenRelatedNote, structuringContextLabel, onRegisterPrepareBackup, projects, germinateOnOpen = null, onGerminateStarted, onReflect, focusOnOpen = false }: NoteEditorProps) {
   const { t } = useTranslation();
   const [title, setTitle] = useState(note?.title || '');
   const [content, setContent] = useState(note?.content || '');
@@ -807,6 +809,7 @@ export default function NoteEditor({ note, onNoteUpdated, isMiniMode, onBackToLi
         canGerminate={Boolean(content.trim()) && !isRecording && !isProcessingVoice && !germination.busy}
         germinating={germination.stage === 'open' || germination.stage === 'reading'}
         onGerminate={() => { void germination.germinate(); }}
+        onReflect={onReflect ? () => onReflect(note) : undefined}
         onTemplate={noteSpace === 'work' ? applyTemplate : undefined}
         isRecording={isRecording}
         isProcessingVoice={isProcessingVoice}

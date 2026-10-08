@@ -206,6 +206,7 @@
     "subCasesBadge_many": "{{count}} sous-cases",
     "provenanceKind": {
       "ask": "Réponse de Humcase",
+      "reflect": "Réflexion avec Humcase",
       "source": "Source",
       "germinated": "Faire germer"
     }

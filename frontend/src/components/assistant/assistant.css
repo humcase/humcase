@@ -1,7 +1,9 @@
 /* "Ask Humcase": a column on the right of the workspace (a drawer on narrow windows). */
-.workspace-app.workspace-app--assistant { grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr) minmax(340px, 400px); }
+.workspace-app.workspace-app--assistant { grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr) auto; }
 
 .assistant-panel {
+  --assistant-default-width: 400px;
+  position: relative; width: var(--assistant-width, var(--assistant-default-width));
   display: flex; flex-direction: column; min-height: 0; height: 100dvh;
   border-left: 1px solid var(--workspace-line); background: var(--workspace-surface);
 }
@@ -74,9 +76,88 @@
 }
 .assistant-panel__composer textarea:focus { outline: 2px solid var(--workspace-action); outline-offset: -1px; }
 
+/* Ask / Think it through: two modes of the panel, each keeping its own thread. */
+.assistant-panel__modes { padding: var(--workspace-space-3) var(--workspace-space-5); border-bottom: 1px solid var(--workspace-line); }
+.assistant-panel__mode { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.assistant-panel__mode[hidden] { display: none; }
+/* Scrolled into view, a block keeps a margin under the mode switch. */
+.assistant-panel__thread { scroll-padding-top: var(--workspace-space-4); }
+
+.reflect-subject { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--workspace-space-2); margin: 0; color: var(--workspace-text-muted); font-size: 13px; }
+.reflect-subject button { padding: 0; border: 0; background: none; color: var(--workspace-ink); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.reflect-subject button:hover { color: var(--workspace-action); text-decoration: underline; }
+
+.reflect-reply { gap: var(--workspace-space-3); }
+.reflect-reply__restated { margin: 0; color: var(--workspace-text-secondary); line-height: 1.55; text-wrap: pretty; }
+.reflect-reply__question {
+  margin: 0; padding-left: var(--workspace-space-3); border-left: 2px solid var(--workspace-action);
+  color: var(--workspace-ink); font-weight: 600; line-height: 1.5; text-wrap: pretty;
+}
+.reflect-reply__lead { display: flex; flex-direction: column; gap: 4px; margin: 0; color: var(--workspace-ink); line-height: 1.5; text-wrap: pretty; }
+.reflect-link__kind {
+  color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .09em; text-transform: uppercase;
+}
+.reflect-links { display: flex; flex-direction: column; gap: var(--workspace-space-2); margin: 0; padding: 0; list-style: none; }
+.reflect-link {
+  display: flex; flex-direction: column; gap: 2px; padding: var(--workspace-space-2) var(--workspace-space-3);
+  border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-card); background: var(--workspace-canvas);
+}
+.reflect-link[data-kind="conflicts"] { border-color: color-mix(in srgb, var(--workspace-warning-ink) 55%, var(--workspace-card-border)); }
+.reflect-link[data-kind="conflicts"] .reflect-link__kind { color: var(--workspace-warning-ink); }
+.reflect-link[data-kind="decided"] .reflect-link__kind { color: var(--workspace-success); }
+
+.reflect-composer { flex-direction: column; align-items: stretch; }
+.reflect-composer__bar { display: flex; align-items: center; justify-content: flex-end; gap: var(--workspace-space-2); }
+.reflect-composer__end { margin-right: auto; padding-left: 0; }
+.reflect-composer__interim { margin: 0; color: var(--workspace-text-muted); font-size: 13px; font-style: italic; }
+
+.reflect-summary {
+  display: flex; flex-direction: column; gap: var(--workspace-space-4); padding: var(--workspace-space-4);
+  border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-card); background: var(--workspace-canvas);
+}
+.reflect-summary header { display: flex; flex-direction: column; gap: 2px; }
+.reflect-summary__hint { margin: 0; color: var(--workspace-text-muted); font-size: 12.5px; }
+.reflect-summary__section { display: flex; flex-direction: column; gap: var(--workspace-space-1); }
+.reflect-summary__section h3 { margin: 0; color: var(--workspace-text-secondary); font-size: 12.5px; font-weight: 600; }
+.reflect-summary__section ul { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.reflect-summary__section li { display: flex; align-items: flex-start; gap: var(--workspace-space-1); }
+.reflect-summary__action input { flex: none; margin-top: 8px; accent-color: var(--workspace-action); }
+.reflect-summary__add { align-self: flex-start; padding-left: 0; }
+.reflect-summary__waiting { margin: var(--workspace-space-1) 0 0; color: var(--workspace-text-secondary); font-size: 13px; }
+.reflect-summary__waiting button { padding: 0; border: 0; background: none; color: var(--workspace-ink); font: inherit; font-weight: 600; cursor: pointer; }
+.reflect-summary__waiting button:hover { color: var(--workspace-action); text-decoration: underline; }
+.reflect-summary__raw { margin: 0; color: var(--workspace-text-muted); font-size: 12.5px; }
+.reflect-autotext {
+  flex: 1; width: 100%; min-height: 30px; resize: none; overflow: hidden; padding: 4px 6px; margin-left: -6px;
+  border: 1px solid transparent; border-radius: var(--workspace-radius-control); background: transparent;
+  color: var(--workspace-ink); font: inherit; font-size: 14px; line-height: 1.45;
+}
+.reflect-autotext:hover { border-color: var(--workspace-card-border); }
+.reflect-autotext:focus { outline: 2px solid var(--workspace-action); outline-offset: -1px; background: var(--workspace-surface); }
+.reflect-summary__title { font-size: 15px; font-weight: 600; }
+/* In a column, flex: 1 would size the line by the column, not by its text. */
+.reflect-summary > .reflect-autotext, .reflect-summary__section > .reflect-autotext { flex: none; }
+/* In the composer column, flex: 1 would fix the height: the text decides it, up to 160 px. */
+.reflect-composer textarea { flex: none; overflow-y: auto; }
+
+/* Large screens: a wider column, so a conversation reads without long scrolls. */
+@media (min-width: 2000px) { .assistant-panel { --assistant-default-width: 480px; } }
+
+/* The left edge: drag it (or use the arrow keys on it) to widen the panel, double click for the default width. */
+.assistant-panel__resize {
+  position: absolute; z-index: 2; top: 0; bottom: 0; left: -4px; width: 8px; cursor: col-resize; touch-action: none;
+}
+.assistant-panel__resize::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 3px; width: 2px; background: transparent; transition: background-color .12s;
+}
+.assistant-panel__resize:hover::after, .assistant-panel__resize[data-dragging="true"]::after, .assistant-panel__resize:focus-visible::after { background: var(--workspace-action); }
+.assistant-panel__resize:focus-visible { outline: none; }
+.assistant-panel[data-resizing="true"] { user-select: none; }
+
 /* Narrow windows: the panel slides over the page instead of taking a column. */
 @media (max-width: 1100px) {
   .workspace-app.workspace-app--assistant { grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr); }
-  .assistant-panel { position: fixed; z-index: 70; top: 0; right: 0; width: min(400px, 100vw); box-shadow: var(--workspace-shadow-raised, 0 8px 32px rgb(0 0 0 / .3)); }
+  .assistant-panel { position: fixed; z-index: 70; top: 0; right: 0; width: min(var(--assistant-width, 400px), 100vw); box-shadow: var(--workspace-shadow-raised, 0 8px 32px rgb(0 0 0 / .3)); }
 }
 @media (max-width: 850px) { .workspace-app.workspace-app--assistant { grid-template-columns: minmax(0, 1fr); } }

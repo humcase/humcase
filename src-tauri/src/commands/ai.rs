@@ -321,12 +321,7 @@ async fn call_llm_with(
     if let Some(format) = response_format {
         body["response_format"] = format.clone();
     }
-    // Explicit bounds: a connection left open without finishing would block the AI processing.
-    let client = reqwest::Client::builder()
-        .connect_timeout(std::time::Duration::from_secs(10))
-        .timeout(std::time::Duration::from_secs(90))
-        .build()
-        .map_err(|e| (crate::tr!("ai.http.clientUnavailable", error = e), None))?;
+    let client = llm_client()?;
     let mut request = client.post(&resolved.url).json(&body);
     if let Some(key) = resolved.key {
         request = request.bearer_auth(key);
@@ -334,24 +329,13 @@ async fn call_llm_with(
     let started = std::time::Instant::now();
     let (text, tokens, status) = send_llm(request, &provider_id).await;
     if let Some(log) = log {
-        crate::ai_usage::record(
-            log.db_path,
-            &crate::ai_usage::UsageEntry {
-                operation: log.operation,
-                provider: &provider_id,
-                model: &resolved.model,
-                language: None,
-                estimated_cost_usd: crate::ai_usage::token_cost(
-                    &provider_id,
-                    &resolved.model,
-                    &tokens,
-                ),
-                tokens: tokens.clone(),
-                audio_seconds: None,
-                duration_ms: started.elapsed().as_millis() as u64,
-                ok: text.is_ok(),
-                prices_as_of: crate::ai_usage::PRICES_AS_OF,
-            },
+        record_usage(
+            log,
+            &provider_id,
+            &resolved.model,
+            &tokens,
+            started,
+            text.is_ok(),
         );
     }
     Ok(LlmAnswer {
@@ -361,13 +345,96 @@ async fn call_llm_with(
     })
 }
 
-/// Sends the request; the tokens are read even from an answer without content. The HTTP status
+/// The HTTP client of every call. Explicit bounds: a connection left open without finishing
+/// would block the AI processing.
+fn llm_client() -> Result<reqwest::Client, (String, Option<u16>)> {
+    reqwest::Client::builder()
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(90))
+        .build()
+        .map_err(|e| (crate::tr!("ai.http.clientUnavailable", error = e), None))
+}
+
+/// Records a call that reached the provider in the consumption journal.
+fn record_usage(
+    log: UsageLog<'_>,
+    provider_id: &str,
+    model: &str,
+    tokens: &crate::ai_usage::TokenUsage,
+    started: std::time::Instant,
+    ok: bool,
+) {
+    crate::ai_usage::record(
+        log.db_path,
+        &crate::ai_usage::UsageEntry {
+            operation: log.operation,
+            provider: provider_id,
+            model,
+            language: None,
+            estimated_cost_usd: crate::ai_usage::token_cost(provider_id, model, tokens),
+            tokens: tokens.clone(),
+            audio_seconds: None,
+            duration_ms: started.elapsed().as_millis() as u64,
+            ok,
+            prices_as_of: crate::ai_usage::PRICES_AS_OF,
+        },
+    );
+}
+
+/// One turn of a conversation with tools (OpenAI-compatible `tools` and `tool_choice`): sends
+/// `messages` and returns the assistant's message, which holds text and/or `tool_calls`. Same
+/// client, key handling and consumption record as the other calls; an error carries the HTTP
+/// status when the provider answered one (a provider that refuses tools answers 400 or 422).
+pub(crate) async fn call_llm_chat(
+    messages: &[serde_json::Value],
+    tools: &serde_json::Value,
+    tool_choice: &serde_json::Value,
+    provider: Option<String>,
+    model: Option<String>,
+    db_path: &std::path::Path,
+    operation: &str,
+) -> Result<serde_json::Value, (String, Option<u16>)> {
+    let provider_id = provider.unwrap_or_else(|| "cerebras".to_string());
+    let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;
+    let body = serde_json::json!({
+        "model": resolved.model,
+        "messages": messages,
+        "tools": tools,
+        "tool_choice": tool_choice,
+    });
+    let client = llm_client()?;
+    let mut request = client.post(&resolved.url).json(&body);
+    if let Some(key) = resolved.key {
+        request = request.bearer_auth(key);
+    }
+    let started = std::time::Instant::now();
+    let (data, tokens, status) = send_raw(request, &provider_id).await;
+    let message = data.and_then(|data| {
+        let message = data["choices"][0]["message"].clone();
+        if message.is_object() {
+            Ok(message)
+        } else {
+            Err(crate::tr!("ai.provider.emptyResponse"))
+        }
+    });
+    record_usage(
+        UsageLog { db_path, operation },
+        &provider_id,
+        &resolved.model,
+        &tokens,
+        started,
+        message.is_ok(),
+    );
+    message.map_err(|e| (e, status))
+}
+
+/// Sends the request and reads the JSON answer; the tokens are read from it. The HTTP status
 /// comes back with a refusal.
-async fn send_llm(
+async fn send_raw(
     request: reqwest::RequestBuilder,
     provider_id: &str,
 ) -> (
-    Result<String, String>,
+    Result<serde_json::Value, String>,
     crate::ai_usage::TokenUsage,
     Option<u16>,
 ) {
@@ -399,11 +466,10 @@ async fn send_llm(
         );
     }
     match response.json::<serde_json::Value>().await {
-        Ok(data) => (
-            providers::extract_content(&data),
-            crate::ai_usage::TokenUsage::from_response(&data),
-            None,
-        ),
+        Ok(data) => {
+            let tokens = crate::ai_usage::TokenUsage::from_response(&data);
+            (Ok(data), tokens, None)
+        }
         Err(e) => (
             Err(crate::tr!(
                 "ai.http.unreadable",
@@ -414,6 +480,24 @@ async fn send_llm(
             None,
         ),
     }
+}
+
+/// Sends the request; the tokens are read even from an answer without content. The HTTP status
+/// comes back with a refusal.
+async fn send_llm(
+    request: reqwest::RequestBuilder,
+    provider_id: &str,
+) -> (
+    Result<String, String>,
+    crate::ai_usage::TokenUsage,
+    Option<u16>,
+) {
+    let (data, tokens, status) = send_raw(request, provider_id).await;
+    (
+        data.and_then(|data| providers::extract_content(&data)),
+        tokens,
+        status,
+    )
 }
 
 fn text_with_context(

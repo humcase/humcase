@@ -201,6 +201,7 @@
     "subCasesBadge_other": "{{count}} Unterfälle",
     "provenanceKind": {
       "ask": "Antwort von Humcase",
+      "reflect": "Durchdacht mit Humcase",
       "source": "Quelle",
       "germinated": "Entfalten"
     }

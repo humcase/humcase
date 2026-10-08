@@ -13,7 +13,7 @@ import './note-sub-cases.css';
 
 const EMPTY: CaseContext = { path: [], provenance: [] };
 /** Provenances Humcase writes itself, named in the interface's language; an agent's kind shows as it wrote it. */
-const OWN_PROVENANCE_KINDS = ['ask', 'source', 'germinated'] as const;
+const OWN_PROVENANCE_KINDS = ['ask', 'reflect', 'source', 'germinated'] as const;
 const isOwnProvenanceKind = (kind: string): kind is typeof OWN_PROVENANCE_KINDS[number] => (OWN_PROVENANCE_KINDS as readonly string[]).includes(kind);
 
 /**

@@ -257,7 +257,8 @@
       "check_decisions": "Decisiones leídas (TypeSafe)",
       "check_gather": "Casos por reunir leídos (TypeSafe)",
       "check_profile": "Sugerencias de perfil leídas (TypeSafe)",
-      "ask": "Preguntas a Humcase"
+      "ask": "Preguntas a Humcase",
+      "reflect": "Reflexiones con Humcase"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} sesión",

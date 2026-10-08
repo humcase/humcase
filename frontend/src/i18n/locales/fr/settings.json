@@ -257,7 +257,8 @@
       "check_decisions": "Décisions relues (TypeSafe)",
       "check_gather": "Cases à regrouper relues (TypeSafe)",
       "check_profile": "Suggestions de profil relues (TypeSafe)",
-      "ask": "Questions à Humcase"
+      "ask": "Questions à Humcase",
+      "reflect": "Réflexions avec Humcase"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} session",
