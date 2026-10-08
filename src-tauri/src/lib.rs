@@ -25,6 +25,8 @@ pub mod profile;
 pub mod providers;
 pub mod recognize;
 pub mod reflect;
+#[cfg(test)]
+mod reflect_quality;
 pub mod test_profile;
 pub mod tidy;
 

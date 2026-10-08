@@ -300,9 +300,12 @@ impl Reading {
 pub(crate) fn without_references(text: &str) -> String {
     static REFERENCE: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
     let reference = REFERENCE.get_or_init(|| {
-        regex::Regex::new(
-            r"(?i)\s*[(\[]\s*(?:(?:ids?|excerpts?|extraits?|extractos?|trechos?|estratt[oi]|auszug|auszüge|cases?|cas|casos?|cas[oi]|fall|fälle)\s*[#:n°]*\s*\d+(?:\s*(?:,|and|et|y|e|und)\s*\d+)*|to_review|rework_requested|accepted_changed|in_progress)\s*[)\]]",
-        )
+        // A parenthesis of references: "(case 4)", "(excerpt 11, 12)", "(case 1, excerpt 3)",
+        // "(case 2 excerpt 4)".
+        let word = r"(?:ids?|excerpts?|extraits?|extractos?|trechos?|estratt[oi]|auszug|auszüge|cases?|cas|casos?|cas[oi]|fall|fälle)\s*[#:n°]*\s*";
+        regex::Regex::new(&format!(
+            r"(?i)\s*[(\[]\s*(?:{word}\d+(?:(?:\s*(?:,|;|and|et|y|e|und|du|de|of|del)\s*(?:{word})?|\s+{word})\d+)*|to_review|rework_requested|accepted_changed|in_progress)\s*[)\]]"
+        ))
         .expect("valid pattern")
     });
     reference.replace_all(text, "").into_owned()
@@ -1722,6 +1725,20 @@ pub(crate) mod tests {
         assert_eq!(
             without_references("Le choix (extrait 3) reste ouvert."),
             "Le choix reste ouvert."
+        );
+        assert_eq!(
+            without_references("The renewal (case 1, excerpt 3) comes first; (cas 2 et 3) too."),
+            "The renewal comes first; too."
+        );
+        assert_eq!(
+            without_references(
+                "Since (case 2 excerpt 4), the bathroom is closed (excerpt 3, case 4)."
+            ),
+            "Since, the bathroom is closed."
+        );
+        assert_eq!(
+            without_references("Entre Ceradel (extrait 2 du cas 1) et Solargil (case 3 of 4)."),
+            "Entre Ceradel et Solargil."
         );
         assert_eq!(
             without_references("Step (page 4) stays."),

@@ -16,7 +16,7 @@ use crate::ask::{
     agent_tool, agent_tools_with, chat_turn, clip, json_object_in, load_case, meaning_hits,
     project_names, read, reading_is_strong, ready_provider, run_agent_with, without_references,
     words_of, AgentFailure, Case, PreviousTurn, Reading, Sent, Source, AGENT_READ_SENTENCES,
-    JOURNAL_MAX_SIZE, PASSAGES_MAX, PREVIOUS_ANSWER_MAX, QUESTION_MAX,
+    JOURNAL_MAX_SIZE, PASSAGES_MAX, PREVIOUS_ANSWER_MAX, QUESTION_MAX, SENTENCES_PER_CASE,
 };
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
@@ -32,7 +32,7 @@ const KEPT_TITLE_MAX: usize = 200;
 pub const JOURNAL_FILE: &str = "reflect-journal.jsonl";
 
 /// Version of the instruction below, recorded in the journal.
-const PROMPT_VERSION: &str = "reflect.v9";
+const PROMPT_VERSION: &str = "reflect.v13";
 
 /// Model calls one reply may take, the last one forced to `reply`.
 const REPLY_CALLS_MAX: usize = 4;
@@ -42,6 +42,12 @@ const SETTLED_ANSWER_WORDS: usize = 6;
 const LINKS_MAX: usize = 3;
 /// Turns of the conversation the AI reads (the latest ones).
 const TURNS_MAX: usize = 12;
+/// Extra attempts when the question digs into a point the person settled (each is one more call).
+const REPEAT_RETRIES: usize = 2;
+/// Cases sent with their sentences at least: when the words and the meaning of what was said
+/// find fewer, the latest cases of the space fill up (a partner that only sees titles cannot
+/// link, or notice a tension with, a case it has not read).
+const DETAILED_MIN: usize = 6;
 /// Length of a text said by the person, and of a text written by the partner.
 const SAID_MAX: usize = QUESTION_MAX + 500;
 const SENTENCE_MAX: usize = 400;
@@ -52,19 +58,20 @@ const ACTIONS_MAX: usize = 8;
 const WAITING_MAX: usize = 5;
 
 const REPLY_PROMPT: &str = "You are the thinking partner of a person who is working an idea, a problem or a choice through, using only what they say and the cases (their notes, tasks, decisions) given in the user message as JSON. `subject` is the case they start from when there is one: they already see it, so never cite it. Each case in `cases` has numbered excerpts, the first one being its title; `overview` lists the latest cases of the space in one line each. `conversation` holds the exchange so far, oldest first: `person` is what they said, `you` is what you replied before. When `conversation` is empty, the person has just opened the subject: restate it from its own text and ask a first question. `latest` is the last thing the person said.
-Each turn you do four things, in the language of the person, always addressing them as the interface does (French: \"vous\", never \"tu\", even if the person writes \"je\"):
+Each turn you first fill `language`: the language of the person's latest message (of the subject when they have not spoken yet), by its English name (\"French\", \"English\"); every text you write after it (the restatement, the lead and the question included, with no word of another language) is in that language, even if these instructions or the cases are in another one, and you address the person as the interface does (French: \"vous\", never \"tu\", even if the person writes \"je\"). Then you do four things:
 1. `restated`: one or two short sentences restating what the person just said, in their own terms. Add nothing of yours.
 2. `links`: at most 3 links to what the cases already say that bears on what the person said, only when the excerpt really says it. `kind`: `supports` (the case goes the same way), `decided` (a decision already taken that bears on it), `conflicts` (it may contradict what the person said or wants). `excerpt` is the id of the excerpt that states it. Never link the subject. No link is better than a forced one: an empty list is fine.
-3. `lead`: only when the person is stuck or hesitates between options (not when they simply state a plan), one short lead to follow (a way to look at it, an option to weigh) that adds something the person did not say, drawn from the conversation or the cases; otherwise null.
-4. `question`: exactly ONE question, the one that moves the thinking forward the most, built on what the person just said. Never two questions, never a list of questions, and never a question already asked in `conversation` (even in other words) nor one the person already answered: follow where the person goes, do not bring them back to your own idea.
-When a direction has clearly emerged from the conversation (the person made their choice, or named their next steps), set `offer_summary` to true and make your question ask whether the person wants a summary of it, instead of opening a new subject; otherwise false.
+3. `lead`: null in most turns. Only when the person is stuck or hesitates between options (not when they simply state a plan), one short lead that rests on one sentence of a case or on one precise fact the person gave, names it, and adds what the person did not say: a tension between two things they said or between what they said and a case, a constraint or an option that a case already holds and they did not mention. Never general advice (compare, list your criteria, ask for quotes, estimate, build a table, check the documents), never an option, figure, percentage, currency or fact that is in neither the cases nor the conversation, never a case applied to a situation it does not concern (a rule for new clients to an old client). No lead is far better than a generic one.
+4. `question`: exactly ONE question, the one that moves the thinking forward the most, built on what the person just said. Never two questions, never a list of questions, and never a question already asked in `conversation` (even in other words) nor one the person already answered: follow where the person goes, do not bring them back to your own idea. Make it specific: it names the element it builds on (a figure, a name, an option or a date from the person's last message or from a case), so that it could not be asked unchanged about another situation (but never by naming again what the person has just settled to ask about it: not when, how or how much of what they have just decided or answered; ask about what their answer leaves open elsewhere). Forbidden, unless the conversation has led exactly there: the generic questions of any checklist (what budget, what deadline, what criteria or weights, which method, which tool, what plan, what is the next step, what price, who and how many). Choose, in this order: (a) a tension between what the person just said and a case (a figure, a date, a decision): name both; (b) the point they hesitate on or that blocks their choice; (c) an element of a case that really bears on their choice and that they did not mention (never a case that only shares a word with it); (d) what their last message leaves open; when it leaves nothing open (they decided, postponed or closed the point), go to another open element of the conversation or of the cases (a choice still waiting, a figure not yet given), never deeper into the closed one. Do not bring up again a tension or a case already pointed out in `conversation`, unless the person's last message changes it. Never ask the person to compute, estimate, subtract, rank, work out how many or how much, or choose a method (you may point out yourself a plain comparison of two figures written in the cases or said by the person, a sum, a difference or an order of dates, showing both figures). Never ask for something the person has just said they do not know or do not have. Never offer help (\"do you want me to...\") and never ask permission (the only offer you may make is the summary below, and then `question` is never null).
+When the person has made a choice and named what they will do, and no hesitation they voiced is still open, set `offer_summary` to true and make your question ask whether the person wants a summary of it, instead of opening a new subject; otherwise false, and once you have asked about a summary, never ask about it again, whatever the answer.
 Rules:
+- Never mix languages, and never write a currency symbol or a unit the person and the cases do not use.
 - Address the person directly as the interface does: \"vous\" in French, \"tú\" in Spanish, \"du\" in German, \"você\" in Portuguese, \"tu\" in Italian; keep it for the whole conversation, restatement of the subject included.
 - Say that something was chosen, retained or decided only when an excerpt or the person says so; a proposal or a suggestion written in a case is not a choice (\"Stripe is proposed\", never \"Stripe, already chosen\"). A case whose state says it is a proposal not chosen has nothing chosen in it yet: never call its option chosen, retained, decided or planned (not \"the payment solution chosen\", not \"confirm the choice of X\"); say it is proposed and still to decide, or say nothing of it.
-- `settled` lists the questions you asked that the person has already answered, with their answer. Those points are closed: never ask about them again, not in other words and not by laying out their options again (now or later, with or without), and do not ask what to do about the answer itself (when, how) unless it leaves something open. Take the answer as given and ask about what is still open. If `not_this_question` is present, your previous attempt asked it and it repeats a closed point: ask another question.
+- `settled` lists the questions you asked that the person has already answered, with their answer. Those points are closed, and so is anything the person postponed (\"later\", \"not now\"): never ask about them again, nor about their details, not in other words and not by laying out their options again (now or later, with or without), and do not ask what to do about the answer itself (when, how) unless it leaves something open. Take the answer as given and ask about what is still open. If `not_this_question` is present, your previous attempt asked it and it digs into a closed point: ask a question that does not name what that point is about, in any wording (another element of the conversation or of the cases). If `do_not_use_these_words` is present, none of those words appears in your question.
 - You never decide for the person. A proposal stays a proposal, what is still to decide stays open, a question stays a question. Never say who wrote, proposed or decided something (\"you proposed\") unless the excerpt names them.
 - Speak as the person would: name a case only by its subject (\"the choice of the supplier\"), never as \"the case\", and say its state in plain words (\"waits for your decision\", \"in progress\"); never write the words of the data (kind, state, excerpt, case number, supports, decided, conflicts).
-- Never state anything the excerpts and the conversation do not say: no outside knowledge, no guess, no advice of your own beyond the lead, no reason, cause or judgment that is not written, and no link between two cases that their text does not make.";
+- Never state anything the excerpts and the conversation do not say: no outside knowledge, no guess, no advice of your own beyond the lead, no reason, cause or judgment that is not written (except a plain comparison of two figures or dates that are written), and no link between two cases that their text does not make.";
 
 const REPLY_TOOLS_ADDENDUM: &str = "
 The cases in the user message are only those whose words are closest to what the person said and the latest ones: the space holds more. You have tools to look for the others:
@@ -77,8 +84,8 @@ const SUMMARY_PROMPT: &str = "You turn a conversation in which a person thought 
 Take everything ONLY from what was said in the conversation: never add a fact, reason, option, figure or action nobody said; when unsure, leave it out. Fields:
 - `title`: starts with the word for \"Reflection\" followed by a colon, in the person's language (for example \"Réflexion : …\" or \"Reflection: …\"), then the subject of the thinking in a few words.
 - `direction`: one or two sentences, the direction the thinking took. If none emerged, say what is still undecided. Never present as decided what the person did not decide.
-- `kept`: what the person kept (ideas, options, decisions). `rejected`: what they set aside. `evolution`: how the idea changed during the conversation, each as what it was and what it became, written in the language of the conversation, not a list of the steps taken; an empty list when it did not change. `questions`: only questions raised in the conversation (by the person or by you) that nobody answered later in the conversation, rewritten as a plain question without addressing the person; never a new one of yours, never one the person answered. Short strings; an empty list when there is nothing.
-- `actions`: next steps the person named, each a short task title. `create` is true only when the person agreed to do it; false for an idea for later. Never an action that already has a case in `cases`, `overview` or `subject`.
+- `kept`: what the person kept (ideas, options, decisions): only what they chose, retained or agreed (\"I could\", \"maybe\", \"probably\" and \"I would like to\" are not enough); an option they still hesitate on, consider or may do goes nowhere in `kept` (say it is undecided in `direction` or put it in `questions`). `rejected`: what they set aside. `evolution`: how the idea changed during the conversation, each as what it was and what it became, written in the language of the conversation, not a list of the steps taken; an empty list when it did not change. `questions`: only questions raised in the conversation (by the person or by you) that nobody answered later in the conversation, rewritten as a plain question without addressing the person; never a new one of yours, never one the person answered. Short strings; an empty list when there is nothing.
+- `actions`: next steps the person named, each a short task title. `create` is true only when the person said they will do it (not \"probably\", \"could\" or \"maybe\"); false for an idea for later. Never an action that only follows from a question, a doubt or an option (\"determine the quantities\" because a question was left open): only what the person said they will do. Never an action that already has a case in `cases`, `overview` or `subject`.
 - `waiting_on`: the numbers (`case`) of existing cases the direction depends on, only when the conversation says or shows that dependency; otherwise an empty list.
 Write every text as a plain note the person keeps, without a subject pronoun and without addressing the person (a note such as \"The cheapest quote under 4,000\", never \"You chose the cheapest quote\"), in the language of the conversation. Speak as the person would: never write the words of the data (kind, state, excerpt, case number) in the texts.";
 
@@ -133,6 +140,18 @@ pub struct ReflectReply {
     pub dropped: usize,
 }
 
+impl ReflectReply {
+    /// Drops from the three texts the currency symbols nobody used (see [`without_unseen_currency`]).
+    fn without_unseen_currency(&mut self, corpus: &str) {
+        for text in [&mut self.restated, &mut self.lead, &mut self.question]
+            .into_iter()
+            .flatten()
+        {
+            *text = without_unseen_currency(text, corpus);
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq)]
 pub struct SummaryAction {
     pub title: String,
@@ -164,6 +183,7 @@ fn reply_schema() -> Value {
     json!({
         "type": "object",
         "properties": {
+            "language": { "type": "string" },
             "restated": { "type": ["string", "null"] },
             "links": {
                 "type": "array",
@@ -181,7 +201,7 @@ fn reply_schema() -> Value {
             "question": { "type": ["string", "null"] },
             "offer_summary": { "type": "boolean" }
         },
-        "required": ["restated", "links", "lead", "question", "offer_summary"],
+        "required": ["language", "restated", "links", "lead", "question", "offer_summary"],
         "additionalProperties": false
     })
 }
@@ -283,6 +303,29 @@ fn clean(text: Option<&str>, max: usize) -> Option<String> {
     (!text.is_empty()).then_some(text)
 }
 
+/// The text without the currency symbols (`€`, `$`, `£`) that appear nowhere in `corpus`, what
+/// the person and the cases said: a partner that writes "430 $" under figures nobody gave a
+/// currency to states a unit nobody said.
+fn without_unseen_currency(text: &str, corpus: &str) -> String {
+    let mut text = text.to_string();
+    for symbol in ['€', '$', '£'] {
+        if !corpus.contains(symbol) && text.contains(symbol) {
+            let symbol = regex::escape(&symbol.to_string());
+            // "430 $" keeps the figure; "$430" keeps the figure too.
+            for (pattern, with) in [
+                (format!(r"(\d)\s?{symbol}"), "$1"),
+                (format!(r"{symbol}\s?"), ""),
+            ] {
+                text = regex::Regex::new(&pattern)
+                    .expect("valid pattern")
+                    .replace_all(&text, with)
+                    .into_owned();
+            }
+        }
+    }
+    text
+}
+
 /// The first question of a text: a partner that asks two questions asks none.
 fn first_question(text: &str) -> String {
     match text.find('?') {
@@ -348,15 +391,28 @@ fn check_reply(raw: RawReply, reading: &Reading, subject_id: Option<&str>) -> Re
 /// words of a short answer (two at least). A question about what the answer leaves open holds
 /// few of them; a language-free check on the words, not on a list of phrases.
 fn repeats_settled(question: &str, settled: &[(String, String)]) -> bool {
+    !settled_words_in(question, settled).is_empty()
+}
+
+/// The words of a settled short answer that the question holds, when it repeats that answer
+/// (see [`repeats_settled`]); empty when it does not.
+fn settled_words_in(question: &str, settled: &[(String, String)]) -> Vec<String> {
     let words = words_of(question);
-    settled.iter().any(|(_, answer)| {
+    let mut found: Vec<String> = Vec::new();
+    for (_, answer) in settled {
         let answer = words_of(answer);
-        let shared = words.intersection(&answer).count();
-        !answer.is_empty()
+        let shared: Vec<String> = words.intersection(&answer).cloned().collect();
+        if !answer.is_empty()
             && answer.len() <= SETTLED_ANSWER_WORDS
-            && shared >= 2
-            && shared * 2 >= answer.len()
-    })
+            && shared.len() >= 2
+            && shared.len() * 2 >= answer.len()
+        {
+            found.extend(shared);
+        }
+    }
+    found.sort();
+    found.dedup();
+    found
 }
 
 /// A title compared without case, accents' marks aside, or punctuation.
@@ -546,6 +602,18 @@ fn prepare(
     if let Some(subject) = &subject {
         reading.detailed.retain(|c| c.id != subject.id);
         reading.overview.retain(|c| c.id != subject.id);
+    }
+    if reading.detailed.len() < DETAILED_MIN {
+        let projects = project_names(conn)?;
+        let words = words_of(&query);
+        while reading.detailed.len() < DETAILED_MIN && !reading.overview.is_empty() {
+            let next = reading.overview.remove(0);
+            if let Some(full) =
+                load_case(conn, &next.id, space, &projects, &words, SENTENCES_PER_CASE)?
+            {
+                reading.detailed.push(full);
+            }
+        }
     }
     Ok(Context {
         reading,
@@ -818,7 +886,9 @@ pub(crate) async fn reply_with_effort(
         None => (parse_text(&single(message.clone()).await?, parse_reply)?, 1),
     };
     let subject_id = context.subject.as_ref().map(|c| c.id.as_str());
+    let corpus = message.to_string();
     let mut reply = check_reply(raw, &context.reading, subject_id);
+    reply.without_unseen_currency(&corpus);
     // A question that asks again about a point the person just settled is asked once more,
     // told not to: one extra call, only then.
     let settled = settled_pairs(&turns);
@@ -828,22 +898,38 @@ pub(crate) async fn reply_with_effort(
     } else {
         settled
     };
-    if let Some(repeated) = reply
-        .question
-        .clone()
-        .filter(|q| repeats_settled(q, &settled))
-    {
-        let mut again = message;
-        again["not_this_question"] = json!(repeated);
-        if let Ok(text) = single(again).await {
-            if let Ok(raw) = parse_text(&text, parse_reply) {
-                let retried = check_reply(raw, &context.reading, subject_id);
-                if retried.question.is_some() {
-                    reply = retried;
-                    calls += 1;
-                }
+    let mut refused: Vec<String> = Vec::new();
+    let mut forbidden: Vec<String> = Vec::new();
+    for _ in 0..REPEAT_RETRIES {
+        let Some(repeated) = reply
+            .question
+            .clone()
+            .filter(|q| repeats_settled(q, &settled))
+        else {
+            break;
+        };
+        for word in settled_words_in(&repeated, &settled) {
+            if !forbidden.contains(&word) {
+                forbidden.push(word);
             }
         }
+        refused.push(repeated);
+        let mut again = message.clone();
+        again["not_this_question"] = json!(refused.join(" | "));
+        again["do_not_use_these_words"] = json!(forbidden);
+        let Ok(text) = single(again).await else {
+            break;
+        };
+        let Ok(raw) = parse_text(&text, parse_reply) else {
+            break;
+        };
+        let mut retried = check_reply(raw, &context.reading, subject_id);
+        retried.without_unseen_currency(&corpus);
+        if retried.question.is_none() {
+            break;
+        }
+        reply = retried;
+        calls += 1;
     }
     reply.sent = Some(Sent {
         service: label,
@@ -1398,6 +1484,48 @@ Three fixed amounts.
         assert!(first.contains("A five-day camp in July for ages 8 to 12."));
     }
 
+    // A partner that only sees titles cannot link a case it has not read: when the words found
+    // fewer than DETAILED_MIN cases, the latest ones are sent with their sentences too.
+    #[test]
+    fn a_small_space_is_read_in_full_even_when_no_word_matches() {
+        let conn = db();
+        let work = project(&conn, "Shop", crate::models::project::ProjectSpace::Work);
+        let subject_id = add(&conn, &work, "Gift boxes", "Sell boxes of candles.");
+        for (title, text) in [
+            ("Wax stock", "Twelve kilos of wax remain."),
+            ("Carrier", "The parcel carrier delivers in four days."),
+            ("Returns", "Returns are accepted within fourteen days."),
+        ] {
+            add(&conn, &work, title, text);
+        }
+        let subject = load_subject(&conn, Some(&subject_id), Some("work")).unwrap();
+        // Nothing the person says shares a word with the other cases.
+        let turns = [turn_said("I want something for December.")];
+        let query = search_text(subject.as_ref(), &turns, false);
+        let context = prepare(&conn, subject, &turns, Some("work"), &[], query).unwrap();
+        assert_eq!(context.reading.detailed.len(), 3, "all three are detailed");
+        assert!(context.reading.overview.is_empty());
+        assert!(context
+            .reading
+            .detailed
+            .iter()
+            .all(|c| c.id != subject_id && !c.sentences.is_empty()));
+    }
+
+    #[test]
+    fn a_currency_nobody_used_is_left_out_of_the_reply() {
+        let corpus = r#"{"cases": ["Retainer of 6 days at 430 per day"], "latest": "about 45 %"}"#;
+        assert_eq!(
+            without_unseen_currency("6 days at 430 $ or $520, 12 €", corpus),
+            "6 days at 430 or 520, 12"
+        );
+        // A symbol the person or a case used stays.
+        assert_eq!(
+            without_unseen_currency("a fee of 50 € and 3 $", &format!("{corpus} 20 €")),
+            "a fee of 50 € and 3"
+        );
+    }
+
     // A tool may bring the subject back; the check still drops a link to it.
     #[test]
     fn the_loop_registers_what_a_tool_returned_and_the_check_drops_the_subject() {
@@ -1561,6 +1689,19 @@ Three fixed amounts.
     }
 
     // Without this check, a question asking again about the point just answered is shown.
+    #[test]
+    fn the_words_a_repeating_question_shares_with_the_answer_are_named() {
+        let settled = vec![(
+            "Proposez-vous aussi un montant libre ?".to_string(),
+            "Le montant libre plus tard.".to_string(),
+        )];
+        assert_eq!(
+            settled_words_in("Quand ajouter le montant libre ?", &settled),
+            vec!["libre".to_string(), "montant".to_string()]
+        );
+        assert!(settled_words_in("Quel fournisseur de paiement ?", &settled).is_empty());
+    }
+
     #[test]
     fn a_question_holding_most_words_of_a_short_answer_repeats_it() {
         let settled = vec![(
