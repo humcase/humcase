@@ -188,7 +188,7 @@ describe('SettingsModal — AI providers', () => {
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
 
-    const clean = (await screen.findByLabelText('Nettoyage de la dictée (LLM)')) as HTMLSelectElement;
+    const clean = (await screen.findByLabelText('IA pour le texte')) as HTMLSelectElement;
     const stt = screen.getByLabelText('Transcription (voix)') as HTMLSelectElement;
 
     await waitFor(() => expect([...clean.options].map(o => o.value)).toEqual(['cerebras', 'ollama']));
@@ -241,14 +241,14 @@ describe('SettingsModal — AI providers', () => {
   it('remembers the model per provider and passes the key to Rust', async () => {
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    const template = (await screen.findByLabelText('Modèle (nettoyage)')) as HTMLInputElement;
+    const template = (await screen.findByLabelText('Modèle (IA pour le texte)')) as HTMLInputElement;
 
     fireEvent.change(template, { target: { value: 'gpt-oss-120b-custom' } });
     expect(localStorage.getItem('ai_model_cerebras')).toBe('gpt-oss-120b-custom');
 
-    const key = screen.getByLabelText("Clé API (nettoyage)") as HTMLInputElement;
+    const key = screen.getByLabelText("Clé API (IA pour le texte)") as HTMLInputElement;
     fireEvent.change(key, { target: { value: 'sk-secret' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
 
     await waitFor(() => expect(mockApi.setAiKey).toHaveBeenCalledWith('cerebras', 'sk-secret'));
     await screen.findByText('Clé de nettoyage enregistrée.');
@@ -259,16 +259,16 @@ describe('SettingsModal — AI providers', () => {
   it('clears the key field after saving and on provider change', async () => {
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    const key = (await screen.findByLabelText("Clé API (nettoyage)")) as HTMLInputElement;
+    const key = (await screen.findByLabelText("Clé API (IA pour le texte)")) as HTMLInputElement;
 
     fireEvent.change(key, { target: { value: 'sk-secret' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
     await waitFor(() => expect(mockApi.setAiKey).toHaveBeenCalledWith('cerebras', 'sk-secret'));
     // The field is cleared after success: impossible to save this key again under another provider.
     await waitFor(() => expect(key.value).toBe(''));
 
     fireEvent.change(key, { target: { value: 'sk-autre' } });
-    const clean = screen.getByLabelText('Nettoyage de la dictée (LLM)') as HTMLSelectElement;
+    const clean = screen.getByLabelText('IA pour le texte') as HTMLSelectElement;
     fireEvent.change(clean, { target: { value: 'ollama' } });
     expect(key.value).toBe('');
   });
@@ -276,10 +276,10 @@ describe('SettingsModal — AI providers', () => {
   it("an empty key field does not clear the existing key", async () => {
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    await screen.findByLabelText("Clé API (nettoyage)");
+    await screen.findByLabelText("Clé API (IA pour le texte)");
 
     // Empty field: the "Save" button must do nothing (the "Clear" button is dedicated).
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
     expect(mockApi.setAiKey).not.toHaveBeenCalled();
   });
 
@@ -289,11 +289,11 @@ describe('SettingsModal — AI providers', () => {
 
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    const key = (await screen.findByLabelText("Clé API (nettoyage)")) as HTMLInputElement;
+    const key = (await screen.findByLabelText("Clé API (IA pour le texte)")) as HTMLInputElement;
     fireEvent.change(key, { target: { value: 'sk-secret' } });
 
-    const save = screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }) as HTMLButtonElement;
-    const erase = screen.getByRole('button', { name: 'Effacer la clé de nettoyage' }) as HTMLButtonElement;
+    const save = screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }) as HTMLButtonElement;
+    const erase = screen.getByRole('button', { name: 'Effacer la clé de l’IA pour le texte' }) as HTMLButtonElement;
     const saveStt = screen.getByRole('button', { name: 'Enregistrer la clé de transcription' }) as HTMLButtonElement;
 
     fireEvent.click(save);
@@ -315,9 +315,9 @@ describe('SettingsModal — AI providers', () => {
 
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    const key = (await screen.findByLabelText("Clé API (nettoyage)")) as HTMLInputElement;
+    const key = (await screen.findByLabelText("Clé API (IA pour le texte)")) as HTMLInputElement;
     fireEvent.change(key, { target: { value: 'sk-secret' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
 
     await waitFor(() => expect(mockApi.setAiKey).toHaveBeenCalledWith('cerebras', 'sk-secret'));
     // Distinct discreet message: the key IS saved, only the display could not be refreshed.
@@ -355,12 +355,12 @@ describe('SettingsModal — input generation', () => {
 
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    const key = (await screen.findByLabelText("Clé API (nettoyage)")) as HTMLInputElement;
-    const clean = screen.getByLabelText('Nettoyage de la dictée (LLM)') as HTMLSelectElement;
+    const key = (await screen.findByLabelText("Clé API (IA pour le texte)")) as HTMLInputElement;
+    const clean = screen.getByLabelText('IA pour le texte') as HTMLSelectElement;
 
     // Provider A (Cerebras): input then save in flight.
     fireEvent.change(key, { target: { value: 'CLE-A' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
     await waitFor(() => expect(mockApi.setAiKey).toHaveBeenCalledWith('cerebras', 'CLE-A'));
 
     // While waiting, the user switches to Ollama (B) and types its key.
@@ -377,7 +377,7 @@ describe('SettingsModal — input generation', () => {
     expect(screen.queryByText(/Clé de nettoyage enregistrée/)).toBeNull();
 
     // B's save succeeds normally: field cleared and status displayed.
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
     await waitFor(() => expect(mockApi.setAiKey).toHaveBeenCalledWith('ollama', 'CLE-B'));
     await screen.findByText('Clé de nettoyage enregistrée.');
     await waitFor(() => expect(key.value).toBe(''));
@@ -389,10 +389,10 @@ describe('SettingsModal — input generation', () => {
 
     render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
     fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
-    const key = (await screen.findByLabelText("Clé API (nettoyage)")) as HTMLInputElement;
+    const key = (await screen.findByLabelText("Clé API (IA pour le texte)")) as HTMLInputElement;
 
     fireEvent.change(key, { target: { value: 'CLE-A1' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de nettoyage' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }));
     await waitFor(() => expect(mockApi.setAiKey).toHaveBeenCalledWith('cerebras', 'CLE-A1'));
 
     // The user extends their input while waiting, without changing provider:
@@ -649,7 +649,7 @@ describe('SettingsModal — review 0.9.69: unreadable providers', () => {
     expect((await screen.findByRole('alert')).textContent).toContain('n’a pas pu être lue');
     fireEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
 
-    const clean = screen.getByLabelText('Nettoyage de la dictée (LLM)') as HTMLSelectElement;
+    const clean = screen.getByLabelText('IA pour le texte') as HTMLSelectElement;
     await waitFor(() => expect([...clean.options].map(o => o.value)).toEqual(['cerebras', 'ollama']));
     expect(screen.queryByText(/n’a pas pu être lue/)).toBeNull();
   });

@@ -64,6 +64,7 @@ export function AiServicesSection({ ai }: { ai: AiProviders }) {
           <label htmlFor="ai-clean-provider" className="settings-label settings-label--small">
             {t('settings.voice.cleanLabel')}
           </label>
+          <p className="text-xs text-muted-foreground">{t('settings.voice.cleanHint')}</p>
           <SelectField
             id="ai-clean-provider"
             value={ai.cleanProvider}
