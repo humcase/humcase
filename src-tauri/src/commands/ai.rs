@@ -119,6 +119,7 @@ pub(crate) fn first_ready_provider() -> Option<String> {
 /// set for another AI is used without choosing it), else the one asked, whose error says what
 /// is missing.
 pub(crate) fn pick_provider(asked: Option<String>) -> String {
+    let asked = asked.filter(|id| !id.is_empty());
     crate::ask::ready_provider(&providers::providers_info().cleanup, asked.as_deref())
         .map(|(id, _)| id)
         .or(asked)

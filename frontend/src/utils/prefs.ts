@@ -199,8 +199,9 @@ export function dictationLanguageCode(preference: DictationLanguage, interfaceLa
   return preference === 'interface' ? interfaceLanguage : preference;
 }
 
+/** The AI chosen in Settings, or `''` when none is: the engine then uses the first one whose key is set. */
 export function getAiCleanProvider(): string {
-  return localStorage.getItem(KEYS.aiCleanProvider) || DEFAULT_AI_CLEAN_PROVIDER;
+  return localStorage.getItem(KEYS.aiCleanProvider) || '';
 }
 
 /** Whether the person chose a cleanup provider in Settings (otherwise the first ready one is used). */

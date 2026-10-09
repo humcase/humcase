@@ -32,7 +32,7 @@ pub mod operation {
 }
 
 /// Day the prices below were read from the providers' pages.
-pub const PRICES_AS_OF: &str = "2026-10-03";
+pub const PRICES_AS_OF: &str = "2026-10-08";
 
 /// Tokens of one language model call, as the provider reports them (`usage` of the
 /// OpenAI-compatible answer). Absent when the provider does not report them.

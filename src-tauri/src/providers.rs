@@ -33,6 +33,20 @@ pub struct LlmProvider {
 }
 
 pub const LLM_PROVIDERS: &[LlmProvider] = &[
+    // The first ready provider is the one used when nothing is chosen (`ask::ready_provider`):
+    // Claude Haiku 5.5 answered best on `ask_eval` and `reflect_quality` (09/10), for less.
+    LlmProvider {
+        id: "anthropic",
+        label: "Anthropic",
+        base_url: "https://api.anthropic.com/v1/messages",
+        key_env: "ANTHROPIC_API_KEY",
+        default_model: "claude-haiku-5-5",
+        model_env: "ANTHROPIC_MODEL",
+        url_env: "",
+        needs_key: true,
+        url_editable: false,
+        default_effort: None,
+    },
     LlmProvider {
         id: "cerebras",
         label: "Cerebras",
@@ -92,18 +106,6 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         needs_key: true,
         url_editable: false,
         default_effort: Some("none"),
-    },
-    LlmProvider {
-        id: "anthropic",
-        label: "Anthropic",
-        base_url: "https://api.anthropic.com/v1/messages",
-        key_env: "ANTHROPIC_API_KEY",
-        default_model: "claude-haiku-5-5",
-        model_env: "ANTHROPIC_MODEL",
-        url_env: "",
-        needs_key: true,
-        url_editable: false,
-        default_effort: None,
     },
     LlmProvider {
         id: "ollama",

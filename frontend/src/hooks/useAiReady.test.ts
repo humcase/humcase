@@ -13,6 +13,11 @@ describe('effectiveCleanProvider', () => {
     expect(effectiveCleanProvider(list(['mistral', 'ollama']), 'cerebras')).toBe('mistral');
   });
 
+  it('with nothing chosen, uses the first AI whose key is set, else the default', () => {
+    expect(effectiveCleanProvider(list(['cerebras', 'mistral']), '')).toBe('cerebras');
+    expect(effectiveCleanProvider(list(['ollama']), '')).toBe('cerebras');
+  });
+
   it('never takes the local server by default, its address being always known', () => {
     expect(effectiveCleanProvider(list(['ollama']), 'cerebras')).toBe('cerebras');
     expect(effectiveCleanProvider(list(['ollama']), 'ollama')).toBe('ollama');

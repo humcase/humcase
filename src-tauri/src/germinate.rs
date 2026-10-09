@@ -697,6 +697,7 @@ pub async fn germinate(
         read_case(&conn, note_id)?
     };
     let provider = provider
+        .filter(|id| !id.is_empty())
         .or_else(crate::commands::ai::first_ready_provider)
         .ok_or_else(|| crate::tr!("germinate.noAi"))?;
     let text: String = reading

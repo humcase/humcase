@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/tauriApi';
-import { PREFS_CHANGED_EVENT, getAiCleanProvider } from '../utils/prefs';
+import { DEFAULT_AI_CLEAN_PROVIDER, PREFS_CHANGED_EVENT, getAiCleanProvider } from '../utils/prefs';
 
 /** Emitted in this window when an AI key or server address is saved in Settings. */
 export const AI_CONFIG_CHANGED_EVENT = 'humcase:ai-config-changed';
@@ -22,7 +22,7 @@ export function requestOpenSettings() {
  */
 export function effectiveCleanProvider(cleanup: { id: string; ready: boolean }[], chosen: string): string {
   if (cleanup.some(p => p.id === chosen && p.ready)) return chosen;
-  return cleanup.find(p => p.ready && p.id !== 'ollama')?.id ?? chosen;
+  return cleanup.find(p => p.ready && p.id !== 'ollama')?.id ?? (chosen || DEFAULT_AI_CLEAN_PROVIDER);
 }
 
 /**
