@@ -21,6 +21,9 @@
 - Previews and derived titles kept no underscore: `pg_upgrade` read "pgupgrade". Only emphasis markers are removed now (`_word_`, `__word__`, asterisks, tildes, backticks); an underscore inside a word stays.
 - Dates of another year showed no year: an overdue date of last October read "Overdue · 19/10", like one of this month. Due dates and list dates of another year now show it ("19/10/2025", "13 Dec 2025"), and a list row no longer repeats the same date twice ("13 Dec · 13 Dec").
 - "This week" meant the next seven days: next Tuesday read "This week" on a Friday. It is now the calendar week (to Sunday, or Saturday where weeks start on Sunday), in the lists and in the session brief.
+- To tidy: unchecking a case before "Archive" refused it for good, without saying so (archiving 2 cases refused the 181 others). An unchecked case now stays proposed; only "Refuse all" refuses.
+- To tidy proposed to archive results an agent declared and the person had not accepted yet. A result waiting for "Accept" or sent back for a rework is no longer proposed, and a waiting proposal is withdrawn when its case becomes one.
+- To tidy's count climbed on its own (155, then 183): each refresh added up to 100 more cases to archive. At most 100 wait at once now.
 
 ### Changed
 - Going public: the website's download buttons point to the installer of the latest GitHub release and its GitHub links show (`GITHUB = true`); the source code is "on GitHub" instead of "on request" (landing page and license pages). The download buttons no longer say "Preview", and the SmartScreen answer says the installer isn't signed yet. The README opens with the logo and three badges (CI, latest release, license).

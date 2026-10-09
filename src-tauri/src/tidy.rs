@@ -343,6 +343,12 @@ pub fn pending(conn: &Connection, space: Option<&str>) -> Result<Vec<TidyItem>, 
 /// nothing open under them and nothing in force: a decision that no newer one replaced stays.
 /// A case the person refused, or archived then took back, is not proposed again; a waiting
 /// proposal whose case no longer qualifies is withdrawn (`replaced`). Returns the count added.
+/// A result an agent declared that the person has not accepted yet, or sent back for a rework.
+fn awaits_decision(conn: &Connection, note_id: &str) -> Result<bool, String> {
+    let state = crate::db::journal::review_state(conn, note_id)?.state;
+    Ok(state == "to_review" || state == "rework_requested")
+}
+
 pub fn refresh_archive(conn: &Connection) -> Result<usize, String> {
     let weeks = settings(conn)?.archive_weeks;
     let tx = crate::db::write_transaction(conn).map_err(crate::db::db_error)?;
@@ -351,8 +357,18 @@ pub fn refresh_archive(conn: &Connection) -> Result<usize, String> {
             r.get(0)
         })
         .map_err(crate::db::db_error)?;
+    // At most ARCHIVE_LIMIT proposals wait at once: each refresh only fills the room left, so the
+    // count does not climb on its own from one visit to the next.
+    let waiting_now: i64 = tx
+        .query_row(
+            "SELECT COUNT(*) FROM proposals WHERE kind = 'archive' AND answer IS NULL",
+            [],
+            |r| r.get(0),
+        )
+        .map_err(crate::db::db_error)?;
+    let room = ARCHIVE_LIMIT.saturating_sub(waiting_now.max(0) as usize);
     // The cases that qualify now. Sub-cases are tidied with their top-level case.
-    let eligible: Vec<(String, String, String)> = if weeks == 0 {
+    let eligible: Vec<(String, String, String)> = if weeks == 0 || room == 0 {
         Vec::new()
     } else {
         let mut stmt = tx
@@ -384,33 +400,50 @@ pub fn refresh_archive(conn: &Connection) -> Result<usize, String> {
             )
             .map_err(crate::db::db_error)?;
         let rows = stmt
-            .query_map(
-                params![format!("-{} days", weeks * 7), ARCHIVE_LIMIT as i64],
-                |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
-            )
+            .query_map(params![format!("-{} days", weeks * 7), room as i64], |r| {
+                Ok((r.get(0)?, r.get(1)?, r.get(2)?))
+            })
             .map_err(crate::db::db_error)?
             .collect::<Result<Vec<_>, _>>()
             .map_err(crate::db::db_error)?;
         rows
     };
-    // Waiting proposals whose case changed since: reopened, archived, trashed, given work.
+    // A result still waiting for the person's decision is never archived behind their back.
+    let mut eligible_now = Vec::with_capacity(eligible.len());
+    for row in eligible {
+        if !awaits_decision(&tx, &row.0)? {
+            eligible_now.push(row);
+        }
+    }
+    let eligible = eligible_now;
+    // Waiting proposals whose case changed since: reopened, archived, trashed, given work, or
+    // now a result waiting for the person's decision.
     let waiting: Vec<String> = {
         let mut stmt = tx
             .prepare(
-                "SELECT pr.id FROM proposals pr JOIN notes n ON n.id = pr.note_id
-                  WHERE pr.kind = 'archive' AND pr.answer IS NULL
-                    AND (n.status <> 'resolved' OR n.archived_at IS NOT NULL
+                "SELECT pr.id, pr.note_id,
+                        (n.status <> 'resolved' OR n.archived_at IS NOT NULL
                          OR n.deleted_at IS NOT NULL OR n.parent_id IS NOT NULL
                          OR ?1 = 0
-                         OR n.updated_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?2))",
+                         OR n.updated_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?2))
+                   FROM proposals pr JOIN notes n ON n.id = pr.note_id
+                  WHERE pr.kind = 'archive' AND pr.answer IS NULL",
             )
             .map_err(crate::db::db_error)?;
-        let rows = stmt
-            .query_map(params![weeks, format!("-{} days", weeks * 7)], |r| r.get(0))
+        let rows: Vec<(String, String, bool)> = stmt
+            .query_map(params![weeks, format!("-{} days", weeks * 7)], |r| {
+                Ok((r.get(0)?, r.get(1)?, r.get(2)?))
+            })
             .map_err(crate::db::db_error)?
             .collect::<Result<Vec<_>, _>>()
             .map_err(crate::db::db_error)?;
-        rows
+        let mut withdrawn = Vec::new();
+        for (id, note_id, changed) in rows {
+            if changed || awaits_decision(&tx, &note_id)? {
+                withdrawn.push(id);
+            }
+        }
+        withdrawn
     };
     for id in &waiting {
         tx.execute(
@@ -1444,6 +1477,64 @@ mod tests {
             }
         )
         .is_err());
+    }
+
+    /// No more than ARCHIVE_LIMIT archive proposals wait at once: a second refresh adds none.
+    #[test]
+    fn archive_proposals_do_not_pile_up_from_one_refresh_to_the_next() {
+        let conn = db();
+        let p = project(&conn, "Humcase");
+        for i in 0..ARCHIVE_LIMIT + 5 {
+            let id = case(&conn, &p, &format!("Done {i}"), NoteType::Todo, "Done.");
+            resolved_since(&conn, &id, 40);
+        }
+        assert_eq!(refresh_archive(&conn).unwrap(), ARCHIVE_LIMIT);
+        assert_eq!(refresh_archive(&conn).unwrap(), 0);
+        assert_eq!(pending(&conn, None).unwrap().len(), ARCHIVE_LIMIT);
+    }
+
+    /// An agent's result the person has not accepted is never proposed for archiving; once
+    /// accepted, it is.
+    #[test]
+    fn a_result_waiting_for_the_persons_decision_is_not_proposed_for_archiving() {
+        use crate::db::journal::{self, Actor};
+        let conn = db();
+        journal::install(&conn, &Actor::Agent(Some("Codex".into()))).unwrap();
+        let p = project(&conn, "Humcase");
+        let result = case(&conn, &p, "Case study", NoteType::Todo, "Draft.");
+        queries::update_note(
+            &conn,
+            &result,
+            crate::models::note::UpdateNoteInput {
+                status: Some(crate::models::note::NoteStatus::Resolved),
+                content: None,
+                resolution_comment: Some("Written, to check with Mathilde.".into()),
+                title: None,
+                note_type: None,
+                raw_content: None,
+                priority: None,
+                git_branch: None,
+                tags: None,
+                due_at: None,
+            },
+        )
+        .unwrap();
+        resolved_since(&conn, &result, 40);
+        assert_eq!(
+            journal::review_state(&conn, &result).unwrap().state,
+            "to_review"
+        );
+        assert_eq!(refresh_archive(&conn).unwrap(), 0);
+
+        journal::set_actor(&conn, &Actor::Human).unwrap();
+        let revision: i64 = conn
+            .query_row("SELECT revision FROM notes WHERE id = ?1", [&result], |r| {
+                r.get(0)
+            })
+            .unwrap();
+        journal::review_case(&conn, &result, journal::Decision::Accept, revision, None).unwrap();
+        resolved_since(&conn, &result, 40);
+        assert_eq!(refresh_archive(&conn).unwrap(), 1);
     }
 
     #[test]
