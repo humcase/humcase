@@ -10,12 +10,14 @@ const message = (error: unknown) => String(error instanceof Error ? error.messag
 
 /** A reply of the assistant: its paragraph with citation numbers, its question, its sources and
  * the actions it proposes. */
-export function AssistantReplyView({ reply, onOpenCase, onConnectAi, onChanged }: {
+export function AssistantReplyView({ reply, onOpenCase, onConnectAi, onChanged, onGerminate }: {
   reply: AssistantReply;
   onOpenCase: (id: string) => void;
   onConnectAi: () => void;
   /** Something was written (an action or its undo): the workspace reloads. */
   onChanged: () => void;
+  /** Opens the case with Sprout running. */
+  onGerminate: (id: string) => void;
 }) {
   const { t } = useTranslation();
   const caseOf = (cite: number | null) => {
@@ -60,16 +62,17 @@ export function AssistantReplyView({ reply, onOpenCase, onConnectAi, onChanged }
           </ol>
         </details>
       )}
-      {reply.actions.map((action, index) => <ActionCard key={index} action={action} onOpenCase={onOpenCase} onChanged={onChanged} />)}
+      {reply.actions.map((action, index) => <ActionCard key={index} action={action} onOpenCase={onOpenCase} onChanged={onChanged} onGerminate={onGerminate} />)}
     </div>
   );
 }
 
-type Done = { text: string; undo: () => Promise<void>; openId?: string };
+/** `undo` is absent when nothing was written (Sprout only opens: its proposals wait in the case). */
+type Done = { text: string; undo?: () => Promise<void>; openId?: string };
 
 /** A proposed action: nothing happens before the click; once done, a line says what changed and
  * offers to undo it. */
-function ActionCard({ action, onOpenCase, onChanged }: { action: AssistantActionV2; onOpenCase: (id: string) => void; onChanged: () => void }) {
+function ActionCard({ action, onOpenCase, onChanged, onGerminate }: { action: AssistantActionV2; onOpenCase: (id: string) => void; onChanged: () => void; onGerminate: (id: string) => void }) {
   const { t } = useTranslation();
   const [done, setDone] = useState<Done | null>(null);
   const [busy, setBusy] = useState(false);
@@ -80,7 +83,7 @@ function ActionCard({ action, onOpenCase, onChanged }: { action: AssistantAction
     try { setDone(await task()); onChanged(); } catch (err) { setError(message(err)); } finally { setBusy(false); }
   };
   const undo = async () => {
-    if (!done) return;
+    if (!done?.undo) return;
     setBusy(true); setError(null);
     try { await done.undo(); setDone(null); onChanged(); } catch (err) { setError(message(err)); } finally { setBusy(false); }
   };
@@ -93,7 +96,7 @@ function ActionCard({ action, onOpenCase, onChanged }: { action: AssistantAction
           <Check size={15} weight="bold" aria-hidden="true" />
           <span>{done.text}</span>
           {done.openId && <button type="button" onClick={() => onOpenCase(done.openId!)}>{t('workspace.assistantWindow.open')}</button>}
-          <button type="button" disabled={busy} onClick={() => void undo()}>{t('workspace.assistantWindow.undo')}</button>
+          {done.undo && <button type="button" disabled={busy} onClick={() => void undo()}>{t('workspace.assistantWindow.undo')}</button>}
         </div>
         {failed}
       </>
@@ -101,7 +104,7 @@ function ActionCard({ action, onOpenCase, onChanged }: { action: AssistantAction
   }
 
   const title = action.case_title;
-  let kind: 'proposed' | 'conflict' | 'supersede' | 'archive' | 'group' | 'move' = 'proposed';
+  let kind: 'proposed' | 'conflict' | 'supersede' | 'archive' | 'group' | 'move' | 'germinate' = 'proposed';
   let body: ReactNode = null;
   let buttons: ReactNode = null;
 
@@ -111,6 +114,12 @@ function ActionCard({ action, onOpenCase, onChanged }: { action: AssistantAction
       const id = await api.createSubCase(action.case_id, action.title, 'todo');
       return { text: t('workspace.assistantWindow.action.subCaseDone', { title: action.title, parent: title }), openId: id, undo: () => api.deleteNote(id) };
     })}>{t('workspace.assistantWindow.action.createSubCase')}</Button>;
+  } else if (action.kind === 'germinate') {
+    kind = 'germinate';
+    body = t('workspace.assistantWindow.action.germinateText', { title });
+    buttons = <Button size="sm" disabled={busy} onClick={() => { onGerminate(action.case_id); setDone({ text: t('workspace.assistantWindow.action.germinateDone', { title }) }); }}>
+      {t('workspace.assistantWindow.action.germinate')}
+    </Button>;
   } else if (action.kind === 'archive') {
     kind = 'archive';
     body = t('workspace.assistantWindow.action.archiveText', { title });

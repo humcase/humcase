@@ -836,6 +836,7 @@
       "toTidy": "To tidy"
     },
     "heading": "What would you like to do?",
+    "caseHeading": "What would you like to do with this case?",
     "intro": "I know your cases and Humcase itself. I cite what I read.",
     "suggest": {
       "week": {
@@ -878,7 +879,8 @@
         "supersede": "Replaced decision",
         "archive": "To archive",
         "group": "To file together",
-        "move": "To file"
+        "move": "To file",
+        "germinate": "Sprout"
       },
       "subCase": "Create the task “{{title}}” in “{{parent}}”.",
       "createSubCase": "Create the sub-case",
@@ -901,10 +903,21 @@
       "groupText": "File “{{title}}” into “{{other}}”.",
       "fileTogether": "File together",
       "keepApart": "Keep them apart",
-      "groupDone": "“{{title}}” filed into “{{other}}”."
+      "groupDone": "“{{title}}” filed into “{{other}}”.",
+      "germinateText": "Sprout “{{title}}”: sub-cases taken from its text, to tick one by one.",
+      "germinate": "Sprout",
+      "germinateDone": "Sprout is open in “{{title}}”."
     },
     "you": "You",
     "keptSources": "Sources",
-    "keptSource": "{{title}}: “{{passage}}”"
+    "keptSource": "{{title}}: “{{passage}}”",
+    "suggestCase": {
+      "tag": "This case",
+      "open": "What is still open?",
+      "sum": "Sum up this case",
+      "split": "Split it into sub-cases",
+      "against": "Does anything contradict it?"
+    },
+    "otherQuestions": "Other questions"
   }
 }

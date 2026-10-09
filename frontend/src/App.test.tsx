@@ -580,20 +580,19 @@ describe('App — Today view', () => {
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('searchbox', { name: 'Rechercher une case' })));
   });
 
-  it('Ctrl+J and the Ask button open the assistant window; closed, it stays as a key in the corner', async () => {
+  it('the key in the corner and Ctrl+J are the way to the assistant; no button in the top bar', async () => {
     render(<App />);
     await screen.findByRole('button', { name: 'Ouvrir Urgente' });
     expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Assistant (Ctrl+J)' })).toBeNull();
-    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
+    expect(screen.queryByRole('button', { name: 'Assistant' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
     expect(await screen.findByRole('region', { name: 'Assistant' })).toBeTruthy();
     expect(await screen.findByText('Claude Haiku 5.5 · prêt')).toBeTruthy();
     fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
     expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
+    expect(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' })).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
     expect(screen.getByRole('region', { name: 'Assistant' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Assistant' }));
-    expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
   });
 
   it('Ctrl+F searches the whole space, leaving Today and the open project', async () => {

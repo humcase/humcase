@@ -81,6 +81,8 @@ export interface AssistantPartV2 {
 export type AssistantActionV2 =
   | { kind: 'create_sub_case'; case_id: string; case_title: string; title: string }
   | { kind: 'archive'; case_id: string; case_title: string }
+  /** Open Sprout on the case: its proposals wait there, nothing is written by the click. */
+  | { kind: 'germinate'; case_id: string; case_title: string }
   | { kind: 'move'; case_id: string; case_title: string; project_id: string; project_name: string; from_project_id: string }
   | {
     kind: 'tidy'; tidy_id: string; tidy_kind: 'archive' | 'supersede' | 'group' | 'conflict';
@@ -118,7 +120,7 @@ export interface AssistantStatus {
   to_tidy: number;
 }
 
-/** One exchange of the window: `said` is null for the kickoff from a case's "Think it through". */
+/** One exchange of the window. */
 export interface AssistantEntry {
   id: number;
   said: string | null;

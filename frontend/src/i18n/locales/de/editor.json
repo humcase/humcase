@@ -316,9 +316,5 @@
     "conflictSure": "Jev liest einen Widerspruch zwischen beiden.",
     "notAConflict": "Tut sie nicht",
     "seeDecision": "Entscheidung ansehen"
-  },
-  "reflect": {
-    "button": "Durchdenken",
-    "buttonTitle": "Diesen Fall mit Humcase durchdenken"
   }
 }

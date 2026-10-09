@@ -16,7 +16,7 @@ use std::collections::HashSet;
 use std::path::Path;
 
 /// Version of the instruction below, recorded with each reply.
-const PROMPT_VERSION: &str = "assistant.v3";
+const PROMPT_VERSION: &str = "assistant.v5";
 /// Local journal of the replies: numbers only (no text), next to the database.
 pub const JOURNAL_FILE: &str = "assistant-journal.jsonl";
 
@@ -52,11 +52,12 @@ How to reply:
 4. `question`: null unless one question really moves the person forward: the point they hesitate on, or what their last message leaves open. Never a question they already answered, never one that repeats what they just said, never a yes-or-no question whose answer their words already give, never a generic one (budget, deadline, criteria, next step), never several. When `latest` is empty, restate the context case in one or two sentences from its own text, then ask one first question about what in it is still open for the person.
 5. `actions`: what you can do for the person, done only when they click; at most three, usually none. Propose one only when the person asks for it, says they will do it or agrees to it, or when an item of list_tidy answers their request. When the person asks what to do now after a plan was made, propose the actions of that plan.
    - create_sub_case: a new task `title` (short, in their language) inside the case numbered `case`;
+   - germinate: open Sprout on the case numbered `case`: it proposes the case's sub-cases from its own text, each with its passage, for the person to tick; the action when they ask to split a case, break it down or find its steps (not several create_sub_case);
    - archive: archive the case numbered `case` (done or out of date);
    - move: file the case numbered `case` in the project named `project` (a name of `projects`, written exactly);
    - tidy: accept the item `tidy` of list_tidy (a case to archive, an older decision a newer one replaces, a case to file inside another, a case that goes against a decision).
    Never propose to create what already has a case, nor an action the person did not ask for or agree to.
-6. Speak as the person would: name a case by its subject, never as \"the case\", and say states in plain words (\"waits for your decision\", \"in progress\"); never write the words of the data (excerpt, case number, kind, state, tidy, id). When you need the word, say it as the interface does: \"case\" in English and French (\"une case\", never \"dossier\" or \"fiche\"), \"caso\" in Spanish, Portuguese and Italian, \"Fall\" in German. No heading. A short list only when the person asks for a summary or several items.
+6. Speak as the person would: name a case by its subject, never as \"the case\", and say states in plain words (\"waits for your decision\", \"in progress\"); never write the words of the data (excerpt, case number, kind, state, tidy, id). When you need the word, say it as the interface does: \"case\" in English and French (\"une case\", never \"dossier\" or \"fiche\"), \"caso\" in Spanish, Portuguese and Italian, \"Fall\" in German. Name Humcase's parts as its interface does in that language, never by their English names from the documentation: Sprout, Structure, To tidy, Inbox, Settings are \"Faire germer\", \"Structurer\", \"À ranger\", \"Réception\", \"Paramètres\" in French; \"Germinar\", \"Estructurar\", \"Por ordenar\", \"Bandeja de entrada\", \"Ajustes\" in Spanish; \"Entfalten\", \"Strukturieren\", \"Aufräumen\", \"Eingang\", \"Einstellungen\" in German; \"Germinar\", \"Estruturar\", \"A arrumar\", \"Caixa de entrada\", \"Configurações\" in Portuguese; \"Fai germogliare\", \"Struttura\", \"Da riordinare\", \"Inbox\", \"Impostazioni\" in Italian. No heading. A short list only when the person asks for a summary or several items.
 Tools: the given cases are only part of the space.
 - search_cases(query): the cases holding the words of `query` (use the words a case about it would contain, a synonym; search again with other words before saying nothing exists).
 - read_case(case): all the excerpts of one case, by its number.
@@ -105,6 +106,11 @@ pub enum Action {
         case_id: String,
         case_title: String,
         title: String,
+    },
+    /// Opens Sprout on the case; its proposals wait there, the click writes nothing.
+    Germinate {
+        case_id: String,
+        case_title: String,
     },
     Archive {
         case_id: String,
@@ -496,7 +502,7 @@ fn reply_schema() -> Value {
                     "type": "object",
                     "properties": {
                         "kind": { "type": "string",
-                            "enum": ["create_sub_case", "archive", "move", "tidy"] },
+                            "enum": ["create_sub_case", "germinate", "archive", "move", "tidy"] },
                         "case": { "type": ["integer", "null"] },
                         "title": { "type": ["string", "null"] },
                         "project": { "type": ["string", "null"] },
@@ -655,6 +661,10 @@ fn check_action(
                 title,
             })
         }
+        "germinate" => acted_case(reading, raw.case).map(|case| Action::Germinate {
+            case_id: case.id.clone(),
+            case_title: case.title.clone(),
+        }),
         "archive" => acted_case(reading, raw.case).map(|case| Action::Archive {
             case_id: case.id.clone(),
             case_title: case.title.clone(),
@@ -1158,6 +1168,7 @@ mod tests {
             raw(json!({ "sentences": [], "question": null, "actions": [
                 { "kind": "create_sub_case", "case": shown, "title": "Pick the provider", "project": null, "tidy": null },
                 { "kind": "create_sub_case", "case": 99, "title": "Nowhere", "project": null, "tidy": null },
+                { "kind": "germinate", "case": shown, "title": null, "project": null, "tidy": null },
                 { "kind": "move", "case": shown, "title": null, "project": "marketing", "tidy": null },
                 { "kind": "move", "case": shown, "title": null, "project": "Home", "tidy": null },
                 { "kind": "tidy", "case": null, "title": null, "project": null, "tidy": "nothing" }
@@ -1175,6 +1186,10 @@ mod tests {
                     case_id: checkout.clone(),
                     case_title: "Checkout".into(),
                     title: "Pick the provider".into()
+                },
+                Action::Germinate {
+                    case_id: checkout.clone(),
+                    case_title: "Checkout".into()
                 },
                 Action::Move {
                     case_id: checkout.clone(),

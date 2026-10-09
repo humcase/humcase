@@ -17,19 +17,19 @@ import { useFloatingWindow } from './useFloatingWindow';
 import './assistant-window.css';
 
 export type CaseRef = { id: string; title: string };
-/** "Think it through" from a case: a new conversation that starts from it (`key` changes each time). */
-export type AssistantKickoff = { key: number; case: CaseRef };
 
 const SUGGESTIONS = ['week', 'conflict', 'howto', 'decide'] as const;
+/** Offered while a case is open (it is the context): what one asks about one case. */
+const CASE_SUGGESTIONS = ['open', 'sum', 'split', 'against'] as const;
 const message = (error: unknown) => String(error instanceof Error ? error.message : error);
 
 /**
  * The assistant: one window inside the app that answers from the cases and from Humcase's help,
  * discusses, cites what it read, asks at most one question and proposes actions the person
- * confirms with a click. Minimised (or closed) it becomes a key in the corner; the conversation
- * lives for the session, a conversation worth keeping becomes a case.
+ * confirms with a click. Closed, it is a key in the corner, the way in with Ctrl+J; the
+ * conversation lives for the session, a conversation worth keeping becomes a case.
  */
-export function AssistantWindow({ open, hidden = false, onOpenChange, space, scopeLabel, openCase, kickoff, keepSpace, onOpenCase, onChanged, onConnectAi }: {
+export function AssistantWindow({ open, hidden = false, onOpenChange, space, scopeLabel, openCase, keepSpace, onOpenCase, onChanged, onGerminate, onConnectAi }: {
   open: boolean;
   /** Mini mode: nothing shown, the conversation kept. */
   hidden?: boolean;
@@ -39,11 +39,12 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   scopeLabel: string;
   /** The case open in the editor, offered as the context. */
   openCase: CaseRef | null;
-  kickoff: AssistantKickoff | null;
   /** Where "Keep as a case" files the conversation (its Inbox). */
   keepSpace: ProjectSpace;
   onOpenCase: (id: string) => void;
   onChanged: () => void;
+  /** Opens the case with Sprout running (an action the assistant proposed). */
+  onGerminate: (id: string) => void;
   onConnectAi: () => void;
 }) {
   const { t } = useTranslation();
@@ -56,7 +57,8 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   const [statusTick, setStatusTick] = useState(0);
   // The context chip, taken off by its ×: no case is sent until another one is opened.
   const [dismissed, setDismissed] = useState<string | null>(null);
-  const [subject, setSubject] = useState<CaseRef | null>(null);
+  // While a case is the context, its own suggestions come first; "Other questions" shows the rest.
+  const [general, setGeneral] = useState(false);
   const [kept, setKept] = useState<string | null>(null);
   const [keepError, setKeepError] = useState<string | null>(null);
   // A reply arrived while minimised: the key shows a light.
@@ -70,7 +72,6 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   const openRef = useRef(open);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
-  const startedFor = useRef<number | null>(null);
 
   const context = openCase && openCase.id !== dismissed ? openCase : null;
 
@@ -123,26 +124,15 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
 
   const restart = () => {
     epoch.current += 1;
-    setEntries([]); setPending(false); setKept(null); setKeepError(null); setSubject(null);
+    setEntries([]); setPending(false); setKept(null); setKeepError(null); setGeneral(false);
     inputRef.current?.focus();
   };
-
-  // "Think it through" on a case: a new conversation, the engine restates the case and asks first.
-  useEffect(() => {
-    if (!kickoff || startedFor.current === kickoff.key) return;
-    startedFor.current = kickoff.key;
-    restart();
-    setDismissed(null);
-    setSubject(kickoff.case);
-    void ask(null, kickoff.case.id, []);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kickoff?.key]);
 
   const changed = () => { onChanged(); setStatusTick(tick => tick + 1); };
 
   const keep = async () => {
     setKeepError(null);
-    const title = entries.find(entry => entry.said)?.said ?? subject?.title ?? t('workspace.assistantWindow.title');
+    const title = entries.find(entry => entry.said)?.said ?? t('workspace.assistantWindow.title');
     const content = keptConversationMarkdown(entries, {
       you: t('workspace.assistantWindow.you'),
       assistant: t('workspace.assistantWindow.title'),
@@ -237,23 +227,31 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
                   <div><span>{t('workspace.assistantWindow.screen.toTidy')}</span><b>{status.to_tidy}</b></div>
                 </div>
               )}
-              <h2>{t('workspace.assistantWindow.heading')}</h2>
+              <h2>{t(context ? 'workspace.assistantWindow.caseHeading' : 'workspace.assistantWindow.heading')}</h2>
               <p>{t('workspace.assistantWindow.intro')}</p>
               <div className="assistant-window__suggestions">
-                {SUGGESTIONS.map(key => (
-                  <button key={key} type="button" className="assistant-window__suggestion" onClick={() => send(t(`workspace.assistantWindow.suggest.${key}.text`))}>
-                    <small>{t(`workspace.assistantWindow.suggest.${key}.tag`)}</small>
-                    {t(`workspace.assistantWindow.suggest.${key}.text`)}
-                  </button>
-                ))}
+                {context && !general
+                  ? CASE_SUGGESTIONS.map(key => (
+                    <button key={key} type="button" className="assistant-window__suggestion" data-case onClick={() => send(t(`workspace.assistantWindow.suggestCase.${key}`))}>
+                      <small>{t('workspace.assistantWindow.suggestCase.tag')}</small>
+                      {t(`workspace.assistantWindow.suggestCase.${key}`)}
+                    </button>
+                  ))
+                  : SUGGESTIONS.map(key => (
+                    <button key={key} type="button" className="assistant-window__suggestion" onClick={() => send(t(`workspace.assistantWindow.suggest.${key}.text`))}>
+                      <small>{t(`workspace.assistantWindow.suggest.${key}.tag`)}</small>
+                      {t(`workspace.assistantWindow.suggest.${key}.text`)}
+                    </button>
+                  ))}
               </div>
+              {context && !general && <button type="button" className="assistant-window__more" onClick={() => setGeneral(true)}>{t('workspace.assistantWindow.otherQuestions')}</button>}
             </div>
           )}
           {entries.map(entry => (
             <Fragment key={entry.id}>
               {entry.said && <p className="assistant-window__said">{entry.said}</p>}
               {entry.error && <p className="assistant-window__error" role="alert">{t('workspace.assistantWindow.error', { error: entry.error })}</p>}
-              {entry.reply && <AssistantReplyView reply={entry.reply} onOpenCase={onOpenCase} onConnectAi={onConnectAi} onChanged={changed} />}
+              {entry.reply && <AssistantReplyView reply={entry.reply} onOpenCase={onOpenCase} onConnectAi={onConnectAi} onChanged={changed} onGerminate={onGerminate} />}
             </Fragment>
           ))}
           {pending && <div className="assistant-window__typing" role="status" aria-label={t('workspace.assistantWindow.status.reading')}><i /><i /><i /></div>}

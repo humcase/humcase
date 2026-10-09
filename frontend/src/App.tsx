@@ -5,7 +5,7 @@ import { TrashView, WorkspaceNotes } from './components/workspace';
 import { HomePage } from './components/workspace/HomePage';
 import { InboxPreview } from './components/workspace/InboxPreview';
 import WorkspaceTopbar from './components/workspace/WorkspaceTopbar';
-import { AssistantWindow, type AssistantKickoff } from './components/assistant/AssistantWindow';
+import { AssistantWindow } from './components/assistant/AssistantWindow';
 import NotesViewbar from './components/workspace/NotesViewbar';
 import { CaseFilterBar } from './components/workspace/CaseFilterBar';
 import InboxPlacement from './components/workspace/InboxPlacement';
@@ -165,13 +165,10 @@ function App() {
   // Notes view: show only archived notes ("Archived" button of the display bar).
   const [showArchived, setShowArchived] = useState(false);
   const [todayView, setTodayView] = useState(false);
-  // The assistant window, with the AI chosen in Settings. Once opened, it stays for the session:
-  // minimised, it is a key in the corner and keeps its conversation.
+  // The assistant window, with the AI chosen in Settings: closed, it is a key in the corner (the
+  // only way in, with Ctrl+J); its conversation lives for the session.
   const [assistantOpen, setAssistantOpen] = useState(false);
-  const [assistantStarted, setAssistantStarted] = useState(false);
-  // "Think it through" on a case: the window opens on a new conversation about it.
-  const [assistantKickoff, setAssistantKickoff] = useState<AssistantKickoff | null>(null);
-  const toggleAssistant = useCallback(() => { setAssistantStarted(true); setAssistantOpen(open => !open); }, []);
+  const toggleAssistant = useCallback(() => setAssistantOpen(open => !open), []);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); toggleAssistant(); }
@@ -685,8 +682,6 @@ function App() {
             onStandup={openStandup}
             onToggleTheme={toggleWorkspaceTheme}
             onToggleMini={toggleMiniMode}
-            onAsk={toggleAssistant}
-            askOpen={assistantOpen}
           />
         )}
         {/* A sub-case follows its parent: only a top-level case of the Inbox is filed. */}
@@ -727,7 +722,6 @@ function App() {
                 onOpenRelatedNote={async target => { await loadNotes(); openNote(target); }}
                 germinateOnOpen={workspacePage === 'editor' && germinateNoteId === activeNoteId ? germinateNoteId : null}
                 onGerminateStarted={clearGerminateNoteId}
-                onReflect={target => { setAssistantKickoff(current => ({ key: (current?.key ?? 0) + 1, case: { id: target.id, title: target.title } })); setAssistantStarted(true); setAssistantOpen(true); }}
                 focusOnOpen={workspacePage === 'editor' && focusNoteId !== null && focusNoteId === activeNoteId}
                 onBackToList={goBack}
               />
@@ -872,26 +866,24 @@ function App() {
           </>
         )}
       </div>
-      {/* Kept mounted once opened (its conversation lives for the session); hidden in mini mode. */}
-      {assistantStarted && (
-        <AssistantWindow
-          open={assistantOpen}
-          hidden={isMiniMode}
-          onOpenChange={setAssistantOpen}
-          space={spacePreferences.scope === 'all' ? undefined : spacePreferences.scope}
-          scopeLabel={t(spacePreferences.scope === 'private' ? 'workspace.sidebar.scopePrivate' : spacePreferences.scope === 'work' ? 'workspace.sidebar.scopeWork' : 'workspace.sidebar.scopeAll')}
-          openCase={workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? { id: activeNote.id, title: activeNote.title } : null}
-          kickoff={assistantKickoff}
-          keepSpace={activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work'}
-          onOpenCase={id => {
-            const note = allScoped.find(candidate => candidate.id === id);
-            if (note) openNote(note);
-            else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
-          }}
-          onChanged={() => { void loadNotes(); void loadProjects(); }}
-          onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
-        />
-      )}
+      {/* Always mounted (its conversation lives for the session); hidden in mini mode. */}
+      <AssistantWindow
+        open={assistantOpen}
+        hidden={isMiniMode}
+        onOpenChange={setAssistantOpen}
+        space={spacePreferences.scope === 'all' ? undefined : spacePreferences.scope}
+        scopeLabel={t(spacePreferences.scope === 'private' ? 'workspace.sidebar.scopePrivate' : spacePreferences.scope === 'work' ? 'workspace.sidebar.scopeWork' : 'workspace.sidebar.scopeAll')}
+        openCase={workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? { id: activeNote.id, title: activeNote.title } : null}
+        keepSpace={activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work'}
+        onOpenCase={id => {
+          const note = allScoped.find(candidate => candidate.id === id);
+          if (note) openNote(note);
+          else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
+        }}
+        onChanged={() => { void loadNotes(); void loadProjects(); }}
+        onGerminate={id => { const note = allScoped.find(candidate => candidate.id === id); if (note && openNote(note)) setGerminateNoteId(id); }}
+        onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
+      />
 
       {projectDialogOpen && <ProjectCreateDialog
         name={projectDraftName}

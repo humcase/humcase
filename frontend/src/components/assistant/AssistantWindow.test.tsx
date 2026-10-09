@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import { useState } from 'react';
 import type { AssistantReply } from '../../types/assistant';
 import { previousTurnsV2 } from '../../types/assistant';
-import { AssistantWindow, type AssistantKickoff, type CaseRef } from './AssistantWindow';
+import { AssistantWindow, type CaseRef } from './AssistantWindow';
 import { keptConversationMarkdown } from './keptConversation';
 import { clampRect, defaultRect, snapTarget, TOP_BAR, MARGIN } from './useFloatingWindow';
 import i18n from '../../i18n';
@@ -38,13 +38,13 @@ const reply = (extra: Partial<AssistantReply> = {}): AssistantReply => ({
   ...extra,
 });
 
-function Harness({ initialOpen = true, kickoff = null, openCase = null, props = {} }: { initialOpen?: boolean; kickoff?: AssistantKickoff | null; openCase?: CaseRef | null; props?: Record<string, unknown> }) {
+function Harness({ initialOpen = true, openCase = null, props = {} }: { initialOpen?: boolean; openCase?: CaseRef | null; props?: Record<string, unknown> }) {
   const [open, setOpen] = useState(initialOpen);
   return (
     <div className="workspace-app">
       <button type="button" onClick={() => setOpen(value => !value)}>toggle</button>
-      <AssistantWindow open={open} onOpenChange={setOpen} space="work" scopeLabel="Pro" openCase={openCase} kickoff={kickoff}
-        keepSpace="work" onOpenCase={vi.fn()} onChanged={vi.fn()} onConnectAi={vi.fn()} {...props} />
+      <AssistantWindow open={open} onOpenChange={setOpen} space="work" scopeLabel="Pro" openCase={openCase}
+        keepSpace="work" onOpenCase={vi.fn()} onChanged={vi.fn()} onGerminate={vi.fn()} onConnectAi={vi.fn()} {...props} />
     </div>
   );
 }
@@ -172,12 +172,34 @@ describe('Assistant window', () => {
     await waitFor(() => expect(api.moveNoteToProject).toHaveBeenCalledWith('m', 'inbox'));
   });
 
-  it('a kickoff from a case sends an empty message with the case and shows no bubble', async () => {
-    api.assistantReply.mockResolvedValue(reply({ parts: [{ text: 'Vous voulez ouvrir le dépôt.', cite: null }], sources: [], question: 'Qu’est-ce qui bloque ?' }));
-    const { container } = render(<Harness kickoff={{ key: 1, case: { id: 'release', title: 'Mise en public' } }} openCase={{ id: 'release', title: 'Mise en public' }} />);
+  it('with a case open, offers questions about it and sends them with the case; other questions on demand', async () => {
+    api.assistantReply.mockResolvedValue(reply({ parts: [{ text: 'Le CLA reste à relire.', cite: null }], sources: [], question: 'Qu’est-ce qui bloque ?' }));
+    render(<Harness openCase={{ id: 'release', title: 'Mise en public' }} />);
+    expect(await screen.findByText('Que voulez-vous faire de cette case ?')).toBeTruthy();
+    expect(screen.queryByText('Résume ma semaine')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Autres questions' }));
+    expect(screen.getByText('Résume ma semaine')).toBeTruthy();
+    expect(screen.queryByText('Résume cette case')).toBeNull();
+  });
+
+  it('a question about the open case goes with it as the context', async () => {
+    api.assistantReply.mockResolvedValue(reply({ parts: [{ text: 'Le CLA reste à relire.', cite: null }], sources: [], question: 'Qu’est-ce qui bloque ?' }));
+    render(<Harness openCase={{ id: 'release', title: 'Mise en public' }} />);
+    fireEvent.click(await screen.findByRole('button', { name: /Qu’est-ce qui reste ouvert/ }));
     expect(await screen.findByText('Qu’est-ce qui bloque ?')).toBeTruthy();
-    expect(api.assistantReply).toHaveBeenCalledWith('', [], 'work', 'release', expect.any(String), undefined);
-    expect(container.querySelector('.assistant-window__said')).toBeNull();
+    expect(api.assistantReply).toHaveBeenCalledWith('Qu’est-ce qui reste ouvert ?', [], 'work', 'release', expect.any(String), undefined);
+  });
+
+  it('Sprout proposed: the click opens it on the case and writes nothing', async () => {
+    api.assistantReply.mockResolvedValue(reply({ parts: [{ text: 'Je peux la découper.', cite: null }], sources: [], question: null,
+      actions: [{ kind: 'germinate', case_id: 'camp', case_title: 'Stage d’été' }] }));
+    const onGerminate = vi.fn();
+    render(<Harness props={{ onGerminate }} />);
+    await say('Découpe le stage d’été');
+    fireEvent.click(await screen.findByRole('button', { name: 'Faire germer' }));
+    expect(onGerminate).toHaveBeenCalledWith('camp');
+    expect(await screen.findByText('Faire germer est ouvert dans « Stage d’été ».')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Annuler' })).toBeNull();
   });
 
   it('says when no AI is connected and offers to connect one', async () => {

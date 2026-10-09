@@ -316,9 +316,5 @@
     "conflictSure": "Jev reads a contradiction between the two.",
     "notAConflict": "It does not",
     "seeDecision": "See the decision"
-  },
-  "reflect": {
-    "button": "Think it through",
-    "buttonTitle": "Think this case through with Humcase"
   }
 }

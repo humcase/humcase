@@ -890,6 +890,7 @@
       "toTidy": "À ranger"
     },
     "heading": "Que voulez-vous faire ?",
+    "caseHeading": "Que voulez-vous faire de cette case ?",
     "intro": "Je connais vos cases et Humcase lui-même. Je cite ce que je lis.",
     "suggest": {
       "week": {
@@ -932,7 +933,8 @@
         "supersede": "Décision remplacée",
         "archive": "À archiver",
         "group": "À regrouper",
-        "move": "À ranger"
+        "move": "À ranger",
+        "germinate": "Faire germer"
       },
       "subCase": "Créer la tâche « {{title}} » dans « {{parent}} ».",
       "createSubCase": "Créer la sous-case",
@@ -955,10 +957,21 @@
       "groupText": "Regrouper « {{title}} » dans « {{other}} ».",
       "fileTogether": "Regrouper",
       "keepApart": "Les laisser séparées",
-      "groupDone": "« {{title}} » regroupée dans « {{other}} »."
+      "groupDone": "« {{title}} » regroupée dans « {{other}} ».",
+      "germinateText": "Faire germer « {{title}} » : des sous-cases tirées de son texte, à cocher une par une.",
+      "germinate": "Faire germer",
+      "germinateDone": "Faire germer est ouvert dans « {{title}} »."
     },
     "you": "Vous",
     "keptSources": "Sources",
-    "keptSource": "{{title}} : « {{passage}} »"
+    "keptSource": "{{title}} : « {{passage}} »",
+    "suggestCase": {
+      "tag": "Cette case",
+      "open": "Qu’est-ce qui reste ouvert ?",
+      "sum": "Résume cette case",
+      "split": "Découpe-la en sous-cases",
+      "against": "Quelque chose la contredit ?"
+    },
+    "otherQuestions": "Autres questions"
   }
 }

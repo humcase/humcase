@@ -25,14 +25,12 @@ interface WorkspaceTopbarProps {
   onToggleTheme: () => void;
   onToggleMini: () => void;
   /** Opens or closes "Ask Humcase"; absent: no button. */
-  onAsk?: () => void;
-  askOpen?: boolean;
 }
 
 /** Top bar of the normal mode: breadcrumb, briefs, theme, settings and Mini mode. */
 export default function WorkspaceTopbar({
   workspacePage, noteProject, activeProject, activeNoteTitle, pageTitle, briefPending, workspaceTheme,
-  onOpenNav, onBackToNotes, onAllNotes, onPathSlot, showBriefs, onHandoff, onStandup, onToggleTheme, onToggleMini, onAsk, askOpen = false,
+  onOpenNav, onBackToNotes, onAllNotes, onPathSlot, showBriefs, onHandoff, onStandup, onToggleTheme, onToggleMini,
 }: WorkspaceTopbarProps) {
   const { t } = useTranslation();
   return (
@@ -50,7 +48,6 @@ export default function WorkspaceTopbar({
         </nav>
       </div>
       <div className="workspace-topbar-actions">
-        {onAsk && <Hint label={t('workspace.assistant.askHint')}><Button variant={askOpen ? 'secondary' : 'ghost'} size="sm" onClick={onAsk} aria-pressed={askOpen}>{t('workspace.assistant.ask')}</Button></Hint>}
         {showBriefs && <Hint label={briefPending === 'handoff' ? t('workspace.topbar.handoffPending') : t('workspace.topbar.handoff')}><Button variant="ghost" size="icon-sm" className="workspace-icon-action" onClick={onHandoff} aria-label={t('workspace.topbar.handoff')} aria-busy={briefPending === 'handoff' || undefined} disabled={briefPending !== null}>{briefPending === 'handoff' ? <CircleNotch size={18} className="animate-spin" /> : <FileText size={18} />}</Button></Hint>}
         {showBriefs && <Hint label={briefPending === 'standup' ? t('workspace.topbar.standupPending') : t('workspace.topbar.standup')}><Button variant="ghost" size="icon-sm" className="workspace-icon-action" onClick={onStandup} aria-label={t('workspace.topbar.standup')} aria-busy={briefPending === 'standup' || undefined} disabled={briefPending !== null}>{briefPending === 'standup' ? <CircleNotch size={18} className="animate-spin" /> : <CalendarDays size={18} />}</Button></Hint>}
         <Hint label={workspaceTheme === 'dark' ? t('workspace.topbar.lightTheme') : t('workspace.topbar.darkTheme')}><Button variant="ghost" size="icon-sm" className="workspace-icon-action" onClick={onToggleTheme} aria-label={workspaceTheme === 'dark' ? t('workspace.topbar.lightTheme') : t('workspace.topbar.darkTheme')}>{workspaceTheme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</Button></Hint>

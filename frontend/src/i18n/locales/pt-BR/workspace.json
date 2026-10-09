@@ -890,6 +890,7 @@
       "toTidy": "A arrumar"
     },
     "heading": "O que você quer fazer?",
+    "caseHeading": "O que você quer fazer com este caso?",
     "intro": "Conheço seus casos e o próprio Humcase. Cito o que leio.",
     "suggest": {
       "week": {
@@ -932,7 +933,8 @@
         "supersede": "Decisão substituída",
         "archive": "A arquivar",
         "group": "Para reunir",
-        "move": "A guardar"
+        "move": "A guardar",
+        "germinate": "Germinar"
       },
       "subCase": "Criar a tarefa “{{title}}” em “{{parent}}”.",
       "createSubCase": "Criar o subcaso",
@@ -955,10 +957,21 @@
       "groupText": "Reunir “{{title}}” dentro de “{{other}}”.",
       "fileTogether": "Reunir",
       "keepApart": "Manter separados",
-      "groupDone": "“{{title}}” reunido dentro de “{{other}}”."
+      "groupDone": "“{{title}}” reunido dentro de “{{other}}”.",
+      "germinateText": "Germinar “{{title}}”: subcasos tirados do texto, para marcar um a um.",
+      "germinate": "Germinar",
+      "germinateDone": "Germinar está aberto em “{{title}}”."
     },
     "you": "Você",
     "keptSources": "Fontes",
-    "keptSource": "{{title}}: “{{passage}}”"
+    "keptSource": "{{title}}: “{{passage}}”",
+    "suggestCase": {
+      "tag": "Este caso",
+      "open": "O que ainda está aberto?",
+      "sum": "Resuma este caso",
+      "split": "Divida em subcasos",
+      "against": "Algo o contradiz?"
+    },
+    "otherQuestions": "Outras perguntas"
   }
 }

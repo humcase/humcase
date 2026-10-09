@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { PencilSimple as Edit2, Image as ImageIcon, Microphone as Mic, Square, CircleNotch as Loader2, Columns, TreeStructure, Plant, ChatsCircle } from '@phosphor-icons/react';
+import { PencilSimple as Edit2, Image as ImageIcon, Microphone as Mic, Square, CircleNotch as Loader2, Columns, TreeStructure, Plant } from '@phosphor-icons/react';
 import { NoteTemplateMenu } from '../NoteTemplateMenu';
 import { requestOpenSettings } from '../../hooks/useAiReady';
 import { Badge } from '../ui/Badge';
@@ -15,7 +15,7 @@ export type EditorView = 'edit' | 'diff';
  * runs out.
  */
 export function NoteToolbar({
-  hasRaw, viewMode, onViewModeChange, aiReady, canStructure, onStructure, canGerminate, germinating, onGerminate, onReflect, onTemplate, isRecording, isProcessingVoice, onStartDictation, onStopDictation,
+  hasRaw, viewMode, onViewModeChange, aiReady, canStructure, onStructure, canGerminate, germinating, onGerminate, onTemplate, isRecording, isProcessingVoice, onStartDictation, onStopDictation,
 }: {
   /** The case keeps a raw dictation: it can be compared with the text. */
   hasRaw: boolean;
@@ -30,7 +30,6 @@ export function NoteToolbar({
   germinating: boolean;
   onGerminate: () => void;
   /** Think it through with Humcase, starting from this case (the panel opens on the right). */
-  onReflect?: () => void;
   /** Templates are offered in the Work space only. */
   onTemplate?: (type: string) => void;
   isRecording: boolean;
@@ -65,11 +64,6 @@ export function NoteToolbar({
         >
           <Plant className="text-primary" aria-hidden="true" /> {t('editor.germinate.button')}
         </Button>
-        {onReflect && (
-          <Button size="sm" variant="outline" onClick={onReflect} disabled={aiReady === false} title={t('editor.reflect.buttonTitle')}>
-            <ChatsCircle className="text-primary" aria-hidden="true" /> {t('editor.reflect.button')}
-          </Button>
-        )}
         {aiReady === false && (
           <Button size="sm" variant="ghost" onClick={requestOpenSettings} title={t('editor.structure.needsAi')}>
             {t('editor.structure.connectAi')}

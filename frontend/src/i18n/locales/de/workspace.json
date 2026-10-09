@@ -836,6 +836,7 @@
       "toTidy": "Aufräumen"
     },
     "heading": "Was möchtest du tun?",
+    "caseHeading": "Was möchtest du mit diesem Fall tun?",
     "intro": "Ich kenne deine Fälle und Humcase selbst. Ich zitiere, was ich lese.",
     "suggest": {
       "week": {
@@ -878,7 +879,8 @@
         "supersede": "Ersetzte Entscheidung",
         "archive": "Zu archivieren",
         "group": "Zusammenzulegen",
-        "move": "Abzulegen"
+        "move": "Abzulegen",
+        "germinate": "Entfalten"
       },
       "subCase": "Die Aufgabe „{{title}}“ in „{{parent}}“ anlegen.",
       "createSubCase": "Unterfall anlegen",
@@ -901,10 +903,21 @@
       "groupText": "„{{title}}“ in „{{other}}“ zusammenlegen.",
       "fileTogether": "Zusammenlegen",
       "keepApart": "Getrennt lassen",
-      "groupDone": "„{{title}}“ in „{{other}}“ zusammengelegt."
+      "groupDone": "„{{title}}“ in „{{other}}“ zusammengelegt.",
+      "germinateText": "„{{title}}“ entfalten: Unterfälle aus seinem Text, einzeln anzuhaken.",
+      "germinate": "Entfalten",
+      "germinateDone": "Entfalten ist in „{{title}}“ geöffnet."
     },
     "you": "Du",
     "keptSources": "Quellen",
-    "keptSource": "{{title}}: „{{passage}}“"
+    "keptSource": "{{title}}: „{{passage}}“",
+    "suggestCase": {
+      "tag": "Dieser Fall",
+      "open": "Was ist noch offen?",
+      "sum": "Fasse diesen Fall zusammen",
+      "split": "Teile ihn in Unterfälle",
+      "against": "Widerspricht ihm etwas?"
+    },
+    "otherQuestions": "Andere Fragen"
   }
 }
