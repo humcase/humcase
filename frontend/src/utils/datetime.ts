@@ -29,9 +29,12 @@ export function formatDateTime(value?: string | null): string {
   return parseTimestamp(value)?.toLocaleString(currentDateLocale()) ?? '';
 }
 
-/** "21 sept." (French locale), for lists. */
-export function formatShortDate(value?: string | null): string {
-  return parseTimestamp(value)?.toLocaleDateString(currentDateLocale(), { day: '2-digit', month: 'short' }) ?? '';
+/** "21 sept." (French locale), for lists; "13 déc. 2025" for a day of another year. */
+export function formatShortDate(value?: string | null, now: Date = new Date()): string {
+  const date = parseTimestamp(value);
+  if (!date) return '';
+  const year = date.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' as const };
+  return date.toLocaleDateString(currentDateLocale(), { day: '2-digit', month: 'short', ...year });
 }
 
 /** "il y a 5 min", "il y a 3 h", "il y a 2 j" (French locale), then a short date beyond a month. */
@@ -49,7 +52,14 @@ export function formatRelative(value?: string | null, now: Date = new Date()): s
   const days = Math.floor(hours / 24);
   if (days < 31) return i18n.t('notes.time.daysAgo', { n: days });
 
-  return formatShortDate(value);
+  return formatShortDate(value, now);
+}
+
+/** "il y a 3 j · 06 oct.", or the date alone when it is already the relative form (beyond a month). */
+export function formatChanged(value?: string | null, now: Date = new Date()): string {
+  const relative = formatRelative(value, now);
+  const day = formatShortDate(value, now);
+  return relative === day ? day : `${relative} · ${day}`;
 }
 
 /** Local date of the day in `YYYY-MM-DD` format (standup titles must not be in UTC). */

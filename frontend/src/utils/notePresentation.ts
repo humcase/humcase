@@ -1,6 +1,7 @@
 import { WarningCircle as AlertCircle, ChatCircleText, Gavel, Lightbulb, ListChecks as ListTodo, MagnifyingGlass, Question } from '@phosphor-icons/react';
 import i18n from '../i18n';
 import type { Note, NoteType } from '../types';
+import { stripInlineMarkdown } from './inlineMarkdown';
 
 /** Labels of note types: getters, the current language is read on every access. */
 export const TYPE_LABELS: Record<NoteType, string> = {
@@ -53,9 +54,8 @@ function computePreview(note: Note): string {
     .replace(/^[ \t]*\|(.*)\|[ \t]*$/gm, (_, row: string) => row.split('|').map(cell => cell.trim()).filter(Boolean).join(', '))
     .replace(/^[ \t]*([-*+]\s+)?\[[ xX]\]\s*/gm, '')
     .replace(/^[ \t]*(?:#{1,6}\s+|>\s*|[-*+]\s+|\d+\.\s+)/gm, '')
-    .replace(/[*_`~]/g, '')
     .split(/\r?\n/)
-    .map(line => line.trim())
+    .map(line => stripInlineMarkdown(line).trim())
     .filter(Boolean);
 
   if (text[0]?.replace(/[.:;!?]+$/, '').toLocaleLowerCase() === note.title.trim().replace(/[.:;!?]+$/, '').toLocaleLowerCase()) {

@@ -13,12 +13,30 @@ function inNDays(now: Date, days: number): string {
   return todayLocalIso(new Date(now.getTime() + days * 24 * 60 * 60 * 1000));
 }
 
+/** First day of the week where the dates are read (1 = Monday … 7 = Sunday); Monday when unknown. */
+function firstDayOfWeek(): number {
+  try {
+    const locale = new Intl.Locale(currentDateLocale()) as Intl.Locale & { getWeekInfo?: () => { firstDay: number }; weekInfo?: { firstDay: number } };
+    return locale.getWeekInfo?.().firstDay ?? locale.weekInfo?.firstDay ?? 1;
+  } catch {
+    return 1;
+  }
+}
+
+/** Last day of the calendar week of `now` (Sunday, or Saturday where weeks start on Sunday). */
+function endOfWeek(now: Date): string {
+  const last = ((firstDayOfWeek() + 5) % 7) + 1;
+  const today = now.getDay() === 0 ? 7 : now.getDay();
+  return inNDays(now, (last - today + 7) % 7);
+}
+
+/** "This week" is the calendar week: next Tuesday is upcoming, even six days ahead. */
 export function dueState(due?: string | null, now: Date = new Date()): DueState | null {
   if (!due) return null;
   const day = todayLocalIso(now);
   if (due < day) return 'overdue';
   if (due === day) return 'today';
-  return due <= inNDays(now, 7) ? 'thisWeek' : 'upcoming';
+  return due <= endOfWeek(now) ? 'thisWeek' : 'upcoming';
 }
 
 const LABEL_KEYS = {
@@ -39,10 +57,16 @@ function localDay(due: string): Date | null {
   return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12) : null;
 }
 
-/** `2026-09-25` → `25/09`, or `09/25` on a US computer (compact display on cards); see `dateLocale`. */
-export function shortDay(due?: string | null): string {
+/**
+ * `2026-09-25` → `25/09`, or `09/25` on a US computer (compact display on cards); see `dateLocale`.
+ * A day of another year keeps its year (`19/10/2025`): an overdue date of last year must not read
+ * like one of this month.
+ */
+export function shortDay(due?: string | null, now: Date = new Date()): string {
   const day = due ? localDay(due.slice(0, 10)) : null;
-  return day ? day.toLocaleDateString(currentDateLocale(), { day: '2-digit', month: '2-digit' }) : '';
+  if (!day) return '';
+  const year = day.getFullYear() === now.getFullYear() ? {} : { year: 'numeric' as const };
+  return day.toLocaleDateString(currentDateLocale(), { day: '2-digit', month: '2-digit', ...year });
 }
 
 /** `2026-09-25` → `25/09/2026`, or `09/25/2026` on a US computer; an unexpected value is returned as is. */

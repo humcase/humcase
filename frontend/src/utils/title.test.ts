@@ -60,6 +60,11 @@ describe('deriveTitle', () => {
     expect(title!.endsWith('…')).toBe(true);
   });
 
+  it('keeps the underscores of a word, removes only emphasis', () => {
+    expect(deriveTitle('vérifier mon_identifiant_api')).toBe('vérifier mon_identifiant_api');
+    expect(deriveTitle('# _urgent_ : relancer __Didier__')).toBe('urgent : relancer Didier');
+  });
+
   it('returns null on an empty text', () => {
     expect(deriveTitle('')).toBeNull();
     expect(deriveTitle('   \n\n  ')).toBeNull();

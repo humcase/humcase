@@ -173,7 +173,8 @@ fn build_handoff_with(
     to_resume_limit: Option<usize>,
 ) -> Result<String> {
     let (today, week_end): (String, String) = conn.query_row(
-        "SELECT date('now','localtime'), date('now','localtime','+7 day')",
+        // "This week" is the calendar week, up to Sunday (today when it is Sunday).
+        "SELECT date('now','localtime'), date('now','localtime','weekday 0')",
         [],
         |row| Ok((row.get(0)?, row.get(1)?)),
     )?;
