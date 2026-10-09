@@ -872,6 +872,7 @@
     "close": "Cerrar",
     "reopen": "Asistente (Ctrl+J)",
     "newReply": "Nueva respuesta",
+    "newAttention": "Nuevo: por decidir o contradicción",
     "move": "Arrastra para mover",
     "resize": "Arrastra para cambiar el tamaño",
     "context": "Contexto",
@@ -887,7 +888,10 @@
       "cases_many": "{{count}} casos",
       "cases_other": "{{count}} casos",
       "toDecide": "Por decidir",
-      "toTidy": "Por ordenar"
+      "toTidy": "Por ordenar",
+      "conflicts": "Contradicciones",
+      "askToTidy": "¿Qué encontró Por ordenar?",
+      "ask": "Preguntar al asistente"
     },
     "heading": "¿Qué quieres hacer?",
     "caseHeading": "¿Qué quieres hacer con este caso?",

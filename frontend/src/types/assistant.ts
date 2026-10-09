@@ -117,6 +117,9 @@ export interface AssistantStatus {
   model_label: string | null;
   cases: number;
   to_decide: number;
+  /** Items of To tidy where two cases disagree (a case against a decision, a replaced decision). */
+  conflicts: number;
+  /** The other items of To tidy. */
   to_tidy: number;
 }
 

@@ -18,6 +18,7 @@ const KEYS = {
   assistantWindow: 'assistant_window',
   assistantStayOnTop: 'assistant_stay_on_top',
   assistantMiniRect: 'assistant_mini_rect',
+  assistantSeen: 'assistant_seen',
   aiCleanProvider: 'ai_clean_provider',
   aiSttProvider: 'ai_stt_provider',
   structureFrame: 'structure_frame',
@@ -149,6 +150,25 @@ export function getAssistantMiniPlace(): { x: number; y: number } | null {
 
 export function setAssistantMiniPlace(place: { x: number; y: number }) {
   try { localStorage.setItem(KEYS.assistantMiniRect, JSON.stringify({ x: Math.round(place.x), y: Math.round(place.y) })); } catch { /* persistence unavailable */ }
+}
+
+/** What the person last saw on the assistant's screen, per space: more lights the key. */
+export interface AssistantSeen { toDecide: number; conflicts: number }
+
+export function getAssistantSeen(space: string): AssistantSeen | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEYS.assistantSeen) ?? '{}')?.[space];
+    if (parsed && Number.isFinite(parsed.toDecide) && Number.isFinite(parsed.conflicts)) return { toDecide: parsed.toDecide, conflicts: parsed.conflicts };
+  } catch { /* storage refused or corrupted value */ }
+  return null;
+}
+
+export function setAssistantSeen(space: string, seen: AssistantSeen) {
+  try {
+    let all: Record<string, AssistantSeen> = {};
+    try { all = JSON.parse(localStorage.getItem(KEYS.assistantSeen) ?? '{}') ?? {}; } catch { /* corrupted value: start again */ }
+    localStorage.setItem(KEYS.assistantSeen, JSON.stringify({ ...all, [space]: seen }));
+  } catch { /* persistence unavailable */ }
 }
 
 /** Place and size of the assistant window, remembered on this computer (null: the default place). */

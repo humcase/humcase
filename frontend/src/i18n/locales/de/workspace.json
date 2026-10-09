@@ -819,6 +819,7 @@
     "close": "Schließen",
     "reopen": "Assistent (Ctrl+J)",
     "newReply": "Neue Antwort",
+    "newAttention": "Neu: zu entscheiden oder Widerspruch",
     "move": "Zum Verschieben ziehen",
     "resize": "Zum Ändern der Größe ziehen",
     "context": "Kontext",
@@ -833,7 +834,10 @@
       "cases_one": "{{count}} Fall",
       "cases_other": "{{count}} Fälle",
       "toDecide": "Zu entscheiden",
-      "toTidy": "Aufräumen"
+      "toTidy": "Aufräumen",
+      "conflicts": "Widersprüche",
+      "askToTidy": "Was hat Aufräumen gefunden?",
+      "ask": "Den Assistenten fragen"
     },
     "heading": "Was möchtest du tun?",
     "caseHeading": "Was möchtest du mit diesem Fall tun?",

@@ -168,6 +168,10 @@ pub struct Status {
     pub model_label: Option<String>,
     pub cases: usize,
     pub to_decide: usize,
+    /// Items of "To tidy" where two cases disagree: a case against a decision, or a decision a
+    /// newer one may replace.
+    pub conflicts: usize,
+    /// The other items of "To tidy": cases to archive, cases to file together.
     pub to_tidy: usize,
 }
 
@@ -1051,11 +1055,22 @@ pub fn status(
             status == "resolved" && ask::decision_of(conn, id, status) == "to_review"
         })
         .count();
+    let tidy = crate::tidy::pending(conn, space)?;
+    let conflicts = tidy
+        .iter()
+        .filter(|item| {
+            matches!(
+                item.kind,
+                crate::tidy::TidyKind::Conflict | crate::tidy::TidyKind::Supersede
+            )
+        })
+        .count();
     Ok(Status {
         model_label,
         cases: rows.len(),
         to_decide,
-        to_tidy: crate::tidy::count(conn, space)?,
+        conflicts,
+        to_tidy: tidy.len() - conflicts,
     })
 }
 
@@ -1295,7 +1310,45 @@ mod tests {
         let status = status(&conn, Some("work"), None, None).unwrap();
         assert_eq!(status.cases, 2);
         assert_eq!(status.to_decide, 0);
+        assert_eq!(status.conflicts, 0);
         assert_eq!(status.to_tidy, 0);
+    }
+
+    #[test]
+    fn status_counts_the_disagreements_apart_from_the_rest_of_to_tidy() {
+        use crate::gather::{store, Candidate, Check, Judged};
+        let conn = db();
+        let work = project(&conn, "Shop", ProjectSpace::Work);
+        let home = project(&conn, "Home", ProjectSpace::Private);
+        let decision = add(&conn, &work, "Never show a price", "No price.");
+        let task = add(&conn, &work, "Show the cost in dollars", "In dollars.");
+        let near = add(&conn, &work, "Cost page", "The cost.");
+        let elsewhere = add(&conn, &home, "Plumber", "Friday.");
+        let other = add(&conn, &home, "Plumber again", "Friday.");
+        let judged = |check, note_id: &str, near_id: &str| Judged {
+            candidate: Candidate {
+                check,
+                note_id: note_id.into(),
+                near_id: near_id.into(),
+                duplicate: false,
+                closeness: 0.9,
+            },
+            chance: Some(0.9),
+            passages: None,
+        };
+        store(
+            &conn,
+            &[
+                judged(Check::Conflict, &task, &decision),
+                judged(Check::Together, &near, &task),
+                judged(Check::Conflict, &other, &elsewhere),
+            ],
+        )
+        .unwrap();
+        let work_status = status(&conn, Some("work"), None, None).unwrap();
+        assert_eq!((work_status.conflicts, work_status.to_tidy), (1, 1));
+        let home_status = status(&conn, Some("private"), None, None).unwrap();
+        assert_eq!((home_status.conflicts, home_status.to_tidy), (1, 0));
     }
 
     #[test]

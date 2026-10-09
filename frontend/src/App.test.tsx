@@ -44,7 +44,7 @@ vi.mock('./services/tauriApi', () => ({
     notesChangeMarker: vi.fn(async () => 'stable'),
     meaningStatus: vi.fn(async () => ({ state: 'ready', done: 0, total: 0, error: null })),
     searchByMeaning: vi.fn(async () => []),
-    assistantStatus: vi.fn(async () => ({ model_label: 'Claude Haiku 5.5', cases: 3, to_decide: 0, to_tidy: 0 })),
+    assistantStatus: vi.fn(async () => ({ model_label: 'Claude Haiku 5.5', cases: 3, to_decide: 0, conflicts: 0, to_tidy: 0 })),
     assistantReply: vi.fn(),
   },
 }));
@@ -106,6 +106,8 @@ vi.mock('./utils/prefs', () => ({
   setAssistantStayOnTop: () => {},
   getAssistantMiniPlace: () => null,
   setAssistantMiniPlace: () => {},
+  getAssistantSeen: () => null,
+  setAssistantSeen: () => {},
   getMiniSize: () => ({ width: 400, height: 500 }),
   setMiniMode: () => {},
   setMiniSize: () => {},

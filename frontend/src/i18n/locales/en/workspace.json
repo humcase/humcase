@@ -819,6 +819,7 @@
     "close": "Close",
     "reopen": "Assistant (Ctrl+J)",
     "newReply": "New reply",
+    "newAttention": "New: to decide or contradiction",
     "move": "Drag to move",
     "resize": "Drag to resize",
     "context": "Context",
@@ -833,7 +834,10 @@
       "cases_one": "{{count}} case",
       "cases_other": "{{count}} cases",
       "toDecide": "To decide",
-      "toTidy": "To tidy"
+      "toTidy": "To tidy",
+      "conflicts": "Contradictions",
+      "askToTidy": "What did To tidy find?",
+      "ask": "Ask the assistant"
     },
     "heading": "What would you like to do?",
     "caseHeading": "What would you like to do with this case?",

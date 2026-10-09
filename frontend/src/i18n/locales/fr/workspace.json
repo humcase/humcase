@@ -872,6 +872,7 @@
     "close": "Fermer",
     "reopen": "Assistant (Ctrl+J)",
     "newReply": "Nouvelle réponse",
+    "newAttention": "Nouveau : à trancher ou contradiction",
     "move": "Tirer pour déplacer",
     "resize": "Tirer pour redimensionner",
     "context": "Contexte",
@@ -887,7 +888,10 @@
       "cases_many": "{{count}} cases",
       "cases_other": "{{count}} cases",
       "toDecide": "À trancher",
-      "toTidy": "À ranger"
+      "toTidy": "À ranger",
+      "conflicts": "Contradictions",
+      "askToTidy": "Qu’a trouvé À ranger ?",
+      "ask": "Demander à l’assistant"
     },
     "heading": "Que voulez-vous faire ?",
     "caseHeading": "Que voulez-vous faire de cette case ?",

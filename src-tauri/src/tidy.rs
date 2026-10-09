@@ -337,11 +337,6 @@ pub fn pending(conn: &Connection, space: Option<&str>) -> Result<Vec<TidyItem>, 
     Ok(items)
 }
 
-/// How many proposals wait in `space` (the Home card).
-pub fn count(conn: &Connection, space: Option<&str>) -> Result<usize, String> {
-    Ok(pending(conn, space)?.len())
-}
-
 // --- Archiving ------------------------------------------------------------------------------
 
 /// Proposes to archive the top-level cases of the database resolved for the chosen weeks, with

@@ -872,6 +872,7 @@
     "close": "Fechar",
     "reopen": "Assistente (Ctrl+J)",
     "newReply": "Nova resposta",
+    "newAttention": "Novo: a decidir ou contradição",
     "move": "Arraste para mover",
     "resize": "Arraste para redimensionar",
     "context": "Contexto",
@@ -887,7 +888,10 @@
       "cases_many": "{{count}} casos",
       "cases_other": "{{count}} casos",
       "toDecide": "A decidir",
-      "toTidy": "A arrumar"
+      "toTidy": "A arrumar",
+      "conflicts": "Contradições",
+      "askToTidy": "O que A arrumar encontrou?",
+      "ask": "Perguntar ao assistente"
     },
     "heading": "O que você quer fazer?",
     "caseHeading": "O que você quer fazer com este caso?",

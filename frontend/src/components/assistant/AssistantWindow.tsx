@@ -8,7 +8,7 @@ import { shortcutKeys } from '../ui/shortcutKeys';
 import { Menu, MenuCheckboxItem, MenuItem, MenuLabel, MenuRadioGroup, MenuSeparator } from '../ui/Menu';
 import { HumcaseKey } from '../brand/HumcaseKey';
 import { api } from '../../services/tauriApi';
-import { getAiCleanProvider, getAiModel } from '../../utils/prefs';
+import { getAiCleanProvider, getAiModel, getAssistantSeen, setAssistantSeen } from '../../utils/prefs';
 import { previousTurnsV2, type AssistantEntry, type AssistantPreviousTurnV2, type AssistantReply, type AssistantStatus } from '../../types/assistant';
 import type { ProjectSpace } from '../../types';
 import { AssistantReplyView } from './AssistantReplyView';
@@ -24,6 +24,7 @@ export type EntryLanded = { id: number; reply?: AssistantReply; error?: string }
 const SUGGESTIONS = ['week', 'conflict', 'howto', 'decide'] as const;
 /** Offered while a case is open (it is the context): what one asks about one case. */
 const CASE_SUGGESTIONS = ['open', 'sum', 'split', 'against'] as const;
+const STATUS_EVERY_MS = 120_000;
 const message = (error: unknown) => String(error instanceof Error ? error.message : error);
 // Ids stay unique across the two windows a conversation moves between.
 let exchangeSeq = 0;
@@ -109,15 +110,24 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
     el.style.height = `${Math.min(Math.max(el.scrollHeight, 40), 160)}px`;
   }, [draft]);
 
-  // The small screen and the AI's name: read when the window opens and after an action.
+  // The small screen and the AI's name: read when the window opens, after an action, and every
+  // two minutes while it is the key (more to decide or a new contradiction lights it).
+  const seenKey = space ?? 'all';
   useEffect(() => {
-    if (!open) return;
+    if (hidden || (!open && variant === 'mini')) return;
     let live = true;
-    api.assistantStatus(space, getAiCleanProvider())
-      .then(next => { if (live) { setStatus(next); setModelLabel(next.model_label); } })
+    const read = () => api.assistantStatus(space, getAiCleanProvider())
+      .then(next => {
+        if (!live) return;
+        // Open, the person sees the screen; the first reading is taken as seen too.
+        if (openRef.current || !getAssistantSeen(seenKey)) setAssistantSeen(seenKey, { toDecide: next.to_decide, conflicts: next.conflicts });
+        setStatus(next); setModelLabel(next.model_label);
+      })
       .catch(() => { if (live) setStatus(null); });
-    return () => { live = false; };
-  }, [open, space, statusTick]);
+    void read();
+    const timer = open ? null : setInterval(() => void read(), STATUS_EVERY_MS);
+    return () => { live = false; if (timer) clearInterval(timer); };
+  }, [open, hidden, variant, space, seenKey, statusTick]);
 
   // A reply fills its exchange if it is still waiting (a new conversation dropped it otherwise).
   const settle = ({ id, reply, error }: EntryLanded) =>
@@ -201,11 +211,15 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   const isMini = variant === 'mini';
   if (!open && isMini) return null;
   if (!open) {
+    const seen = status ? getAssistantSeen(seenKey) : null;
+    const attention = !!status && !!seen && (status.to_decide > seen.toDecide || status.conflicts > seen.conflicts);
     return (
       <Hint label={t('workspace.assistantWindow.reopen')} side="left">
         <button type="button" className="assistant-window-key" onClick={() => onOpenChange(true)} aria-label={t('workspace.assistantWindow.reopen')}>
           <HumcaseKey size={54} />
-          {unseen && <i className="assistant-window-key__light" role="status" aria-label={t('workspace.assistantWindow.newReply')} />}
+          {unseen
+            ? <i className="assistant-window-key__light" role="status" aria-label={t('workspace.assistantWindow.newReply')} />
+            : attention && <i className="assistant-window-key__light" data-attention role="status" aria-label={t('workspace.assistantWindow.newAttention')} />}
         </button>
       </Hint>
     );
@@ -281,8 +295,19 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
               {status && (
                 <div className="assistant-window__screen">
                   <div><span>{scopeLabel}</span><b>{t('workspace.assistantWindow.screen.cases', { count: status.cases })}</b></div>
-                  <div><span>{t('workspace.assistantWindow.screen.toDecide')}</span><b>{status.to_decide}</b></div>
-                  <div><span>{t('workspace.assistantWindow.screen.toTidy')}</span><b>{status.to_tidy}</b></div>
+                  {([
+                    ['toDecide', status.to_decide, t('workspace.assistantWindow.suggest.decide.text'), true],
+                    ['conflicts', status.conflicts, t('workspace.assistantWindow.suggest.conflict.text'), true],
+                    ['toTidy', status.to_tidy, t('workspace.assistantWindow.screen.askToTidy'), false],
+                  ] as const).map(([key, count, question, lit]) => count > 0
+                    ? (
+                      <Hint key={key} label={t('workspace.assistantWindow.screen.ask')} side="left">
+                        <button type="button" data-lit={lit || undefined} onClick={() => send(question)}>
+                          <span>{t(`workspace.assistantWindow.screen.${key}`)}</span><b>{count}</b>
+                        </button>
+                      </Hint>
+                    )
+                    : <div key={key}><span>{t(`workspace.assistantWindow.screen.${key}`)}</span><b>{count}</b></div>)}
                 </div>
               )}
               <h2>{t(context ? 'workspace.assistantWindow.caseHeading' : 'workspace.assistantWindow.heading')}</h2>

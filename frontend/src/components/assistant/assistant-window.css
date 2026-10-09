@@ -39,7 +39,7 @@
 .assistant-window__title small {
   display: flex; align-items: center; gap: 6px; min-width: 0; margin-top: 2px;
   color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 10px; font-weight: 500;
-  letter-spacing: .12em; line-height: 1.4; text-transform: uppercase; white-space: nowrap;
+  letter-spacing: .07em; line-height: 1.4; text-transform: uppercase; white-space: nowrap;
 }
 .assistant-window__title small span:last-child { overflow: hidden; text-overflow: ellipsis; }
 .assistant-window__led {
@@ -79,7 +79,18 @@
   background-color: var(--screen-bg); background-image: var(--screen-texture); box-shadow: var(--screen-inset);
   color: var(--screen-muted); font-family: var(--workspace-font-mono); font-size: 11px; font-weight: 500; letter-spacing: .08em; line-height: 1.6; text-transform: uppercase;
 }
-.assistant-window__screen > div { display: flex; justify-content: space-between; gap: 12px; }
+.assistant-window__screen > div,
+.assistant-window__screen > button { display: flex; justify-content: space-between; gap: 12px; }
+/* A count above zero asks the assistant about it. */
+.assistant-window__screen > button {
+  width: 100%; margin: 0 -6px; padding: 0 6px; box-sizing: content-box; border: 0; border-radius: 4px;
+  background: none; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left; cursor: pointer;
+}
+.assistant-window__screen > button:hover,
+.assistant-window__screen > button:focus-visible { background: var(--screen-rail); color: var(--screen-fg); outline: none; }
+.assistant-window__screen > button:hover span,
+.assistant-window__screen > button:focus-visible span { text-decoration: underline; text-underline-offset: 3px; }
+.assistant-window__screen > button[data-lit] b { color: var(--workspace-warning-ink); }
 .assistant-window__screen b { color: var(--screen-fg); font-weight: 500; font-variant-numeric: tabular-nums; }
 .assistant-window__empty h2 { margin: 0 0 4px; font-size: 21px; font-weight: 600; letter-spacing: -.015em; }
 .assistant-window__empty p { margin: 0 0 14px; color: var(--workspace-text-muted); font-size: 13px; }
@@ -212,6 +223,7 @@ button.assistant-window__cite:hover { background: var(--workspace-accent-hover);
   position: absolute; top: -3px; right: -3px; width: 14px; height: 14px; border-radius: 50%;
   border: 2px solid var(--workspace-canvas); background: var(--assistant-led);
 }
+.assistant-window-key__light[data-attention] { background: var(--workspace-warning-ink); }
 
 @media (prefers-reduced-motion: reduce) {
   .assistant-window, .assistant-window-key, .assistant-window__reply, .assistant-window__done { animation: none; }

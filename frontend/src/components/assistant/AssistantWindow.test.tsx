@@ -62,7 +62,7 @@ describe('Assistant window', () => {
     await i18n.changeLanguage('fr');
     vi.clearAllMocks();
     try { localStorage.clear(); } catch { /* no storage */ }
-    api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 142, to_decide: 3, to_tidy: 2 });
+    api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 142, to_decide: 3, conflicts: 0, to_tidy: 2 });
   });
 
   it('shows the small screen from the status, the AI ready and four suggestions', async () => {
@@ -76,6 +76,40 @@ describe('Assistant window', () => {
     expect(screen.getByRole('button', { name: /Résume ma semaine/ })).toBeTruthy();
     expect(screen.getAllByRole('button').filter(button => button.className === 'assistant-window__suggestion')).toHaveLength(4);
     expect(api.assistantStatus).toHaveBeenCalledWith('work', expect.any(String));
+  });
+
+  it('counts the contradictions apart; a count above zero asks the assistant about it', async () => {
+    api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 142, to_decide: 0, conflicts: 2, to_tidy: 1 });
+    api.assistantReply.mockResolvedValue(reply());
+    render(<Harness />);
+    const conflicts = await screen.findByRole('button', { name: /Contradictions/ });
+    expect(conflicts.textContent).toBe('Contradictions2');
+    // Nothing to decide: a plain line, not a question.
+    expect(screen.queryByRole('button', { name: /À trancher/ })).toBeNull();
+    fireEvent.click(conflicts);
+    await waitFor(() => expect(api.assistantReply).toHaveBeenCalledWith(expect.stringContaining('contradictions'), [], 'work', undefined, expect.any(String), undefined));
+  });
+
+  it('the count of To tidy asks what To tidy found', async () => {
+    api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 142, to_decide: 0, conflicts: 0, to_tidy: 1 });
+    api.assistantReply.mockResolvedValue(reply());
+    render(<Harness />);
+    fireEvent.click(await screen.findByRole('button', { name: /À ranger/ }));
+    await waitFor(() => expect(api.assistantReply).toHaveBeenCalledWith('Qu’a trouvé À ranger ?', [], 'work', undefined, expect.any(String), undefined));
+  });
+
+  it('lights the key when more waits for a decision than the person last saw, until it is opened', async () => {
+    api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 10, to_decide: 1, conflicts: 0, to_tidy: 0 });
+    render(<Harness />);
+    expect(await screen.findByText('10 cases')).toBeTruthy();
+    api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 11, to_decide: 1, conflicts: 1, to_tidy: 0 });
+    fireEvent.click(screen.getByRole('button', { name: 'Réduire' }));
+    expect(await screen.findByLabelText('Nouveau : à trancher ou contradiction')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
+    expect(await screen.findByText('11 cases')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Réduire' }));
+    await waitFor(() => expect(api.assistantStatus).toHaveBeenCalledTimes(4));
+    expect(screen.queryByLabelText('Nouveau : à trancher ou contradiction')).toBeNull();
   });
 
   it('sends what the person says and shows the reply: citations, sources, the question', async () => {
@@ -205,7 +239,7 @@ describe('Assistant window', () => {
   });
 
   it('says when no AI is connected and offers to connect one', async () => {
-    api.assistantStatus.mockResolvedValue({ model_label: null, cases: 4, to_decide: 0, to_tidy: 0 });
+    api.assistantStatus.mockResolvedValue({ model_label: null, cases: 4, to_decide: 0, conflicts: 0, to_tidy: 0 });
     api.assistantReply.mockResolvedValue(reply({ kind: 'no_ai', parts: [], sources: [], question: null, model_label: null }));
     const onConnectAi = vi.fn();
     render(<Harness props={{ onConnectAi }} />);
