@@ -17,6 +17,7 @@
 
 ### Fixed
 - "Back" from a sub-case opened from its case leads to that case, then to the page the case was opened from; it led straight to that page.
+- An AI key set as a Windows environment variable after Humcase, or the program that launched it, had started was not seen: the AI chosen in Settings counted as without a key and another one answered instead. On Windows, a key missing from the process's environment is read from the user's, then the system's, stored variables.
 
 ### Changed
 - Going public: the website's download buttons point to the installer of the latest GitHub release and its GitHub links show (`GITHUB = true`); the source code is "on GitHub" instead of "on request" (landing page and license pages). The download buttons no longer say "Preview", and the SmartScreen answer says the installer isn't signed yet. The README opens with the logo and three badges (CI, latest release, license).

@@ -354,7 +354,7 @@ pub fn resolve_llm(id: &str, requested_model: Option<&str>) -> Result<ResolvedLl
         requested_model,
         app_key.as_deref(),
         app_url.as_deref(),
-        |key| std::env::var(key).ok(),
+        crate::ai_settings::env_value,
     )
 }
 
@@ -368,7 +368,7 @@ pub fn is_known_provider(id: &str) -> bool {
 /// Key of a **transcription** provider: the application's key takes precedence over the environment.
 pub fn stt_key(id: &str) -> Result<String, String> {
     let f = find_stt_provider(id)?;
-    let (key, _) = crate::ai_settings::effective_key(id, f.key_env, |k| std::env::var(k).ok());
+    let (key, _) = crate::ai_settings::effective_key(id, f.key_env, crate::ai_settings::env_value);
     key.ok_or_else(|| missing_key_error(f.key_env))
 }
 
@@ -527,7 +527,7 @@ pub fn providers_info_in<F: Fn(&str) -> Option<String>>(path: &Path, env: F) -> 
 
 pub fn providers_info() -> ProvidersInfo {
     match crate::ai_settings::config_path() {
-        Ok(path) => providers_info_in(&path, |k| std::env::var(k).ok()),
+        Ok(path) => providers_info_in(&path, crate::ai_settings::env_value),
         // Without a resolvable path (APPDATA missing): no app key can be resolved,
         // but the environment and the already known alert remain exposed.
         Err(_) => {
@@ -537,9 +537,13 @@ pub fn providers_info() -> ProvidersInfo {
                     info_llm_with(
                         f,
                         |id, key_env| {
-                            crate::ai_settings::key_status(id, key_env, |k| std::env::var(k).ok())
+                            crate::ai_settings::key_status(
+                                id,
+                                key_env,
+                                crate::ai_settings::env_value,
+                            )
                         },
-                        effective_url(f, None, &|k: &str| std::env::var(k).ok()),
+                        effective_url(f, None, &crate::ai_settings::env_value),
                     )
                 })
                 .collect();
@@ -547,7 +551,7 @@ pub fn providers_info() -> ProvidersInfo {
                 .iter()
                 .map(|f| {
                     info_stt_with(f, |id, key_env| {
-                        crate::ai_settings::key_status(id, key_env, |k| std::env::var(k).ok())
+                        crate::ai_settings::key_status(id, key_env, crate::ai_settings::env_value)
                     })
                 })
                 .collect();
@@ -555,7 +559,7 @@ pub fn providers_info() -> ProvidersInfo {
                 .iter()
                 .map(|f| {
                     info_stt_with(f, |id, key_env| {
-                        crate::ai_settings::key_status(id, key_env, |k| std::env::var(k).ok())
+                        crate::ai_settings::key_status(id, key_env, crate::ai_settings::env_value)
                     })
                 })
                 .collect();

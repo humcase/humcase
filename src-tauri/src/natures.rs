@@ -479,7 +479,7 @@ pub fn switch(data_dir: &Path, state: &NatureState, on: bool) -> Result<(), Stri
 }
 
 pub(crate) fn key() -> Option<String> {
-    crate::ai_settings::effective_key(jev::PROVIDER, jev::KEY_ENV, |k| std::env::var(k).ok()).0
+    crate::ai_settings::effective_key(jev::PROVIDER, jev::KEY_ENV, crate::ai_settings::env_value).0
 }
 
 fn key_fingerprint(key: &str) -> String {

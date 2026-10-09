@@ -866,6 +866,101 @@ pub fn key_status<F: Fn(&str) -> Option<String>>(
     }
 }
 
+/// A key's environment variable: the process's first, then on Windows the user's and the
+/// system's as stored. A process inherits its environment from its parent when it starts, so a
+/// key set afterwards (Humcase launched from a terminal or an app opened before) was not seen,
+/// and the chosen AI silently gave way to another one.
+pub fn env_value(name: &str) -> Option<String> {
+    std::env::var(name)
+        .ok()
+        .filter(|value| !value.is_empty())
+        .or_else(|| stored_env::read(name))
+}
+
+#[cfg(windows)]
+mod stored_env {
+    use std::ffi::c_void;
+
+    // Predefined keys, sign-extended as in winreg.h.
+    const HKEY_CURRENT_USER: isize = 0x8000_0001u32 as i32 as isize;
+    const HKEY_LOCAL_MACHINE: isize = 0x8000_0002u32 as i32 as isize;
+    // A REG_EXPAND_SZ value is expanded and then checked as a REG_SZ.
+    const RRF_RT_REG_SZ: u32 = 0x2;
+
+    #[link(name = "advapi32")]
+    extern "system" {
+        fn RegGetValueW(
+            hkey: isize,
+            sub_key: *const u16,
+            value: *const u16,
+            flags: u32,
+            kind: *mut u32,
+            data: *mut c_void,
+            size: *mut u32,
+        ) -> i32;
+    }
+
+    fn wide(text: &str) -> Vec<u16> {
+        text.encode_utf16().chain(std::iter::once(0)).collect()
+    }
+
+    fn get(root: isize, sub_key: &str, name: &str) -> Option<String> {
+        let (sub_key, name) = (wide(sub_key), wide(name));
+        let mut size = 0u32;
+        // SAFETY: valid NUL-terminated strings; a null buffer only asks for the size.
+        let status = unsafe {
+            RegGetValueW(
+                root,
+                sub_key.as_ptr(),
+                name.as_ptr(),
+                RRF_RT_REG_SZ,
+                std::ptr::null_mut(),
+                std::ptr::null_mut(),
+                &mut size,
+            )
+        };
+        if status != 0 || size == 0 {
+            return None;
+        }
+        let mut buffer = vec![0u16; (size as usize).div_ceil(2)];
+        let mut size = u32::try_from(buffer.len() * 2).ok()?;
+        // SAFETY: `size` is the byte length of `buffer`, which the call fills at most.
+        let status = unsafe {
+            RegGetValueW(
+                root,
+                sub_key.as_ptr(),
+                name.as_ptr(),
+                RRF_RT_REG_SZ,
+                std::ptr::null_mut(),
+                buffer.as_mut_ptr().cast(),
+                &mut size,
+            )
+        };
+        if status != 0 {
+            return None;
+        }
+        let end = buffer.iter().position(|&c| c == 0).unwrap_or(buffer.len());
+        Some(String::from_utf16_lossy(&buffer[..end])).filter(|value| !value.is_empty())
+    }
+
+    pub fn read(name: &str) -> Option<String> {
+        get(HKEY_CURRENT_USER, "Environment", name).or_else(|| {
+            get(
+                HKEY_LOCAL_MACHINE,
+                r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                name,
+            )
+        })
+    }
+}
+
+#[cfg(not(windows))]
+mod stored_env {
+    pub fn read(_name: &str) -> Option<String> {
+        None
+    }
+}
+
 /// At-rest protection of keys, with **DPAPI** (bound to the current Windows user).
 ///
 /// Direct FFI implementation (no extra dependency): `CryptProtectData` /
@@ -1113,6 +1208,17 @@ mod dpapi {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // Removing the stored fallback would leave a key set after Humcase started unseen.
+    #[cfg(windows)]
+    #[test]
+    fn a_variable_stored_for_the_user_is_read_and_expanded() {
+        // TEMP is stored in HKCU\Environment as %USERPROFILE%\AppData\Local\Temp.
+        let temp = stored_env::read("TEMP").expect("TEMP is stored for every Windows user");
+        assert!(!temp.contains('%'), "expanded: {temp}");
+        assert_eq!(stored_env::read("HUMCASE_NO_SUCH_VARIABLE_42"), None);
+        assert_eq!(env_value("HUMCASE_NO_SUCH_VARIABLE_42"), None);
+    }
 
     /// The quarantine alert is one process-wide static, and every healthy write clears it. Run in
     /// parallel, these tests erase each other's alert faster than they can observe it (seen on
