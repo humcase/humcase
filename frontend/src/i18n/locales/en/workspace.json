@@ -738,8 +738,6 @@
     "searching": "Searching your cases…",
     "sources": "Sources",
     "openSource": "Open the case {{title}}",
-    "sent_one": "Sent to {{service}}: excerpts of {{count}} case.",
-    "sent_other": "Sent to {{service}}: excerpts of {{count}} cases.",
     "keep": "Keep as a case",
     "kept": "Kept in the Inbox: open it",
     "copy": "Copy",

@@ -299,13 +299,13 @@ export const api = {
     await invoke('reflect_reply', { subjectId, turns, space, provider, model }),
   /** Keeps the corrected summary inside the case thought about (the Inbox of `space` without one),
    * marked as written by Humcase; the ticked actions become its task sub-cases. */
-  keepReflection: async (subjectId: string | undefined, space: ProjectSpace, title: string, content: string, service: string | undefined, actions: string[]): Promise<string> =>
-    await invoke('keep_reflection', { subjectId, space, title, content, service, actions }),
+  keepReflection: async (subjectId: string | undefined, space: ProjectSpace, title: string, content: string, actions: string[]): Promise<string> =>
+    await invoke('keep_reflection', { subjectId, space, title, content, actions }),
   /** The summary proposed at the end of a conversation; nothing is written until it is kept. */
   reflectSummarize: async (subjectId: string | undefined, turns: ReflectPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<ReflectSummary> =>
     await invoke('reflect_summarize', { subjectId, turns, space, provider, model }),
-  keepAnswer: async (space: ProjectSpace, question: string, content: string, service: string | undefined, sources: { title: string; passages: string[] }[]): Promise<string> => {
-    return await invoke('keep_answer', { space, question, content, service, sources });
+  keepAnswer: async (space: ProjectSpace, question: string, content: string, sources: { title: string; passages: string[] }[]): Promise<string> => {
+    return await invoke('keep_answer', { space, question, content, sources });
   },
 
   germinateCase: async (noteId: string, provider?: string, model?: string): Promise<Germination> => {

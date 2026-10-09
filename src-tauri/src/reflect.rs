@@ -1038,7 +1038,6 @@ pub fn keep(
     space: crate::models::project::ProjectSpace,
     title: &str,
     content: &str,
-    service: Option<&str>,
     actions: &[String],
 ) -> Result<String, String> {
     let title = clip(title.trim(), KEPT_TITLE_MAX);
@@ -1071,11 +1070,7 @@ pub fn keep(
             crate::db::queries::create_note(conn, new)?
         }
     };
-    let label = match service {
-        Some(service) => format!("Humcase · {}", clip(service, 100)),
-        None => "Humcase".to_string(),
-    };
-    crate::db::cases::add_provenance(conn, &id, KEPT_KIND, Some(&label), None, None, None)?;
+    crate::db::cases::add_provenance(conn, &id, KEPT_KIND, Some("Humcase"), None, None, None)?;
     let parent = subject_id.unwrap_or(&id);
     for action in actions
         .iter()
@@ -1342,7 +1337,6 @@ Three fixed amounts.
 
 ### Conversation
 **You** : gift cards for the holidays",
-            Some("Cerebras"),
             &["Create the three gift cards".into(), "  ".into()],
         )
         .unwrap();
@@ -1399,7 +1393,6 @@ Three fixed amounts.
             crate::models::project::ProjectSpace::Work,
             "What about the plumber contract?",
             "The plumber contract is signed. [1]",
-            None,
             &[],
         )
         .unwrap();

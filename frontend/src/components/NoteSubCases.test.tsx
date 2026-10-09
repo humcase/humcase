@@ -123,6 +123,7 @@ describe('NoteSubCases', () => {
     expect(await screen.findByText('Réponse de Humcase')).toBeTruthy();
     expect(screen.getByText('Source')).toBeTruthy();
     expect(screen.queryByText('ask')).toBeNull();
+    expect(screen.queryByText(/Cerebras/)).toBeNull();
   });
 });
 

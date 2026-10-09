@@ -64,7 +64,6 @@
 }
 .assistant-action p { margin: 0; color: var(--workspace-text-secondary); font-size: 13.5px; line-height: 1.45; }
 .assistant-answer__foot { display: flex; align-items: center; gap: var(--workspace-space-2); flex-wrap: wrap; }
-.assistant-answer__sent { margin: 0; color: var(--workspace-text-muted); font-size: 12px; }
 
 .assistant-panel__composer {
   display: flex; align-items: flex-end; gap: var(--workspace-space-2); padding: var(--workspace-space-3) var(--workspace-space-4) var(--workspace-space-4);

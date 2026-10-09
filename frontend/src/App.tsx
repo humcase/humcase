@@ -102,6 +102,9 @@ function App() {
   const [natureView, setNatureView] = useState<NatureShortcut | null>(null);
   // Page the open case came from; null when it was opened from nowhere in particular.
   const [returnTo, setReturnTo] = useState<ReturnPoint | null>(null);
+  // Cases opened one from another (a sub-case from its case), oldest first: "Back" walks them back
+  // before leading to `returnTo`.
+  const [caseTrail, setCaseTrail] = useState<string[]>([]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [noteTargetDialogOpen, setNoteTargetDialogOpen] = useState(false);
   const [noteTargetId, setNoteTargetId] = useState('');
@@ -256,12 +259,14 @@ function App() {
   }, [initialProjectsSettled, activeProjectId, projects, spacePreferences.scope]);
 
   const hereRef = useRef<ReturnPoint>({ page: 'home', projectId: null, today: false, shortcut: null, activityId: null, inbox: null });
+  const openNoteIdRef = useRef<string | null>(null);
   useEffect(() => {
     hereRef.current = { page: workspacePage, projectId: activeProjectId, today: todayView, shortcut: workspacePage === 'nature' ? natureView : null, activityId: activeActivityId, inbox: inboxPreviewSpace };
+    openNoteIdRef.current = workspacePage === 'editor' ? activeNoteId : null;
   });
   // Opening a case from a page remembers that page; going from case to case keeps the first one.
   const rememberOrigin = useCallback(() => {
-    if (hereRef.current.page !== 'editor') setReturnTo(hereRef.current);
+    if (hereRef.current.page !== 'editor') { setReturnTo(hereRef.current); setCaseTrail([]); }
   }, []);
 
   const selectProject = useCallback((id: string | null) => {
@@ -328,6 +333,12 @@ function App() {
     // Any case opened disarms a Sprout asked for another opening (re-armed by the nudge after).
     setGerminateNoteId(null);
     if (hereRef.current.page !== 'editor') setReturnTo(hereRef.current);
+    // From a case, the case left joins the trail; going back to the last one leaves it.
+    const from = openNoteIdRef.current;
+    setCaseTrail(trail => !from ? []
+      : from === note.id ? trail
+      : trail.at(-1) === note.id ? trail.slice(0, -1)
+      : [...trail, from]);
     setActiveActivityId(null);
     setInboxPreviewSpace(null);
     setActiveProjectId(note.project_id);
@@ -513,7 +524,7 @@ function App() {
     const content = reflectSummaryMarkdown(summary, turns, key => t(`workspace.assistant.reflect.${key}`));
     const space: ProjectSpace = activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work';
     const actions = summary.actions.filter(action => action.create && action.title.trim()).map(action => action.title.trim());
-    const id = await api.keepReflection(subject?.id, space, summary.title.trim(), content, summary.sent?.service, actions);
+    const id = await api.keepReflection(subject?.id, space, summary.title.trim(), content, actions);
     await loadNotes(); await loadProjects();
     return id;
   };
@@ -560,7 +571,10 @@ function App() {
     setTodayView(false);
     setWorkspacePage('notes');
   };
+  const previousCase = caseTrail.length > 0 ? allScoped.find(note => note.id === caseTrail[caseTrail.length - 1]) : undefined;
   const goBack = () => {
+    if (previousCase && openNote(previousCase)) return;
+    setCaseTrail([]);
     setActiveNoteId(null);
     if (!returnTo) { setWorkspacePage('notes'); return; }
     // The page may have changed meanwhile: an activity deleted would hide every project, and the
@@ -577,7 +591,8 @@ function App() {
     setWorkspacePage(returnTo.page === 'editor' ? 'notes' : returnTo.page);
   };
   const returnProject = returnTo?.projectId ? projects.find(project => project.id === returnTo.projectId) : undefined;
-  const returnLabel = !returnTo ? null
+  const returnLabel = previousCase ? previousCase.title
+    : !returnTo ? null
     : returnTo.page === 'home' ? t('workspace.sidebar.home')
     : returnTo.page === 'nature' && returnTo.shortcut ? t(`workspace.shortcuts.${returnTo.shortcut}`)
     : returnTo.page === 'trash' ? t('workspace.sidebar.trash')
@@ -893,7 +908,7 @@ function App() {
             const space: ProjectSpace = activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work';
             // A question nothing answered becomes a plain case; an answer is kept marked as one.
             const id = answer.kind === 'answer'
-              ? await api.keepAnswer(space, question, keptAnswerMarkdown(answer, t('workspace.assistant.sources'), (title, passage) => t('workspace.assistant.keptSource', { title, passage })), answer.sent?.service, answer.sources.map(({ title, passages }) => ({ title, passages })))
+              ? await api.keepAnswer(space, question, keptAnswerMarkdown(answer, t('workspace.assistant.sources'), (title, passage) => t('workspace.assistant.keptSource', { title, passage })), answer.sources.map(({ title, passages }) => ({ title, passages })))
               : await api.createNote({ project_id: await api.getOrCreateInbox(space), title: question, content: '', note_type: 'note' });
             await loadNotes(); await loadProjects();
             return id;

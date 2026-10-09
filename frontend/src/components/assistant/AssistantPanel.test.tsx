@@ -51,7 +51,7 @@ describe('Ask Humcase', () => {
     await ask('Qu’avait-on décidé pour le paiement ?');
     await screen.findByText(/Le paiement se fera/);
     expect(screen.getByText('Adresse, livraison et paiement sur une seule page.')).toBeTruthy();
-    expect(screen.getByText('Envoyé à Cerebras : des extraits de 2 cases.')).toBeTruthy();
+    expect(screen.queryByText(/Cerebras/)).toBeNull();
     fireEvent.click(screen.getAllByRole('button', { name: 'Ouvrir la case Paiement sur une seule page' })[0]);
     expect(props.onOpenNote).toHaveBeenCalledWith(checkout);
   });

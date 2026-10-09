@@ -460,7 +460,6 @@ pub fn keep(
     space: crate::models::project::ProjectSpace,
     question: &str,
     content: &str,
-    service: Option<&str>,
     sources: &[KeptSource],
 ) -> Result<String, String> {
     let inbox = queries::get_or_create_inbox(conn, space)?;
@@ -478,15 +477,11 @@ pub fn keep(
             raw_content: None,
         },
     )?;
-    let label = match service {
-        Some(service) => format!("Humcase · {}", clip(service, 100)),
-        None => "Humcase".to_string(),
-    };
     crate::db::cases::add_provenance(
         conn,
         &id,
         KEPT_KIND,
-        Some(&label),
+        Some("Humcase"),
         None,
         Some(&clip(question, QUESTION_MAX)),
         None,
@@ -1893,7 +1888,6 @@ pub(crate) mod tests {
             crate::models::project::ProjectSpace::Work,
             "What is next for the photos?",
             "Resize product photos, planned for today. [1]",
-            Some("Cerebras"),
             &[KeptSource {
                 title: "Resize product photos".into(),
                 passages: vec!["Every photo at 1600 px.".into()],
@@ -2095,7 +2089,6 @@ pub(crate) mod tests {
             crate::models::project::ProjectSpace::Work,
             "What about the contract?",
             "The contract is signed. [1]",
-            None,
             &[],
         )
         .unwrap();

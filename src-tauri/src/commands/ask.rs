@@ -44,17 +44,9 @@ pub fn keep_answer(
     space: ProjectSpace,
     question: String,
     content: String,
-    service: Option<String>,
     sources: Vec<KeptSource>,
 ) -> Result<String, String> {
     let _mutation = mutation_allowed(&state)?;
     let conn = state.db.lock().map_err(|e| e.to_string())?;
-    ask::keep(
-        &conn,
-        space,
-        &question,
-        &content,
-        service.as_deref(),
-        &sources,
-    )
+    ask::keep(&conn, space, &question, &content, &sources)
 }

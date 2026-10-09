@@ -73,7 +73,6 @@ pub fn keep_reflection(
     space: ProjectSpace,
     title: String,
     content: String,
-    service: Option<String>,
     actions: Vec<String>,
 ) -> Result<String, String> {
     let _mutation = mutation_allowed(&state)?;
@@ -84,7 +83,6 @@ pub fn keep_reflection(
         space,
         &title,
         &content,
-        service.as_deref(),
         &actions,
     )
 }

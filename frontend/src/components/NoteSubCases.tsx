@@ -15,6 +15,8 @@ const EMPTY: CaseContext = { path: [], provenance: [] };
 /** Provenances Humcase writes itself, named in the interface's language; an agent's kind shows as it wrote it. */
 const OWN_PROVENANCE_KINDS = ['ask', 'reflect', 'source', 'germinated'] as const;
 const isOwnProvenanceKind = (kind: string): kind is typeof OWN_PROVENANCE_KINDS[number] => (OWN_PROVENANCE_KINDS as readonly string[]).includes(kind);
+/** A kept answer or summary: its kind already says Humcase wrote it; older ones also named the AI service. */
+const KEPT_PROVENANCE_KINDS = ['ask', 'reflect'];
 
 /**
  * Path and provenance of a case, reread when the notes list changes (an agent can move a case
@@ -192,7 +194,7 @@ export default function NoteSubCases({ note, allNotes, onOpenNote, onChanged, on
               <ul>{context.provenance.map(item => (
                 <li key={item.id}>
                   <div>
-                    <p><span className="case-provenance-kind">{isOwnProvenanceKind(item.kind) ? t(`notes.cases.provenanceKind.${item.kind}`) : item.kind}</span> {item.label ?? item.url}</p>
+                    <p><span className="case-provenance-kind">{isOwnProvenanceKind(item.kind) ? t(`notes.cases.provenanceKind.${item.kind}`) : item.kind}</span> {!KEPT_PROVENANCE_KINDS.includes(item.kind) && (item.label ?? item.url)}</p>
                     {item.label && item.url && <p className="case-provenance-url">{item.url}</p>}
                     {item.excerpt && <blockquote>{item.excerpt}</blockquote>}
                     <p className="case-provenance-meta">{item.agent ? t('notes.cases.recordedByAgent', { agent: item.agent, date: formatDateTime(item.created_at) }) : t('notes.cases.recordedByPerson', { date: formatDateTime(item.created_at) })}</p>

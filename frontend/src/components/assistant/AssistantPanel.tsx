@@ -204,7 +204,6 @@ function Answer({ answer, turnId, done, onOpen, onKeep, onAction, onConnectAi }:
         {answer.kind === 'answer' && <Hint label={t('workspace.assistant.copy')}><Button variant="ghost" size="icon-sm" onClick={() => void navigator.clipboard?.writeText(plain)} aria-label={t('workspace.assistant.copy')}><Copy size={16} /></Button></Hint>}
         {answer.kind === 'no_ai' && <Button variant="link" size="sm" onClick={onConnectAi}>{t('workspace.assistant.connectAi')}</Button>}
       </div>
-      {answer.sent && <p className="assistant-answer__sent">{t('workspace.assistant.sent', { service: answer.sent.service, count: answer.sent.excerpts })}</p>}
     </div>
   );
 }

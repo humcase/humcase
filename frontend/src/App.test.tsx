@@ -105,7 +105,12 @@ vi.mock('./utils/prefs', () => ({
   setMiniSize: () => {},
 }));
 
-vi.mock('./components/NoteEditor', () => ({ default: ({ note }: { note: Note | null }) => <div data-testid="editor-note">{note?.id}</div> }));
+vi.mock('./components/NoteEditor', () => ({
+  default: ({ note, allNotes, onOpenRelatedNote }: { note: Note | null; allNotes: Note[]; onOpenRelatedNote: (target: Note) => void }) => <>
+    <div data-testid="editor-note">{note?.id}</div>
+    {note && allNotes.filter(child => child.parent_id === note.id).map(child => <button key={child.id} onClick={() => onOpenRelatedNote(child)}>Sous-case {child.title}</button>)}
+  </>,
+}));
 vi.mock('./components/TiptapEditor', () => ({ default: ({ value, onChange }: { value: string; onChange: (value: string) => void }) => <textarea aria-label="Contenu de la note" value={value} onChange={event => onChange(event.target.value)} /> }));
 vi.mock('./components/CommandPalette', () => ({ default: ({ isOpen, projects, notes }: { isOpen: boolean; projects: Project[]; notes: Note[] }) => isOpen ? <div data-testid="palette">{projects.map(project => <span key={project.id}>{project.name}</span>)}{notes.map(note => <span key={note.id}>{note.title}</span>)}</div> : null }));
 vi.mock('./components/KanbanBoard', () => ({
@@ -363,6 +368,18 @@ describe('App — raccordement du nouvel espace', () => {
     await waitFor(() => expect(screen.getByTestId('editor-note').textContent).toBe('ailleurs'));
     expect(screen.queryByRole('dialog', { name: 'Note distante' })).toBeNull();
     // Opened from Home, the way back leads to Home, not to the case's project.
+    fireEvent.click(screen.getByRole('button', { name: 'Retour : Accueil' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Reprendre le fil' })).toBeTruthy();
+  });
+
+  it('goes back from a sub-case to its case, then to the page the case was opened from', async () => {
+    notesEnBase.current = [makeNote('parent', 'Audit', 'open', null), { ...makeNote('child', 'Bouton retour', 'open', null), parent_id: 'parent' }];
+    render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir Audit' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Sous-case Bouton retour' }));
+    await waitFor(() => expect(screen.getByTestId('editor-note').textContent).toBe('child'));
+    fireEvent.click(screen.getByRole('button', { name: 'Retour : Audit' }));
+    await waitFor(() => expect(screen.getByTestId('editor-note').textContent).toBe('parent'));
     fireEvent.click(screen.getByRole('button', { name: 'Retour : Accueil' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'Reprendre le fil' })).toBeTruthy();
   });
