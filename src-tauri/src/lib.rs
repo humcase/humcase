@@ -24,6 +24,8 @@ pub mod models;
 pub mod natures;
 pub mod process_lease;
 pub mod profile;
+#[cfg(test)]
+mod profile_seed;
 pub mod providers;
 pub mod recognize;
 pub mod test_profile;

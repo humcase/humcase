@@ -59,6 +59,7 @@ To check notes through MCP and their display without touching the user database,
 - A release always ignores this variable and uses `%USERPROFILE%\.humcase`. Never use the user database as a test folder.
 - Outside an isolated profile, the interface is single-instance: a second launch brings the open window to the front and exits (the MCP is not concerned).
 - Stop a debug build by its process id: the debug binary is `src-tauri/target/debug/humcase.exe` and Windows compares process names without case, so `taskkill /IM humcase.exe` also closes the installed `Humcase.exe`.
+- A large profile from a JSON file (projects, cases and sub-cases with their dates, due days and the agent that declared a result): `HUMCASE_SEED_FILE=profile.json HUMCASE_SEED_DIR=C:	mp\profile cargo test seed_profile -- --ignored` (`src-tauri/src/profile_seed.rs`, format in its header). It writes through the application's own functions and refuses a folder that is not a new or marked test profile.
 - Interface inspection: WebView2 + CDP (`WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`). Visual check at 720/1920/2560 px, two themes, narrow window.
 
 Migration trials: on temporary databases or dedicated copies; make a safety copy of the real database before delivering a migration.
