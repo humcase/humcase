@@ -138,8 +138,7 @@ mod tests {
             ids.insert(key.into(), id);
         }
         let tx = conn.unchecked_transaction().unwrap();
-        // Dates last: every write above moved them to now. The journal keeps the day of the
-        // seeding: it cannot be rewritten (append-only, `db/journal.rs`).
+        // Dates last: every write above moved them to now.
         for case in cases {
             let created = case["days_ago"].as_i64().unwrap_or(0).max(0);
             let updated = case["updated_days_ago"]
@@ -158,6 +157,29 @@ mod tests {
             )
             .unwrap();
         }
+        // The journal follows: a creation on the case's first day, the other writes on its last
+        // change. Its guard against rewrites is lifted for this test profile only, then put back
+        // as it was.
+        let guard: String = tx
+            .query_row(
+                "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = 'case_events_only_merge_edits'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        tx.execute_batch("DROP TRIGGER case_events_only_merge_edits")
+            .unwrap();
+        tx.execute(
+            "UPDATE case_events SET
+                 created_at = (SELECT CASE WHEN case_events.kind = 'created' THEN n.created_at ELSE n.updated_at END
+                                 FROM notes n WHERE n.id = case_events.note_id),
+                 last_at = (SELECT CASE WHEN case_events.kind = 'created' THEN n.created_at ELSE n.updated_at END
+                              FROM notes n WHERE n.id = case_events.note_id)
+              WHERE EXISTS (SELECT 1 FROM notes n WHERE n.id = case_events.note_id)",
+            [],
+        )
+        .unwrap();
+        tx.execute_batch(&guard).unwrap();
         tx.commit().unwrap();
         (projects.len(), ids.len())
     }
@@ -203,5 +225,21 @@ mod tests {
             )
             .unwrap();
         assert!(old);
+        let journal_today: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM case_events WHERE created_at > strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '-1 days')",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(journal_today, 0, "the journal follows the cases' dates");
+        let guard: i64 = conn
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master WHERE name = 'case_events_only_merge_edits'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(guard, 1, "the journal's guard is back");
     }
 }
