@@ -218,3 +218,9 @@ button.assistant-window__cite:hover { background: var(--workspace-accent-hover);
   .assistant-window[data-snapping] { transition: none; }
   .assistant-window__typing i, .assistant-window[data-thinking] .assistant-window__led { animation: none; }
 }
+
+/* Mini Humcase: the window is the system's, the assistant fills it. */
+.assistant-window[data-variant="mini"] { inset: 0; border-radius: 0; border: 0; box-shadow: none; animation: none; }
+.assistant-window[data-variant="mini"] .assistant-window__head { cursor: default; }
+.workspace-app .assistant-window__head-key[data-lit] { color: var(--workspace-accent-ink); }
+.assistant-mini-root, .assistant-mini-root body { margin: 0; height: 100%; overflow: hidden; background: var(--workspace-surface); }

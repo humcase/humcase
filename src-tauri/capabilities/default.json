@@ -1,10 +1,11 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "enables the default permissions (main window and quick capture window)",
+  "description": "enables the default permissions (main window, quick capture window and Mini Humcase)",
   "windows": [
     "main",
-    "quick_capture"
+    "quick_capture",
+    "assistant_mini"
   ],
   "permissions": [
     "core:default",
@@ -19,6 +20,9 @@
     "core:window:allow-show",
     "core:window:allow-set-focus",
     "core:window:allow-set-title",
+    "core:window:allow-start-dragging",
+    "core:window:allow-set-position",
+    "core:window:allow-unminimize",
     "core:webview:allow-set-webview-zoom"
   ]
 }

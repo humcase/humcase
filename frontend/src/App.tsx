@@ -6,6 +6,9 @@ import { HomePage } from './components/workspace/HomePage';
 import { InboxPreview } from './components/workspace/InboxPreview';
 import WorkspaceTopbar from './components/workspace/WorkspaceTopbar';
 import { AssistantWindow } from './components/assistant/AssistantWindow';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { useAssistantMini } from './hooks/useAssistantMini';
+import type { MiniRequest } from './components/assistant/miniBridge';
 import NotesViewbar from './components/workspace/NotesViewbar';
 import { CaseFilterBar } from './components/workspace/CaseFilterBar';
 import InboxPlacement from './components/workspace/InboxPlacement';
@@ -515,6 +518,34 @@ function App() {
   const chooseStatus = (status: NoteStatus | '') => { setStatusFilter(status); };
   const chooseNature = (nature: NoteType | '') => { setNatureFilter(nature); };
   const activeProject = scopeProjects.find(project => project.id === activeProjectId);
+  // The assistant reads the space shown and offers the open case as its context; Mini Humcase
+  // follows them while the conversation is there.
+  const assistantOpenCase = workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? activeNote : null;
+  const openCaseId = assistantOpenCase?.id;
+  const openCaseTitle = assistantOpenCase?.title ?? '';
+  const assistantScope = useMemo(() => ({
+    space: spacePreferences.scope === 'all' ? undefined : spacePreferences.scope,
+    scopeLabel: t(spacePreferences.scope === 'private' ? 'workspace.sidebar.scopePrivate' : spacePreferences.scope === 'work' ? 'workspace.sidebar.scopeWork' : 'workspace.sidebar.scopeAll'),
+    openCase: openCaseId ? { id: openCaseId, title: openCaseTitle } : null,
+    keepSpace: (activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work') as ProjectSpace,
+  }), [spacePreferences.scope, t, openCaseId, openCaseTitle, activeProject?.space]);
+  const openAssistantCase = (id: string) => {
+    const note = allScoped.find(candidate => candidate.id === id);
+    if (note) openNote(note);
+    else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
+  };
+  const germinateFromAssistant = (id: string) => { const note = allScoped.find(candidate => candidate.id === id); if (note && openNote(note)) setGerminateNoteId(id); };
+  // What Mini Humcase asks: the main window comes to the front for a case or Settings.
+  const fromMini = (request: MiniRequest) => {
+    if (request.kind === 'changed') { void loadNotes(); void loadProjects(); return; }
+    const main = getCurrentWindow();
+    void main.show().then(() => main.unminimize()).then(() => main.setFocus()).catch(() => {});
+    if (request.kind === 'open-case') openAssistantCase(request.id);
+    else if (request.kind === 'germinate') germinateFromAssistant(request.id);
+    else { setFocusAiSettings(true); setIsSettingsOpen(true); }
+  };
+  const assistantMini = useAssistantMini({ open: assistantOpen, setOpen: setAssistantOpen, scope: assistantScope, blocked: isMiniMode, onRequest: fromMini });
+
   const settingsProject = projects.find(project => project.id === projectActivityDialogId);
   const noteProject = projects.find(project => project.id === activeNote?.project_id);
   const structuringContextLabel = noteProject ? [
@@ -866,23 +897,27 @@ function App() {
           </>
         )}
       </div>
-      {/* Always mounted (its conversation lives for the session); hidden in mini mode. */}
+      {/* Always mounted (its conversation lives for the session); hidden in the sticky-note mode
+          and while it is in Mini Humcase. */}
       <AssistantWindow
         open={assistantOpen}
-        hidden={isMiniMode}
+        hidden={isMiniMode || assistantMini.away !== null}
         onOpenChange={setAssistantOpen}
-        space={spacePreferences.scope === 'all' ? undefined : spacePreferences.scope}
-        scopeLabel={t(spacePreferences.scope === 'private' ? 'workspace.sidebar.scopePrivate' : spacePreferences.scope === 'work' ? 'workspace.sidebar.scopeWork' : 'workspace.sidebar.scopeAll')}
-        openCase={workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? { id: activeNote.id, title: activeNote.title } : null}
-        keepSpace={activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work'}
-        onOpenCase={id => {
-          const note = allScoped.find(candidate => candidate.id === id);
-          if (note) openNote(note);
-          else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
-        }}
+        space={assistantScope.space}
+        scopeLabel={assistantScope.scopeLabel}
+        openCase={assistantScope.openCase}
+        keepSpace={assistantScope.keepSpace}
+        onOpenCase={openAssistantCase}
         onChanged={() => { void loadNotes(); void loadProjects(); }}
-        onGerminate={id => { const note = allScoped.find(candidate => candidate.id === id); if (note && openNote(note)) setGerminateNoteId(id); }}
+        onGerminate={germinateFromAssistant}
         onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
+        seed={assistantMini.seed}
+        landed={assistantMini.landed}
+        onSnapshot={assistantMini.onSnapshot}
+        onLanded={assistantMini.onLanded}
+        onPin={assistantMini.pin}
+        stayOnTop={assistantMini.stayOnTop}
+        onStayOnTopChange={assistantMini.changeStayOnTop}
       />
 
       {projectDialogOpen && <ProjectCreateDialog

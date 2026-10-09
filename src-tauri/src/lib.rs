@@ -149,7 +149,7 @@ pub fn run() {
                 .map_err(|e| e.to_string())?;
             // Windows are created here rather than from the configuration (`create: false`) so
             // that their WebView2 profile (local storage, including the draft escrow) lives in the
-            // data folder, not in AppData. Both windows share it.
+            // data folder, not in AppData. Every window (main, quick capture, Mini Humcase) shares it.
             let webview_dir = app_dir.join(data_location::WEBVIEW_DIR);
             for config in app.config().app.windows.clone() {
                 tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?

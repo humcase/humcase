@@ -16,6 +16,8 @@ const KEYS = {
   miniMode: 'mini_mode',
   miniSize: 'mini_size',
   assistantWindow: 'assistant_window',
+  assistantStayOnTop: 'assistant_stay_on_top',
+  assistantMiniRect: 'assistant_mini_rect',
   aiCleanProvider: 'ai_clean_provider',
   aiSttProvider: 'ai_stt_provider',
   structureFrame: 'structure_frame',
@@ -125,6 +127,28 @@ export function getMiniSize(): { width: number; height: number } {
 
 export function setMiniSize(width: number, height: number) {
   localStorage.setItem(KEYS.miniSize, JSON.stringify({ width: Math.round(width), height: Math.round(height) }));
+}
+
+/** "Stay on top when Humcase goes behind": the assistant becomes Mini Humcase (on by default). */
+export function getAssistantStayOnTop(): boolean {
+  try { return localStorage.getItem(KEYS.assistantStayOnTop) !== 'false'; } catch { return true; }
+}
+
+export function setAssistantStayOnTop(enabled: boolean) {
+  try { localStorage.setItem(KEYS.assistantStayOnTop, enabled ? 'true' : 'false'); } catch { /* persistence unavailable */ }
+}
+
+/** Place of Mini Humcase on the screen, in physical pixels (null: the bottom right of the screen). */
+export function getAssistantMiniPlace(): { x: number; y: number } | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEYS.assistantMiniRect) ?? 'null');
+    if (parsed && Number.isFinite(parsed.x) && Number.isFinite(parsed.y)) return { x: parsed.x, y: parsed.y };
+  } catch { /* storage refused or corrupted value */ }
+  return null;
+}
+
+export function setAssistantMiniPlace(place: { x: number; y: number }) {
+  try { localStorage.setItem(KEYS.assistantMiniRect, JSON.stringify({ x: Math.round(place.x), y: Math.round(place.y) })); } catch { /* persistence unavailable */ }
 }
 
 /** Place and size of the assistant window, remembered on this computer (null: the default place). */

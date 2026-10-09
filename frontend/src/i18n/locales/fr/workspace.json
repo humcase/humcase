@@ -972,6 +972,12 @@
       "split": "Découpe-la en sous-cases",
       "against": "Quelque chose la contredit ?"
     },
-    "otherQuestions": "Autres questions"
+    "otherQuestions": "Autres questions",
+    "miniTitle": "Mini Humcase",
+    "pin": "Garder au premier plan, même hors de Humcase",
+    "unpin": "Remettre dans Humcase",
+    "windowLabel": "Fenêtre",
+    "stayOnTop": "Rester au premier plan quand Humcase passe derrière",
+    "stayOnTopDetail": "La fenêtre devient Mini Humcase et reste sur votre écran"
   }
 }

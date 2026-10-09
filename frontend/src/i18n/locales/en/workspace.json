@@ -918,6 +918,12 @@
       "split": "Split it into sub-cases",
       "against": "Does anything contradict it?"
     },
-    "otherQuestions": "Other questions"
+    "otherQuestions": "Other questions",
+    "miniTitle": "Mini Humcase",
+    "pin": "Keep on top, even outside Humcase",
+    "unpin": "Back into Humcase",
+    "windowLabel": "Window",
+    "stayOnTop": "Stay on top when Humcase goes behind",
+    "stayOnTopDetail": "The window becomes Mini Humcase and stays on your screen"
   }
 }

@@ -37,6 +37,23 @@
         "center": true,
         "skipTaskbar": true,
         "create": false
+      },
+      {
+        "label": "assistant_mini",
+        "url": "/assistant_mini.html",
+        "title": "Mini Humcase",
+        "width": 380,
+        "height": 560,
+        "minWidth": 320,
+        "minHeight": 400,
+        "resizable": true,
+        "decorations": false,
+        "shadow": true,
+        "alwaysOnTop": true,
+        "visible": false,
+        "skipTaskbar": true,
+        "backgroundColor": "#1d1d1b",
+        "create": false
       }
     ],
     "security": {

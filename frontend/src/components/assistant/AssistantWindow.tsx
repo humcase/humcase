@@ -1,14 +1,15 @@
-import { Fragment, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { Fragment, useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowUp, Check, DotsThree, Microphone, Minus, Square, X } from '@phosphor-icons/react';
+import { ArrowUp, Check, DotsThree, Microphone, Minus, PushPin, Square, X } from '@phosphor-icons/react';
+import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Button } from '../ui/Button';
 import { Hint, Kbd } from '../ui/Hint';
 import { shortcutKeys } from '../ui/shortcutKeys';
-import { Menu, MenuItem, MenuLabel, MenuRadioGroup, MenuSeparator } from '../ui/Menu';
+import { Menu, MenuCheckboxItem, MenuItem, MenuLabel, MenuRadioGroup, MenuSeparator } from '../ui/Menu';
 import { HumcaseKey } from '../brand/HumcaseKey';
 import { api } from '../../services/tauriApi';
 import { getAiCleanProvider, getAiModel } from '../../utils/prefs';
-import { previousTurnsV2, type AssistantEntry, type AssistantPreviousTurnV2, type AssistantStatus } from '../../types/assistant';
+import { previousTurnsV2, type AssistantEntry, type AssistantPreviousTurnV2, type AssistantReply, type AssistantStatus } from '../../types/assistant';
 import type { ProjectSpace } from '../../types';
 import { AssistantReplyView } from './AssistantReplyView';
 import { conversationSources, keptConversationMarkdown } from './keptConversation';
@@ -17,19 +18,26 @@ import { useFloatingWindow } from './useFloatingWindow';
 import './assistant-window.css';
 
 export type CaseRef = { id: string; title: string };
+/** A reply, or its error, for one exchange. */
+export type EntryLanded = { id: number; reply?: AssistantReply; error?: string };
 
 const SUGGESTIONS = ['week', 'conflict', 'howto', 'decide'] as const;
 /** Offered while a case is open (it is the context): what one asks about one case. */
 const CASE_SUGGESTIONS = ['open', 'sum', 'split', 'against'] as const;
 const message = (error: unknown) => String(error instanceof Error ? error.message : error);
+// Ids stay unique across the two windows a conversation moves between.
+let exchangeSeq = 0;
+const newExchangeId = () => Date.now() * 100 + (exchangeSeq++ % 100);
 
 /**
  * The assistant: one window inside the app that answers from the cases and from Humcase's help,
  * discusses, cites what it read, asks at most one question and proposes actions the person
  * confirms with a click. Closed, it is a key in the corner, the way in with Ctrl+J; the
- * conversation lives for the session, a conversation worth keeping becomes a case.
+ * conversation lives for the session, a conversation worth keeping becomes a case. Pinned (or when
+ * Humcase goes behind), it moves to Mini Humcase, its own window on top of other applications.
  */
-export function AssistantWindow({ open, hidden = false, onOpenChange, space, scopeLabel, openCase, keepSpace, onOpenCase, onChanged, onGerminate, onConnectAi }: {
+export function AssistantWindow({ open, hidden = false, onOpenChange, space, scopeLabel, openCase, keepSpace, onOpenCase, onChanged, onGerminate, onConnectAi,
+  variant = 'inside', seed = null, landed = null, onSnapshot, onLanded, onPin, stayOnTop, onStayOnTopChange }: {
   open: boolean;
   /** Mini mode: nothing shown, the conversation kept. */
   hidden?: boolean;
@@ -46,12 +54,26 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   /** Opens the case with Sprout running (an action the assistant proposed). */
   onGerminate: (id: string) => void;
   onConnectAi: () => void;
+  /** `mini`: Mini Humcase, the assistant in its own window on top of other applications. */
+  variant?: 'inside' | 'mini';
+  /** A conversation handed over by the other window (`key` changes each time). */
+  seed?: { key: number; entries: AssistantEntry[] } | null;
+  /** A reply for an exchange asked in the other window, landed there. */
+  landed?: (EntryLanded & { key: number }) | null;
+  /** The conversation as it is now, for handing it over. */
+  onSnapshot?: (entries: AssistantEntry[]) => void;
+  /** A reply landed here: the other window may show its exchange now. */
+  onLanded?: (landed: EntryLanded) => void;
+  /** The pin: inside, to Mini Humcase; in Mini Humcase, back into the app. */
+  onPin?: () => void;
+  /** "Stay on top when Humcase goes behind". */
+  stayOnTop?: boolean;
+  onStayOnTopChange?: (on: boolean) => void;
 }) {
   const { t } = useTranslation();
   const frame = useFloatingWindow();
   const [entries, setEntries] = useState<AssistantEntry[]>([]);
   const [draft, setDraft] = useState('');
-  const [pending, setPending] = useState(false);
   const [status, setStatus] = useState<AssistantStatus | null>(null);
   const [modelLabel, setModelLabel] = useState<string | null>(null);
   const [statusTick, setStatusTick] = useState(0);
@@ -66,9 +88,11 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   const [wasOpen, setWasOpen] = useState(open);
   if (wasOpen !== open) { setWasOpen(open); if (open) setUnseen(false); }
   const dictation = useComposerDictation();
-  const nextId = useRef(1);
-  // A new conversation drops the replies still on their way.
   const epoch = useRef(0);
+  const handover = useRef({ onSnapshot, onLanded });
+  useEffect(() => { handover.current = { onSnapshot, onLanded }; });
+  // An exchange still waiting for its reply (asked here or in the other window).
+  const pending = entries.some(entry => !entry.reply && !entry.error);
   const openRef = useRef(open);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
@@ -95,25 +119,41 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
     return () => { live = false; };
   }, [open, space, statusTick]);
 
+  // A reply fills its exchange if it is still waiting (a new conversation dropped it otherwise).
+  const settle = ({ id, reply, error }: EntryLanded) =>
+    setEntries(list => list.map(entry => entry.id === id && !entry.reply && !entry.error ? (reply ? { ...entry, reply } : { ...entry, error }) : entry));
+
   const ask = async (said: string | null, contextId: string | undefined, previous: AssistantPreviousTurnV2[]) => {
     const run = epoch.current;
-    const id = nextId.current++;
+    const id = newExchangeId();
     setEntries(list => [...list, { id, said }]);
-    setPending(true);
     const provider = getAiCleanProvider();
+    let result: EntryLanded;
     try {
       const reply = await api.assistantReply(said ?? '', previous, space, contextId, provider, getAiModel(provider) || undefined);
-      if (run !== epoch.current) return;
-      setEntries(list => list.map(entry => entry.id === id ? { ...entry, reply } : entry));
+      result = { id, reply };
       if (reply.model_label) setModelLabel(reply.model_label);
       if (!openRef.current) setUnseen(true);
     } catch (error) {
-      if (run !== epoch.current) return;
-      setEntries(list => list.map(entry => entry.id === id ? { ...entry, error: message(error) } : entry));
-    } finally {
-      if (run === epoch.current) { setPending(false); inputRef.current?.focus(); }
+      result = { id, error: message(error) };
     }
+    settle(result);
+    handover.current.onLanded?.(result);
+    if (run === epoch.current) inputRef.current?.focus();
   };
+
+  // A conversation handed over by the other window, and replies that landed there.
+  const [seenSeed, setSeenSeed] = useState<typeof seed>(null);
+  if (seed !== seenSeed) {
+    setSeenSeed(seed);
+    if (seed) { setEntries(seed.entries); setKept(null); setKeepError(null); }
+  }
+  const [seenLanded, setSeenLanded] = useState<typeof landed>(null);
+  if (landed !== seenLanded) {
+    setSeenLanded(landed);
+    if (landed) settle(landed);
+  }
+  useEffect(() => { handover.current.onSnapshot?.(entries); }, [entries]);
 
   const send = (text: string) => {
     const said = text.trim();
@@ -124,7 +164,7 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
 
   const restart = () => {
     epoch.current += 1;
-    setEntries([]); setPending(false); setKept(null); setKeepError(null); setGeneral(false);
+    setEntries([]); setKept(null); setKeepError(null); setGeneral(false);
     inputRef.current?.focus();
   };
 
@@ -158,6 +198,8 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   };
 
   if (hidden) return null;
+  const isMini = variant === 'mini';
+  if (!open && isMini) return null;
   if (!open) {
     return (
       <Hint label={t('workspace.assistantWindow.reopen')} side="left">
@@ -175,31 +217,47 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
     : status ? t('workspace.assistantWindow.status.noAi')
     : t('workspace.assistantWindow.status.readyPlain');
   const { rect, ghost } = frame;
+  const title = t(isMini ? 'workspace.assistantWindow.miniTitle' : 'workspace.assistantWindow.title');
+  // Mini Humcase is a window of its own: the system carries it, the app's frame does not.
+  const onHeadDown = isMini
+    ? (event: ReactPointerEvent) => { if (!(event.target as HTMLElement).closest('button') && event.button === 0) void getCurrentWindow().startDragging(); }
+    : frame.onDragStart;
 
   return (
     <>
-      {ghost && <div className="assistant-window-ghost" aria-hidden="true" style={{ left: ghost.x, top: ghost.y, width: ghost.width, height: ghost.height }} />}
-      <section className="assistant-window" aria-label={t('workspace.assistantWindow.title')} data-thinking={pending || undefined} data-snapping={frame.snapping || undefined}
-        style={{ left: rect.x, top: rect.y, width: rect.width, height: rect.height }}>
-        <header className="assistant-window__head" onPointerDown={frame.onDragStart} title={t('workspace.assistantWindow.move')}>
+      {ghost && !isMini && <div className="assistant-window-ghost" aria-hidden="true" style={{ left: ghost.x, top: ghost.y, width: ghost.width, height: ghost.height }} />}
+      <section className="assistant-window" data-variant={variant} aria-label={title} data-thinking={pending || undefined} data-snapping={frame.snapping || undefined}
+        style={isMini ? undefined : { left: rect.x, top: rect.y, width: rect.width, height: rect.height }}>
+        <header className="assistant-window__head" onPointerDown={onHeadDown} title={t('workspace.assistantWindow.move')}>
           <span className="assistant-window__grip" aria-hidden="true" />
           <HumcaseKey size={26} />
           <div className="assistant-window__title">
-            <strong>{t('workspace.assistantWindow.title')}</strong>
+            <strong>{title}</strong>
             <small><span className="assistant-window__led" data-off={!pending && !modelLabel && status !== null ? true : undefined} aria-hidden="true" /><span>{statusText}</span></small>
           </div>
+          {onPin && (
+            <Hint label={t(isMini ? 'workspace.assistantWindow.unpin' : 'workspace.assistantWindow.pin')}>
+              <Button variant="ghost" size="icon-sm" className="assistant-window__head-key" data-lit={isMini || undefined} onClick={onPin}
+                aria-label={t(isMini ? 'workspace.assistantWindow.unpin' : 'workspace.assistantWindow.pin')} aria-pressed={isMini}><PushPin size={16} weight={isMini ? 'fill' : 'bold'} /></Button>
+            </Hint>
+          )}
           <Menu align="end" trigger={
             <Button variant="ghost" size="icon-sm" className="assistant-window__head-key" aria-label={t('workspace.assistantWindow.options')}><DotsThree size={18} weight="bold" /></Button>
           }>
             <MenuLabel>{t('workspace.assistantWindow.reads')}</MenuLabel>
             <MenuRadioGroup value="scope" onValueChange={() => {}} label={t('workspace.assistantWindow.reads')} options={[{ value: 'scope', label: scopeLabel }]} />
+            {onStayOnTopChange && <>
+              <MenuSeparator />
+              <MenuLabel>{t('workspace.assistantWindow.windowLabel')}</MenuLabel>
+              <MenuCheckboxItem checked={stayOnTop ?? false} onCheckedChange={onStayOnTopChange} detail={t('workspace.assistantWindow.stayOnTopDetail')}>{t('workspace.assistantWindow.stayOnTop')}</MenuCheckboxItem>
+            </>}
             <MenuSeparator />
             {replied && !kept && <MenuItem onSelect={() => void keep()}>{t('workspace.assistantWindow.keep')}</MenuItem>}
             <MenuItem onSelect={restart}>{t('workspace.assistantWindow.newConversation')}</MenuItem>
           </Menu>
-          <Hint label={t('workspace.assistantWindow.minimise')} shortcut="Control+J">
+          {!isMini && <Hint label={t('workspace.assistantWindow.minimise')} shortcut="Control+J">
             <Button variant="ghost" size="icon-sm" className="assistant-window__head-key" onClick={() => onOpenChange(false)} aria-label={t('workspace.assistantWindow.minimise')}><Minus size={16} weight="bold" /></Button>
-          </Hint>
+          </Hint>}
           <Hint label={t('workspace.assistantWindow.close')}>
             <Button variant="ghost" size="icon-sm" className="assistant-window__head-key" onClick={() => onOpenChange(false)} aria-label={t('workspace.assistantWindow.close')}><X size={16} weight="bold" /></Button>
           </Hint>
@@ -285,9 +343,9 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
           {dictation.error && <p className="assistant-window__error" role="alert">{t('workspace.assistantWindow.micError')}</p>}
           <div className="assistant-window__foot">
             <span>{t('workspace.assistantWindow.footer')}</span>
-            <span><Kbd>{t('workspace.assistantWindow.keyEnter')}</Kbd> {t('workspace.assistantWindow.keySend')} · <Kbd>{shortcutKeys('Control+J').join(' ')}</Kbd></span>
+            <span><Kbd>{t('workspace.assistantWindow.keyEnter')}</Kbd> {t('workspace.assistantWindow.keySend')}{!isMini && <> · <Kbd>{shortcutKeys('Control+J').join(' ')}</Kbd></>}</span>
           </div>
-          <span className="assistant-window__resize" aria-hidden="true" title={t('workspace.assistantWindow.resize')} onPointerDown={frame.onResizeStart} />
+          {!isMini && <span className="assistant-window__resize" aria-hidden="true" title={t('workspace.assistantWindow.resize')} onPointerDown={frame.onResizeStart} />}
         </form>
       </section>
     </>

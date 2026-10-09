@@ -918,6 +918,12 @@
       "split": "Teile ihn in Unterfälle",
       "against": "Widerspricht ihm etwas?"
     },
-    "otherQuestions": "Andere Fragen"
+    "otherQuestions": "Andere Fragen",
+    "miniTitle": "Mini Humcase",
+    "pin": "Im Vordergrund halten, auch außerhalb von Humcase",
+    "unpin": "Zurück in Humcase",
+    "windowLabel": "Fenster",
+    "stayOnTop": "Im Vordergrund bleiben, wenn Humcase in den Hintergrund geht",
+    "stayOnTopDetail": "Das Fenster wird zu Mini Humcase und bleibt auf deinem Bildschirm"
   }
 }

@@ -20,6 +20,8 @@ const api = vi.hoisted(() => ({
   keepAnswer: vi.fn(async () => 'kept-case'),
 }));
 vi.mock('../../services/tauriApi', () => ({ api }));
+const startDragging = vi.fn(async () => {});
+vi.mock('@tauri-apps/api/window', () => ({ getCurrentWindow: () => ({ startDragging }) }));
 vi.mock('./useComposerDictation', () => ({
   useComposerDictation: () => ({ listening: false, starting: false, interim: '', error: null, start: vi.fn(), stop: vi.fn(async () => '') }),
 }));
@@ -262,5 +264,34 @@ describe('Assistant window: place and kept conversation', () => {
       '### Sources\n1. Paiement sur une seule page : « Adresse et paiement sur une page. »',
     ].join('\n\n'));
     expect(previousTurnsV2(entries)[0].source_ids).toEqual(['checkout']);
+  });
+
+  it('the pin hands the conversation to Mini Humcase; there it is lit, carried by the system and has no minimise key', async () => {
+    const onPin = vi.fn();
+    const { rerender } = render(<Harness props={{ onPin }} />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Garder au premier plan, même hors de Humcase' }));
+    expect(onPin).toHaveBeenCalled();
+    rerender(<Harness props={{ onPin, variant: 'mini' }} />);
+    expect(await screen.findByRole('region', { name: 'Mini Humcase' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Remettre dans Humcase' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.queryByRole('button', { name: 'Réduire' })).toBeNull();
+    fireEvent.pointerDown(screen.getByText('Mini Humcase'), { button: 0 });
+    expect(startDragging).toHaveBeenCalled();
+  });
+
+  // Losing the hand-over would lose the conversation each time the assistant moves windows.
+  it('takes a conversation handed over, and fills an exchange whose reply landed in the other window', async () => {
+    const onSnapshot = vi.fn();
+    const entries = [
+      { id: 1, said: 'Où en est le CLA ?', reply: reply({ parts: [{ text: 'Il reste à relire.', cite: null }], sources: [], question: null }) },
+      { id: 2, said: 'Et le dépôt ?' },
+    ];
+    const { rerender } = render(<Harness props={{ onSnapshot, seed: { key: 1, entries } }} />);
+    expect(await screen.findByText('Il reste à relire.')).toBeTruthy();
+    expect(screen.getByText('Et le dépôt ?')).toBeTruthy();
+    expect(screen.getByRole('status', { name: 'Lecture de vos cases…' })).toBeTruthy();
+    rerender(<Harness props={{ onSnapshot, seed: { key: 1, entries }, landed: { key: 1, id: 2, reply: reply({ parts: [{ text: 'Il ouvre après le CLA.', cite: null }], sources: [], question: null }) } }} />);
+    expect(await screen.findByText('Il ouvre après le CLA.')).toBeTruthy();
+    await waitFor(() => expect(onSnapshot).toHaveBeenLastCalledWith(expect.arrayContaining([expect.objectContaining({ id: 2, reply: expect.anything() })])));
   });
 });

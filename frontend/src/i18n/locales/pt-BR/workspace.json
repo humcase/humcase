@@ -972,6 +972,12 @@
       "split": "Divida em subcasos",
       "against": "Algo o contradiz?"
     },
-    "otherQuestions": "Outras perguntas"
+    "otherQuestions": "Outras perguntas",
+    "miniTitle": "Mini Humcase",
+    "pin": "Manter na frente, mesmo fora do Humcase",
+    "unpin": "Voltar para o Humcase",
+    "windowLabel": "Janela",
+    "stayOnTop": "Ficar na frente quando o Humcase vai para trás",
+    "stayOnTopDetail": "A janela vira Mini Humcase e fica na sua tela"
   }
 }
