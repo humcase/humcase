@@ -26,9 +26,6 @@ pub mod process_lease;
 pub mod profile;
 pub mod providers;
 pub mod recognize;
-pub mod reflect;
-#[cfg(test)]
-mod reflect_quality;
 pub mod test_profile;
 pub mod tidy;
 
@@ -283,13 +280,9 @@ pub fn run() {
             commands::nature_review,
             commands::answer_nature,
             commands::germinate_case,
-            commands::ask_cases,
             commands::assistant_reply,
             commands::assistant_status,
             commands::keep_answer,
-            commands::reflect_reply,
-            commands::reflect_summarize,
-            commands::keep_reflection,
             commands::list_proposals,
             commands::answer_proposals,
             commands::undo_proposals,

@@ -14,7 +14,6 @@ mod natures;
 mod notes;
 mod profile;
 mod projects;
-mod reflect;
 mod tidy;
 mod transcription;
 
@@ -31,7 +30,6 @@ pub use natures::*;
 pub use notes::*;
 pub use profile::*;
 pub use projects::*;
-pub use reflect::*;
 pub use tidy::*;
 pub use transcription::*;
 

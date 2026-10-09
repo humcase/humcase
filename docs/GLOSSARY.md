@@ -32,8 +32,8 @@ Rule for every Humcase translation: **one term = a single translation per langua
 | Tâche liée | Tâche liée | Linked task | |
 | Structurer | Structurer | Structure | |
 | Faire germer | Faire germer | Sprout | Humcase proposes a case's next steps as sub-cases, each quoting its passage; the person answers. Not Structurer, which rewrites the note itself. "Existe déjà" / "Already exists": a case that may already cover a step; "Ranger ici" / "Put it here". |
-| Réfléchir avec Humcase | Réfléchir avec Humcase | Think it through | The second mode of the panel: Humcase restates, links what the cases say ("Va dans ce sens" / "Goes this way", "Déjà décidé" / "Already decided", "À concilier" / "To reconcile"), proposes "Une piste" / "A lead" and asks one question. "Synthèse proposée" / "Proposed summary": corrected, then kept as a sub-case. |
-| Demander à Humcase | Demander à Humcase | Ask Humcase | A question answered from the cases, each sentence with its source (the case and the sentences it cites). "Garder comme case" / "Keep as a case": the answer filed in the Inbox. "Cases les plus proches" / "Closest cases": what shows without an AI. |
+| Assistant | Assistant | Assistant | The window of the "h" key in the corner (Ctrl+J): one conversation about the cases and Humcase itself, each sentence with its source; it proposes actions that run only on a click. "Garder comme case" / "Keep as a case" files the conversation in the Inbox. |
+| Mini Humcase | Mini Humcase | Mini Humcase | The assistant in its own small window above every application (the pin, or Humcase going behind). |
 | À ranger | À ranger | To tidy | What Humcase proposes to put away (archive a case resolved long ago, mark a replaced decision, file close cases together) and the cases that may go against a decision; the person answers, nothing is deleted. |
 | Regrouper | Regrouper | File together | File a case inside a close case of the same project (To tidy); the direction can be swapped. |
 | Va contre une décision | Va contre une décision | Goes against a decision | A case that plans or states the opposite of a decision in force; the person corrects it or says it does not. |
@@ -102,8 +102,7 @@ Spanish, German, Brazilian Portuguese and Italian, chosen at the first translati
 | Shortcuts / History | Atajos / Historial | Schnellzugriffe / Verlauf | Atalhos / Histórico | Scorciatoie / Cronologia |
 | Linked task | Tarea vinculada | Verknüpfte Aufgabe | Tarefa vinculada | Attività collegata |
 | Structure / Sprout | Estructurar / Germinar | Strukturieren / Entfalten | Estruturar / Germinar | Struttura / Fai germogliare |
-| Ask Humcase / Keep as a case | Preguntar a Humcase / Guardar como caso | Humcase fragen / Als Fall behalten | Perguntar ao Humcase / Guardar como caso | Chiedi a Humcase / Tieni come caso |
-| Think it through / Proposed summary | Reflexionar / Síntesis propuesta | Durchdenken / Vorgeschlagene Zusammenfassung | Refletir / Síntese proposta | Riflettere / Sintesi proposta |
+| Assistant / Keep as a case | Asistente / Guardar como caso | Assistent / Als Fall behalten | Assistente / Guardar como caso | Assistente / Tieni come caso |
 | To tidy / File together | Por ordenar / Reunir | Aufräumen / Zusammenlegen | A arrumar / Reunir | Da riordinare / Riunisci |
 | Goes against a decision | Va contra una decisión | Widerspricht einer Entscheidung | Vai contra uma decisão | Va contro una decisione |
 | Summary / Decision in force / Replaced by | Síntesis / Decisión vigente / Reemplazada por | Zusammenfassung / Gültige Entscheidung / Ersetzt durch | Síntese / Decisão em vigor / Substituída por | Riepilogo / Decisione in vigore / Sostituita da |

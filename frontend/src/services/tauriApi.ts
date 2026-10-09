@@ -1,8 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import i18n from '../i18n';
 import type { Activity, Brief, CaseEvent, CaseJournal, CaseReview, CaseContext, CasePosition, ContentKind, NoteType, Project, ProjectSpace, Note, NoteRelations, NoteRevision, CreateNoteInput, UpdateNoteInput, AiProvidersInfo, AiUsageRecord, AgentSeen, Recognition, MeaningHit, MeaningStatus, NatureReview, NatureReadingStatus, Germination, Proposal, ProposalAnswer, ProposalOutcome, TidyItem, TidyAnswer, TidyOutcome, TidySettings, Supersession, ProjectSummary, ProfileView, ProfileAnswer, ProfileOutcome, ProfileSettings, Nudge, NudgeAnswer } from '../types';
-import type { AssistantAnswer, AssistantPreviousTurn, AssistantPreviousTurnV2, AssistantReply, AssistantStatus } from '../types/assistant';
-import type { ReflectPreviousTurn, ReflectReply, ReflectSummary } from '../types/reflect';
+import type { AssistantPreviousTurnV2, AssistantReply, AssistantStatus } from '../types/assistant';
 
 export interface BackupArchivePreview {
   archive_sha256: string;
@@ -286,36 +285,20 @@ export const api = {
     return await invoke('answer_nature', { noteId, reviewed, proposed, change });
   },
 
-  /** Faire germer: the AI proposes the next steps of a case, kept as proposals. */
-  /** "Ask Humcase": an answer from the cases of `space` (all spaces when absent); writes nothing. */
-  askCases: async (question: string, previous: AssistantPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<AssistantAnswer> => {
-    return await invoke('ask_cases', { question, previous, space, provider, model });
-  },
-
   /** The assistant window's reply: answers, cites, asks at most one question and proposes actions;
-   * writes nothing. An empty `message` with `contextId` starts from that case ("Think it through"). */
+   * writes nothing. */
   assistantReply: async (message: string, previous: AssistantPreviousTurnV2[], space?: ProjectSpace | 'unassigned', contextId?: string, provider?: string, model?: string): Promise<AssistantReply> =>
     await invoke('assistant_reply', { message, previous, space, contextId, provider, model }),
   /** The window's small screen: the AI used and the counts of the space. */
   assistantStatus: async (space?: ProjectSpace | 'unassigned', provider?: string): Promise<AssistantStatus> =>
     await invoke('assistant_status', { space, provider }),
 
-  /** Keeps an answer as a case of the Inbox of `space`, marked so it is never read as a source. */
-  /** "Think it through": the partner's next reply (restates, links the cases with their passage,
-   * asks one question), about `subjectId` when the conversation started from a case. */
-  reflectReply: async (subjectId: string | undefined, turns: ReflectPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<ReflectReply> =>
-    await invoke('reflect_reply', { subjectId, turns, space, provider, model }),
-  /** Keeps the corrected summary inside the case thought about (the Inbox of `space` without one),
-   * marked as written by Humcase; the ticked actions become its task sub-cases. */
-  keepReflection: async (subjectId: string | undefined, space: ProjectSpace, title: string, content: string, actions: string[]): Promise<string> =>
-    await invoke('keep_reflection', { subjectId, space, title, content, actions }),
-  /** The summary proposed at the end of a conversation; nothing is written until it is kept. */
-  reflectSummarize: async (subjectId: string | undefined, turns: ReflectPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<ReflectSummary> =>
-    await invoke('reflect_summarize', { subjectId, turns, space, provider, model }),
+  /** Keeps an assistant conversation as a case of the Inbox of `space`, marked so it is never read as a source. */
   keepAnswer: async (space: ProjectSpace, question: string, content: string, sources: { title: string; passages: string[] }[]): Promise<string> => {
     return await invoke('keep_answer', { space, question, content, sources });
   },
 
+  /** Faire germer: the AI proposes the next steps of a case, kept as proposals. */
   germinateCase: async (noteId: string, provider?: string, model?: string): Promise<Germination> => {
     return await invoke('germinate_case', { noteId, provider, model });
   },

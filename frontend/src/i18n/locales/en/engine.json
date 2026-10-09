@@ -372,9 +372,5 @@
   },
   "ask": {
     "unreadable": "Unreadable answer from the AI: {{error}}"
-  },
-  "reflect": {
-    "noAi": "Connect an AI in Settings to think it through with Humcase.",
-    "subjectUnavailable": "This case cannot be used as the starting point."
   }
 }

@@ -372,9 +372,5 @@
   },
   "ask": {
     "unreadable": "Unlesbare Antwort der KI: {{error}}"
-  },
-  "reflect": {
-    "noAi": "Verbinde in den Einstellungen eine KI, um mit Humcase gemeinsam nachzudenken.",
-    "subjectUnavailable": "Dieser Fall kann nicht als Ausgangspunkt dienen."
   }
 }
