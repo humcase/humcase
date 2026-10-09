@@ -79,6 +79,7 @@
     "modelPlaceholder": "Modell",
     "cleanKeyAria": "API-Schlüssel (KI für Text)",
     "keyPlaceholder": "API-Schlüssel (nie wieder angezeigt)",
+    "choiceSaved": "Auswahl gespeichert: {{label}}.",
     "cleanSaveAria": "Schlüssel der KI für Text speichern",
     "cleanClearAria": "Schlüssel der KI für Text löschen",
     "clear": "Löschen",

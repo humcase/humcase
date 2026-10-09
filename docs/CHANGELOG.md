@@ -17,6 +17,8 @@
 
 ### Fixed
 - "Back" from a sub-case opened from its case leads to that case, then to the page the case was opened from; it led straight to that page.
+- Settings → AI services: choosing an AI said nothing although it is saved at once, and "Save" stayed clickable with an empty key field and then did nothing. Choosing now shows "Choice saved: Anthropic." under the section, Save waits for a typed key, Clear is offered only for a key saved in Humcase, and each message appears under the section it concerns (they all appeared under transcription).
+- Think it through and Ask: a brace or bracket closing nothing at the end of a sentence ("… ici.}", seen with Claude Haiku 5.5) is removed.
 - An AI key set as a Windows environment variable after Humcase, or the program that launched it, had started was not seen: the AI chosen in Settings counted as without a key and another one answered instead. On Windows, a key missing from the process's environment is read from the user's, then the system's, stored variables.
 
 ### Changed

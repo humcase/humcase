@@ -81,6 +81,7 @@
     "modelPlaceholder": "Modèle",
     "cleanKeyAria": "Clé API (IA pour le texte)",
     "keyPlaceholder": "Clé API (jamais relue)",
+    "choiceSaved": "Choix enregistré : {{label}}.",
     "cleanSaveAria": "Enregistrer la clé de l’IA pour le texte",
     "cleanClearAria": "Effacer la clé de l’IA pour le texte",
     "clear": "Effacer",

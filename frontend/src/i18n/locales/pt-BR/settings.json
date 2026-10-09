@@ -81,6 +81,7 @@
     "modelPlaceholder": "Modelo",
     "cleanKeyAria": "Chave de API (IA para o texto)",
     "keyPlaceholder": "Chave de API (nunca mostrada de novo)",
+    "choiceSaved": "Escolha salva: {{label}}.",
     "cleanSaveAria": "Salvar a chave da IA para o texto",
     "cleanClearAria": "Apagar a chave da IA para o texto",
     "clear": "Apagar",

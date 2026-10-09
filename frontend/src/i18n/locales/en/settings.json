@@ -79,6 +79,7 @@
     "modelPlaceholder": "Model",
     "cleanKeyAria": "API key (AI for text)",
     "keyPlaceholder": "API key (never shown again)",
+    "choiceSaved": "Choice saved: {{label}}.",
     "cleanSaveAria": "Save the key of the AI for text",
     "cleanClearAria": "Clear the key of the AI for text",
     "clear": "Clear",

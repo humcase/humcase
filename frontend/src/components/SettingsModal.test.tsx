@@ -295,6 +295,7 @@ describe('SettingsModal — AI providers', () => {
     const save = screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }) as HTMLButtonElement;
     const erase = screen.getByRole('button', { name: 'Effacer la clé de l’IA pour le texte' }) as HTMLButtonElement;
     const saveStt = screen.getByRole('button', { name: 'Enregistrer la clé de transcription' }) as HTMLButtonElement;
+    fireEvent.change(screen.getByLabelText('Clé API (transcription)'), { target: { value: 'dg-secret' } });
 
     fireEvent.click(save);
     await waitFor(() => expect(save.disabled).toBe(true));
@@ -303,8 +304,34 @@ describe('SettingsModal — AI providers', () => {
     expect(saveStt.disabled).toBe(false);
 
     resolve();
-    await waitFor(() => expect(save.disabled).toBe(false));
-    expect(erase.disabled).toBe(false);
+    // Saved: the field is emptied, so Save waits for a new key.
+    await waitFor(() => expect(key.value).toBe(''));
+    expect(save.disabled).toBe(true);
+  });
+
+  it("says the AI chosen is saved, under its section", async () => {
+    render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
+    await screen.findByLabelText("Clé API (IA pour le texte)");
+    const select = screen.getByLabelText('IA pour le texte') as HTMLSelectElement;
+    const other = [...select.options].find(option => option.value !== select.value)!;
+    fireEvent.change(select, { target: { value: other.value } });
+    expect(await screen.findByText(`Choix enregistré : ${other.text}.`)).toBeTruthy();
+  });
+
+  it("offers Save only with a typed key and Clear only for a key saved here", async () => {
+    render(<SettingsModal onClose={() => {}} prepareBackup={async () => ({ ready: true })} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Services IA' }));
+    const key = (await screen.findByLabelText("Clé API (IA pour le texte)")) as HTMLInputElement;
+    const save = screen.getByRole('button', { name: 'Enregistrer la clé de l’IA pour le texte' }) as HTMLButtonElement;
+    const erase = screen.getByRole('button', { name: 'Effacer la clé de l’IA pour le texte' }) as HTMLButtonElement;
+    expect(save.disabled).toBe(true);
+    fireEvent.change(key, { target: { value: 'sk-secret' } });
+    expect(save.disabled).toBe(false);
+    fireEvent.change(key, { target: { value: '   ' } });
+    expect(save.disabled).toBe(true);
+    // No key saved in Humcase for this provider: nothing to clear.
+    expect(erase.disabled).toBe(true);
   });
 
   it("a refresh failure does not call the save into question", async () => {

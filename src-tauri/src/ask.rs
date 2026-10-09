@@ -308,7 +308,23 @@ pub(crate) fn without_references(text: &str) -> String {
         ))
         .expect("valid pattern")
     });
-    reference.replace_all(text, "").into_owned()
+    let mut text = reference.replace_all(text, "").into_owned();
+    // A brace or bracket closing nothing, left at the end by the JSON around the text
+    // ("Vous demandez quel modèle répond ici.}", seen with Claude Haiku 5.5).
+    loop {
+        let trimmed = text.trim_end();
+        let (open, close) = match trimmed.chars().last() {
+            Some('}') => ('{', '}'),
+            Some(']') => ('[', ']'),
+            _ => break,
+        };
+        if trimmed.matches(open).count() >= trimmed.matches(close).count() {
+            break;
+        }
+        let end = trimmed.len() - close.len_utf8();
+        text.truncate(end);
+    }
+    text
 }
 
 /// The state of a case as the person says it: the AI copied raw words ("resolved",
@@ -1744,6 +1760,15 @@ pub(crate) mod tests {
         assert_eq!(
             without_references("It awaits your decision (to_review)."),
             "It awaits your decision."
+        );
+        assert_eq!(
+            without_references("Vous demandez quel modèle répond ici.}"),
+            "Vous demandez quel modèle répond ici."
+        );
+        assert_eq!(without_references("Done.}] "), "Done.");
+        assert_eq!(
+            without_references("The set {a, b} stays [as written]"),
+            "The set {a, b} stays [as written]"
         );
     }
 
