@@ -805,7 +805,7 @@
       "toDecide": "À trancher",
       "toTidy": "À ranger",
       "conflicts": "Contradictions",
-      "askToTidy": "Qu’a trouvé À ranger ?",
+      "askToTidy": "Qu’est-ce que je peux ranger ?",
       "ask": "Demander à l’assistant"
     },
     "heading": "Que voulez-vous faire ?",

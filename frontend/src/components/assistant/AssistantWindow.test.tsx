@@ -95,7 +95,7 @@ describe('Assistant window', () => {
     api.assistantReply.mockResolvedValue(reply());
     render(<Harness />);
     fireEvent.click(await screen.findByRole('button', { name: /À ranger/ }));
-    await waitFor(() => expect(api.assistantReply).toHaveBeenCalledWith('Qu’a trouvé À ranger ?', [], 'work', undefined, expect.any(String), undefined));
+    await waitFor(() => expect(api.assistantReply).toHaveBeenCalledWith('Qu’est-ce que je peux ranger ?', [], 'work', undefined, expect.any(String), undefined));
   });
 
   it('lights the key when more waits for a decision than the person last saw, until it is opened', async () => {

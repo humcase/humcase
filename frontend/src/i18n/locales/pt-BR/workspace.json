@@ -805,7 +805,7 @@
       "toDecide": "A decidir",
       "toTidy": "A arrumar",
       "conflicts": "Contradições",
-      "askToTidy": "O que A arrumar encontrou?",
+      "askToTidy": "O que posso arrumar?",
       "ask": "Perguntar ao assistente"
     },
     "heading": "O que você quer fazer?",
