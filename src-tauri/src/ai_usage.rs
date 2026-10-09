@@ -28,6 +28,7 @@ pub mod operation {
     pub const CHECK_GATHER: &str = "check_gather";
     pub const CHECK_PROFILE: &str = "check_profile";
     pub const ASK: &str = "ask";
+    pub const ASSISTANT: &str = "assistant";
     pub const REFLECT: &str = "reflect";
 }
 

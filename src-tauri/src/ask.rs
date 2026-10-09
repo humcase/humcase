@@ -517,7 +517,7 @@ pub fn keep(
     Ok(id)
 }
 
-fn decision_of(conn: &Connection, note_id: &str, status: &str) -> String {
+pub(crate) fn decision_of(conn: &Connection, note_id: &str, status: &str) -> String {
     if status != "resolved" && status != "open" && status != "in_progress" {
         return "none".into();
     }
@@ -535,7 +535,11 @@ pub(crate) fn project_names(conn: &Connection) -> Result<HashMap<String, String>
 }
 
 /// Whether the project belongs to the scope read (`space`, see [`UNASSIGNED`]).
-fn in_space(conn: &Connection, space: Option<&str>, project_id: &str) -> Result<bool, String> {
+pub(crate) fn in_space(
+    conn: &Connection,
+    space: Option<&str>,
+    project_id: &str,
+) -> Result<bool, String> {
     let Some(space) = space else { return Ok(true) };
     let found: Option<String> = conn
         .query_row(
@@ -561,14 +565,39 @@ pub(crate) fn load_case(
     question_words: &HashSet<String>,
     max_sentences: usize,
 ) -> Result<Option<Case>, String> {
+    load_case_as(
+        conn,
+        id,
+        space,
+        projects,
+        question_words,
+        max_sentences,
+        false,
+    )
+}
+
+/// [`load_case`], or with `opened` the case the person has open: read even when it is archived,
+/// a kept answer or outside the space read, since they chose it (never in the trash, never a
+/// drawing).
+pub(crate) fn load_case_as(
+    conn: &Connection,
+    id: &str,
+    space: Option<&str>,
+    projects: &HashMap<String, String>,
+    question_words: &HashSet<String>,
+    max_sentences: usize,
+    opened: bool,
+) -> Result<Option<Case>, String> {
     let Ok(note) = queries::get_note_by_id(conn, id) else {
         return Ok(None);
     };
-    if note.deleted_at.is_some()
-        || note.archived_at.is_some()
-        || is_kept_answer(conn, &note.id)?
-        || note.content_kind == crate::models::note::ContentKind::Sketch
-        || !in_space(conn, space, &note.project_id)?
+    if note.deleted_at.is_some() || note.content_kind == crate::models::note::ContentKind::Sketch {
+        return Ok(None);
+    }
+    if !opened
+        && (note.archived_at.is_some()
+            || is_kept_answer(conn, &note.id)?
+            || !in_space(conn, space, &note.project_id)?)
     {
         return Ok(None);
     }
@@ -1002,7 +1031,7 @@ pub(crate) fn named_tool_choice(name: &str) -> Value {
 
 /// A case as a tool returns it: its number, its facts and its excerpts, each with a new id that
 /// is registered so the answer may cite it (and nothing else).
-fn case_for_tool(reading: &mut Reading, case: &Case) -> Value {
+pub(crate) fn case_for_tool(reading: &mut Reading, case: &Case) -> Value {
     let number = reading.number_of(case);
     let excerpts: Vec<Value> = case
         .sentences
@@ -1161,6 +1190,7 @@ where
         "answer",
         AGENT_CALLS_MAX,
         |args| serde_json::from_value::<RawAnswer>(args).map_err(|e| e.to_string()),
+        |_, _, _, _| None,
         call_model,
     )
     .await
@@ -1169,7 +1199,8 @@ where
 /// The loop of [`run_agent`] for any final answer: the model finishes by calling the function
 /// `final_tool`, whose arguments `parse` reads (the same reader is tried on a JSON object
 /// written as plain text); at most `max_calls` model calls, the last forced to `final_tool`.
-/// `query` is what the question words of the search tools are taken from.
+/// `query` is what the question words of the search tools are taken from. `extra_tool` runs the
+/// tools of the caller beyond the shared read-only ones (`None`: not one of its tools).
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn run_agent_with<T, F, Fut>(
     db: &std::sync::Mutex<Connection>,
@@ -1181,6 +1212,7 @@ pub(crate) async fn run_agent_with<T, F, Fut>(
     final_tool: &str,
     max_calls: usize,
     parse: impl Fn(Value) -> Result<T, String>,
+    extra_tool: impl Fn(&Connection, &mut Reading, &str, &Value) -> Option<Result<Value, String>>,
     mut call_model: F,
 ) -> Result<AgentOutcome<T>, AgentFailure>
 where
@@ -1241,7 +1273,10 @@ where
             } else {
                 tools_used.push(format!("{name} {args}"));
                 let conn = db.lock().map_err(|e| AgentFailure::Failed(e.to_string()))?;
-                run_tool(&conn, space, &question_words, reading, name, &args)
+                extra_tool(&conn, reading, name, &args)
+                    .unwrap_or_else(|| {
+                        run_tool(&conn, space, &question_words, reading, name, &args)
+                    })
                     .map_err(AgentFailure::Failed)?
             };
             messages.push(json!({

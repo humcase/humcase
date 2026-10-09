@@ -254,7 +254,8 @@
       "check_gather": "Gelesene Fälle zum Zusammenlegen (TypeSafe)",
       "check_profile": "Gelesene Profilvorschläge (TypeSafe)",
       "ask": "Fragen an Humcase",
-      "reflect": "Durchdenken mit Humcase"
+      "reflect": "Durchdenken mit Humcase",
+      "assistant": "Assistent"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} Sitzung",

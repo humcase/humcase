@@ -15,6 +15,7 @@ const KEYS = {
   lastProjectId: 'last_project_id',
   miniMode: 'mini_mode',
   miniSize: 'mini_size',
+  assistantWindow: 'assistant_window',
   aiCleanProvider: 'ai_clean_provider',
   aiSttProvider: 'ai_stt_provider',
   structureFrame: 'structure_frame',
@@ -124,6 +125,29 @@ export function getMiniSize(): { width: number; height: number } {
 
 export function setMiniSize(width: number, height: number) {
   localStorage.setItem(KEYS.miniSize, JSON.stringify({ width: Math.round(width), height: Math.round(height) }));
+}
+
+/** Place and size of the assistant window, remembered on this computer (null: the default place). */
+export interface WindowRect { x: number; y: number; width: number; height: number }
+
+export function getAssistantWindow(): WindowRect | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEYS.assistantWindow) ?? 'null');
+    if (parsed && [parsed.x, parsed.y, parsed.width, parsed.height].every(value => typeof value === 'number' && Number.isFinite(value))) {
+      return { x: parsed.x, y: parsed.y, width: parsed.width, height: parsed.height };
+    }
+  } catch {
+    // storage refused or corrupted value: the default place
+  }
+  return null;
+}
+
+export function setAssistantWindow(rect: WindowRect) {
+  try {
+    localStorage.setItem(KEYS.assistantWindow, JSON.stringify({ x: Math.round(rect.x), y: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) }));
+  } catch {
+    // kept for this session only
+  }
 }
 
 /** **Cleanup** provider (LLM) chosen by the user. */

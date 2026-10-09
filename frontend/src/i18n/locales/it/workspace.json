@@ -775,8 +775,8 @@
     }
   },
   "assistant": {
-    "ask": "Chiedi",
-    "askHint": "Chiedi a Humcase (Ctrl+J)",
+    "ask": "Assistente",
+    "askHint": "Assistente (Ctrl+J)",
     "title": "Chiedi a Humcase",
     "intro": "Fai una domanda: Humcase risponde a partire dai tuoi casi e cita le fonti.",
     "suggest": {
@@ -858,5 +858,107 @@
       "partner": "Humcase",
       "micError": "Microfono o trascrizione non disponibili. Controlla il microfono e la chiave di trascrizione nelle Impostazioni."
     }
+  },
+  "assistantWindow": {
+    "title": "Assistente",
+    "status": {
+      "ready": "{{model}} · pronto",
+      "readyPlain": "Pronto",
+      "noAi": "Nessuna IA collegata",
+      "reading": "Lettura dei tuoi casi…"
+    },
+    "options": "Opzioni",
+    "minimise": "Riduci",
+    "close": "Chiudi",
+    "reopen": "Assistente (Ctrl+J)",
+    "newReply": "Nuova risposta",
+    "move": "Trascina per spostare",
+    "resize": "Trascina per ridimensionare",
+    "context": "Contesto",
+    "removeContext": "Togli dal contesto",
+    "reads": "Cosa legge",
+    "keep": "Tieni come caso",
+    "newConversation": "Nuova conversazione",
+    "kept": "Tenuto come caso nell’Inbox.",
+    "open": "Apri",
+    "undo": "Annulla",
+    "screen": {
+      "cases_one": "{{count}} caso",
+      "cases_many": "{{count}} casi",
+      "cases_other": "{{count}} casi",
+      "toDecide": "Da decidere",
+      "toTidy": "Da riordinare"
+    },
+    "heading": "Cosa vuoi fare?",
+    "intro": "Conosco i tuoi casi e Humcase stesso. Cito ciò che leggo.",
+    "suggest": {
+      "week": {
+        "tag": "Memoria",
+        "text": "Riassumi la mia settimana"
+      },
+      "conflict": {
+        "tag": "Coerenza",
+        "text": "C’è qualcosa di contraddittorio?"
+      },
+      "howto": {
+        "tag": "Humcase",
+        "text": "Come metto un caso in un progetto?"
+      },
+      "decide": {
+        "tag": "Decisioni",
+        "text": "Cosa aspetta la mia decisione?"
+      }
+    },
+    "placeholder": "Scrivi o detta…",
+    "listening": "Ti ascolto…",
+    "dictate": "Dettare",
+    "stopDictation": "Ferma la dettatura",
+    "micError": "Microfono o trascrizione non disponibili. Controlla il microfono e la chiave di trascrizione nelle Impostazioni.",
+    "send": "Invia",
+    "footer": "Nulla cambia senza il tuo clic.",
+    "keyEnter": "Invio",
+    "keySend": "invia",
+    "sources": "Fonti · {{n}}",
+    "helpSource": "Guida di Humcase · {{title}}",
+    "openSource": "Apri il caso {{title}}",
+    "noAi": "Nessuna IA collegata.",
+    "connectAi": "Collega un’IA",
+    "error": "Nessuna risposta: {{error}}",
+    "actionError": "Non fatto: {{error}}",
+    "action": {
+      "kind": {
+        "proposed": "Proposto",
+        "conflict": "Va contro una decisione",
+        "supersede": "Decisione sostituita",
+        "archive": "Da archiviare",
+        "group": "Da riunire",
+        "move": "Da sistemare"
+      },
+      "subCase": "Crea l’attività “{{title}}” in “{{parent}}”.",
+      "createSubCase": "Crea il sottocaso",
+      "subCaseDone": "Sottocaso “{{title}}” creato in “{{parent}}”.",
+      "archiveText": "Archivia “{{title}}”. Resta ritrovabile.",
+      "archive": "Archivia",
+      "archiveDone": "“{{title}}” archiviato.",
+      "moveText": "Metti “{{title}}” in {{project}}.",
+      "move": "Metti in {{project}}",
+      "moveDone": "“{{title}}” messo in {{project}}.",
+      "markReplaced": "Segna la più vecchia come sostituita",
+      "bothHold": "Valgono entrambe",
+      "replacedDone": "“{{title}}” segnata come sostituita da “{{other}}”.",
+      "iFix": "Correggerò il caso",
+      "noConflict": "Non è una contraddizione",
+      "fixDone": "“{{title}}” da correggere.",
+      "openBoth": "Apri entrambi",
+      "keep": "Tieni",
+      "refusedDone": "Resta così. Non verrà più proposto.",
+      "groupText": "Riunisci “{{title}}” dentro “{{other}}”.",
+      "fileTogether": "Riunisci",
+      "keepApart": "Tienili separati",
+      "groupDone": "“{{title}}” riunito dentro “{{other}}”."
+    },
+    "you": "Tu",
+    "keptSources": "Fonti",
+    "keptSource": "{{title}}: «{{passage}}»"
   }
 }

@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import i18n from '../i18n';
 import type { Activity, Brief, CaseEvent, CaseJournal, CaseReview, CaseContext, CasePosition, ContentKind, NoteType, Project, ProjectSpace, Note, NoteRelations, NoteRevision, CreateNoteInput, UpdateNoteInput, AiProvidersInfo, AiUsageRecord, AgentSeen, Recognition, MeaningHit, MeaningStatus, NatureReview, NatureReadingStatus, Germination, Proposal, ProposalAnswer, ProposalOutcome, TidyItem, TidyAnswer, TidyOutcome, TidySettings, Supersession, ProjectSummary, ProfileView, ProfileAnswer, ProfileOutcome, ProfileSettings, Nudge, NudgeAnswer } from '../types';
-import type { AssistantAnswer, AssistantPreviousTurn } from '../types/assistant';
+import type { AssistantAnswer, AssistantPreviousTurn, AssistantPreviousTurnV2, AssistantReply, AssistantStatus } from '../types/assistant';
 import type { ReflectPreviousTurn, ReflectReply, ReflectSummary } from '../types/reflect';
 
 export interface BackupArchivePreview {
@@ -291,6 +291,14 @@ export const api = {
   askCases: async (question: string, previous: AssistantPreviousTurn[], space?: ProjectSpace | 'unassigned', provider?: string, model?: string): Promise<AssistantAnswer> => {
     return await invoke('ask_cases', { question, previous, space, provider, model });
   },
+
+  /** The assistant window's reply: answers, cites, asks at most one question and proposes actions;
+   * writes nothing. An empty `message` with `contextId` starts from that case ("Think it through"). */
+  assistantReply: async (message: string, previous: AssistantPreviousTurnV2[], space?: ProjectSpace | 'unassigned', contextId?: string, provider?: string, model?: string): Promise<AssistantReply> =>
+    await invoke('assistant_reply', { message, previous, space, contextId, provider, model }),
+  /** The window's small screen: the AI used and the counts of the space. */
+  assistantStatus: async (space?: ProjectSpace | 'unassigned', provider?: string): Promise<AssistantStatus> =>
+    await invoke('assistant_status', { space, provider }),
 
   /** Keeps an answer as a case of the Inbox of `space`, marked so it is never read as a source. */
   /** "Think it through": the partner's next reply (restates, links the cases with their passage,

@@ -44,6 +44,8 @@ vi.mock('./services/tauriApi', () => ({
     notesChangeMarker: vi.fn(async () => 'stable'),
     meaningStatus: vi.fn(async () => ({ state: 'ready', done: 0, total: 0, error: null })),
     searchByMeaning: vi.fn(async () => []),
+    assistantStatus: vi.fn(async () => ({ model_label: 'Claude Haiku 5.5', cases: 3, to_decide: 0, to_tidy: 0 })),
+    assistantReply: vi.fn(),
   },
 }));
 
@@ -103,6 +105,8 @@ vi.mock('./utils/prefs', () => ({
   getMiniSize: () => ({ width: 400, height: 500 }),
   setMiniMode: () => {},
   setMiniSize: () => {},
+  getAssistantWindow: () => null,
+  setAssistantWindow: () => {},
 }));
 
 vi.mock('./components/NoteEditor', () => ({
@@ -574,6 +578,22 @@ describe('App — Today view', () => {
     await screen.findByRole('button', { name: 'Ouvrir Urgente' });
     fireEvent.keyDown(window, { key: 'F', ctrlKey: true });
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('searchbox', { name: 'Rechercher une case' })));
+  });
+
+  it('Ctrl+J and the Ask button open the assistant window; closed, it stays as a key in the corner', async () => {
+    render(<App />);
+    await screen.findByRole('button', { name: 'Ouvrir Urgente' });
+    expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Assistant (Ctrl+J)' })).toBeNull();
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
+    expect(await screen.findByRole('region', { name: 'Assistant' })).toBeTruthy();
+    expect(await screen.findByText('Claude Haiku 5.5 · prêt')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
+    expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
+    expect(screen.getByRole('region', { name: 'Assistant' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Assistant' }));
+    expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
   });
 
   it('Ctrl+F searches the whole space, leaving Today and the open project', async () => {

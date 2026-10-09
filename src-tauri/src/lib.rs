@@ -4,6 +4,7 @@ pub mod ai_settings;
 pub mod ai_usage;
 pub mod anthropic;
 pub mod ask;
+pub mod assistant;
 pub mod backup;
 pub mod commands;
 pub mod common_words;
@@ -283,6 +284,8 @@ pub fn run() {
             commands::answer_nature,
             commands::germinate_case,
             commands::ask_cases,
+            commands::assistant_reply,
+            commands::assistant_status,
             commands::keep_answer,
             commands::reflect_reply,
             commands::reflect_summarize,

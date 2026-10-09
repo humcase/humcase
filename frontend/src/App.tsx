@@ -5,12 +5,7 @@ import { TrashView, WorkspaceNotes } from './components/workspace';
 import { HomePage } from './components/workspace/HomePage';
 import { InboxPreview } from './components/workspace/InboxPreview';
 import WorkspaceTopbar from './components/workspace/WorkspaceTopbar';
-import { AssistantPanel, type AssistantMode } from './components/assistant/AssistantPanel';
-import { ReflectThread } from './components/assistant/ReflectThread';
-import { reflectSummaryMarkdown } from './components/assistant/reflectSummary';
-import { reflectPreviousTurns, type ReflectEngine, type ReflectSummary, type ReflectTurn } from './types/reflect';
-import { keptAnswerMarkdown } from './components/assistant/keptAnswer';
-import { previousTurn, type AssistantEngine } from './types/assistant';
+import { AssistantWindow, type AssistantKickoff } from './components/assistant/AssistantWindow';
 import NotesViewbar from './components/workspace/NotesViewbar';
 import { CaseFilterBar } from './components/workspace/CaseFilterBar';
 import InboxPlacement from './components/workspace/InboxPlacement';
@@ -36,7 +31,7 @@ import { resolveActiveNote } from './utils/selection';
 import { sortNotes, type NoteSort } from './utils/noteSort';
 import { isNoteStatus } from './utils/statuses';
 import { defaultTitle } from './utils/title';
-import { getAiCleanProvider, getAiModel, getLastProjectId, getMiniMode, setLastProjectId } from './utils/prefs';
+import { getLastProjectId, getMiniMode, setLastProjectId } from './utils/prefs';
 import type { Note, NoteStatus, NoteType, WorkspacePage } from './types';
 import { NatureView } from './components/workspace/NatureView';
 import { TidyView } from './components/workspace/Tidy';
@@ -170,19 +165,20 @@ function App() {
   // Notes view: show only archived notes ("Archived" button of the display bar).
   const [showArchived, setShowArchived] = useState(false);
   const [todayView, setTodayView] = useState(false);
-  // "Ask Humcase": answers from the cases of the space shown, with the AI chosen in Settings.
+  // The assistant window, with the AI chosen in Settings. Once opened, it stays for the session:
+  // minimised, it is a key in the corner and keeps its conversation.
   const [assistantOpen, setAssistantOpen] = useState(false);
-  // "Think it through": the panel's second mode, started from a case or free.
-  const [assistantMode, setAssistantMode] = useState<AssistantMode>('ask');
-  const [reflectSubject, setReflectSubject] = useState<{ id: string; title: string } | null>(null);
-  const [reflectKey, setReflectKey] = useState(0);
+  const [assistantStarted, setAssistantStarted] = useState(false);
+  // "Think it through" on a case: the window opens on a new conversation about it.
+  const [assistantKickoff, setAssistantKickoff] = useState<AssistantKickoff | null>(null);
+  const toggleAssistant = useCallback(() => { setAssistantStarted(true); setAssistantOpen(open => !open); }, []);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); setAssistantOpen(open => !open); }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); toggleAssistant(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [toggleAssistant]);
   // Creation lock: two quick Ctrl+N must not create two notes.
   const creationEnCoursRef = useRef(false);
   // Error of a one-off action (Handoff, Standup, creation): visible and non-blocking.
@@ -506,28 +502,6 @@ function App() {
 
   // The cards page opens without parsing: excerpts are prepared in the idle moments of the window.
   useEffect(() => warmCardExcerpts(allScoped), [allScoped]);
-  const assistantEngine = useCallback<AssistantEngine>((question, previous) => {
-    const provider = getAiCleanProvider();
-    return api.askCases(question, previous.map(previousTurn), spacePreferences.scope === 'all' ? undefined : spacePreferences.scope, provider, getAiModel(provider) || undefined);
-  }, [spacePreferences.scope]);
-  const reflectEngine = useMemo<ReflectEngine>(() => {
-    const space = spacePreferences.scope === 'all' ? undefined : spacePreferences.scope;
-    const choice = () => { const provider = getAiCleanProvider(); return [provider, getAiModel(provider) || undefined] as const; };
-    return {
-      reply: (subject, turns) => api.reflectReply(subject?.id, reflectPreviousTurns(turns), space, ...choice()),
-      summarize: (subject, turns) => api.reflectSummarize(subject?.id, reflectPreviousTurns(turns), space, ...choice()),
-    };
-  }, [spacePreferences.scope]);
-  // The kept summary: a case inside the case thought about (the Inbox otherwise), the whole
-  // conversation below it; the ticked actions become sub-cases of the case thought about.
-  const keepReflection = async (subject: { id: string; title: string } | null, summary: ReflectSummary, turns: ReflectTurn[]) => {
-    const content = reflectSummaryMarkdown(summary, turns, key => t(`workspace.assistant.reflect.${key}`));
-    const space: ProjectSpace = activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work';
-    const actions = summary.actions.filter(action => action.create && action.title.trim()).map(action => action.title.trim());
-    const id = await api.keepReflection(subject?.id, space, summary.title.trim(), content, actions);
-    await loadNotes(); await loadProjects();
-    return id;
-  };
   const notesForView = useMemo(() => viewMode === 'kanban' ? displayedNotes : sortNotes(displayedNotes, shownSort, searchRank), [viewMode, displayedNotes, shownSort, searchRank]);
   const boardRootCases = useMemo(() => sortNotes(topLevelProjectCases, noteSort), [topLevelProjectCases, noteSort]);
   const shortcutCounts = useMemo(() => countShortcuts(spaceCases), [spaceCases]);
@@ -648,7 +622,7 @@ function App() {
   const toggleWorkspaceTheme = () => changeWorkspaceTheme(workspaceTheme === 'dark' ? 'light' : 'dark');
 
   return (
-    <div className={`workspace-app relative${isMiniMode ? ' workspace-mini' : ''}${assistantOpen && !isMiniMode ? ' workspace-app--assistant' : ''}`} data-theme={workspaceTheme}>
+    <div className={`workspace-app relative${isMiniMode ? ' workspace-mini' : ''}`} data-theme={workspaceTheme}>
       {globalError && (
         // Non-blocking warning: the application stays usable and the periodic refresh
         // clears the banner as soon as a read succeeds.
@@ -711,7 +685,7 @@ function App() {
             onStandup={openStandup}
             onToggleTheme={toggleWorkspaceTheme}
             onToggleMini={toggleMiniMode}
-            onAsk={() => setAssistantOpen(open => !open)}
+            onAsk={toggleAssistant}
             askOpen={assistantOpen}
           />
         )}
@@ -753,7 +727,7 @@ function App() {
                 onOpenRelatedNote={async target => { await loadNotes(); openNote(target); }}
                 germinateOnOpen={workspacePage === 'editor' && germinateNoteId === activeNoteId ? germinateNoteId : null}
                 onGerminateStarted={clearGerminateNoteId}
-                onReflect={target => { setReflectSubject({ id: target.id, title: target.title }); setReflectKey(key => key + 1); setAssistantMode('reflect'); setAssistantOpen(true); }}
+                onReflect={target => { setAssistantKickoff(current => ({ key: (current?.key ?? 0) + 1, case: { id: target.id, title: target.title } })); setAssistantStarted(true); setAssistantOpen(true); }}
                 focusOnOpen={workspacePage === 'editor' && focusNoteId !== null && focusNoteId === activeNoteId}
                 onBackToList={goBack}
               />
@@ -898,38 +872,24 @@ function App() {
           </>
         )}
       </div>
-      {assistantOpen && !isMiniMode && (
-        <AssistantPanel
-          engine={assistantEngine}
-          notes={allScoped}
+      {/* Kept mounted once opened (its conversation lives for the session); hidden in mini mode. */}
+      {assistantStarted && (
+        <AssistantWindow
+          open={assistantOpen}
+          hidden={isMiniMode}
+          onOpenChange={setAssistantOpen}
+          space={spacePreferences.scope === 'all' ? undefined : spacePreferences.scope}
           scopeLabel={t(spacePreferences.scope === 'private' ? 'workspace.sidebar.scopePrivate' : spacePreferences.scope === 'work' ? 'workspace.sidebar.scopeWork' : 'workspace.sidebar.scopeAll')}
-          onOpenNote={note => openNote(note)}
-          onKeep={async (question, answer) => {
-            const space: ProjectSpace = activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work';
-            // A question nothing answered becomes a plain case; an answer is kept marked as one.
-            const id = answer.kind === 'answer'
-              ? await api.keepAnswer(space, question, keptAnswerMarkdown(answer, t('workspace.assistant.sources'), (title, passage) => t('workspace.assistant.keptSource', { title, passage })), answer.sources.map(({ title, passages }) => ({ title, passages })))
-              : await api.createNote({ project_id: await api.getOrCreateInbox(space), title: question, content: '', note_type: 'note' });
-            await loadNotes(); await loadProjects();
-            return id;
+          openCase={workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? { id: activeNote.id, title: activeNote.title } : null}
+          kickoff={assistantKickoff}
+          keepSpace={activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work'}
+          onOpenCase={id => {
+            const note = allScoped.find(candidate => candidate.id === id);
+            if (note) openNote(note);
+            else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
           }}
-          onCreateSubCase={async (parentId, title) => { const id = await api.createSubCase(parentId, title, 'todo'); await loadNotes(); return id; }}
+          onChanged={() => { void loadNotes(); void loadProjects(); }}
           onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
-          onClose={() => setAssistantOpen(false)}
-          mode={assistantMode}
-          onModeChange={setAssistantMode}
-          onRestartReflect={() => { setReflectSubject(null); setReflectKey(key => key + 1); }}
-          reflect={(
-            <ReflectThread key={reflectKey}
-              engine={reflectEngine}
-              notes={allScoped}
-              subject={reflectSubject}
-              candidate={workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? { id: activeNote.id, title: activeNote.title } : null}
-              onStart={subject => { setReflectSubject(subject); setReflectKey(key => key + 1); }}
-              onOpenNote={note => openNote(note)}
-              onKeep={keepReflection}
-              onClose={() => setAssistantOpen(false)} />
-          )}
         />
       )}
 

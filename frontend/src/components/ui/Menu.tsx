@@ -68,6 +68,11 @@ export function MenuRadioGroup<T extends string>({ value, onValueChange, options
   );
 }
 
+/** Heading of a group of items, inside the menu (not focusable). */
+export function MenuLabel({ children }: { children: ReactNode }) {
+  return <DropdownMenu.Label className="ui-menu__label">{children}</DropdownMenu.Label>;
+}
+
 export function MenuSeparator() {
   return <DropdownMenu.Separator className="ui-menu__separator" />;
 }

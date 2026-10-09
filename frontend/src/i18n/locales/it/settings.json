@@ -260,7 +260,8 @@
       "check_gather": "Casi da riunire letti (TypeSafe)",
       "check_profile": "Suggerimenti di profilo letti (TypeSafe)",
       "ask": "Domande a Humcase",
-      "reflect": "Riflessioni con Humcase"
+      "reflect": "Riflessioni con Humcase",
+      "assistant": "Assistente"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} sessione",

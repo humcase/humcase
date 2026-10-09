@@ -775,8 +775,8 @@
     }
   },
   "assistant": {
-    "ask": "Preguntar",
-    "askHint": "Preguntar a Humcase (Ctrl+J)",
+    "ask": "Asistente",
+    "askHint": "Asistente (Ctrl+J)",
     "title": "Preguntar a Humcase",
     "intro": "Haz una pregunta: Humcase responde a partir de tus casos y cita sus fuentes.",
     "suggest": {
@@ -858,5 +858,107 @@
       "partner": "Humcase",
       "micError": "Micrófono o transcripción no disponibles. Revisa el micrófono y la clave de transcripción en Ajustes."
     }
+  },
+  "assistantWindow": {
+    "title": "Asistente",
+    "status": {
+      "ready": "{{model}} · listo",
+      "readyPlain": "Listo",
+      "noAi": "Ninguna IA conectada",
+      "reading": "Leyendo tus casos…"
+    },
+    "options": "Opciones",
+    "minimise": "Minimizar",
+    "close": "Cerrar",
+    "reopen": "Asistente (Ctrl+J)",
+    "newReply": "Nueva respuesta",
+    "move": "Arrastra para mover",
+    "resize": "Arrastra para cambiar el tamaño",
+    "context": "Contexto",
+    "removeContext": "Quitar del contexto",
+    "reads": "Qué lee",
+    "keep": "Guardar como caso",
+    "newConversation": "Nueva conversación",
+    "kept": "Guardado como caso en la Bandeja de entrada.",
+    "open": "Abrir",
+    "undo": "Deshacer",
+    "screen": {
+      "cases_one": "{{count}} caso",
+      "cases_many": "{{count}} casos",
+      "cases_other": "{{count}} casos",
+      "toDecide": "Por decidir",
+      "toTidy": "Por ordenar"
+    },
+    "heading": "¿Qué quieres hacer?",
+    "intro": "Conozco tus casos y el propio Humcase. Cito lo que leo.",
+    "suggest": {
+      "week": {
+        "tag": "Memoria",
+        "text": "Resume mi semana"
+      },
+      "conflict": {
+        "tag": "Coherencia",
+        "text": "¿Hay algo contradictorio?"
+      },
+      "howto": {
+        "tag": "Humcase",
+        "text": "¿Cómo archivo un caso en un proyecto?"
+      },
+      "decide": {
+        "tag": "Decisiones",
+        "text": "¿Qué espera mi decisión?"
+      }
+    },
+    "placeholder": "Escribe o dicta…",
+    "listening": "Te escucho…",
+    "dictate": "Dictar",
+    "stopDictation": "Detener el dictado",
+    "micError": "Micrófono o transcripción no disponibles. Revisa el micrófono y la clave de transcripción en Ajustes.",
+    "send": "Enviar",
+    "footer": "Nada cambia sin tu clic.",
+    "keyEnter": "Intro",
+    "keySend": "enviar",
+    "sources": "Fuentes · {{n}}",
+    "helpSource": "Ayuda de Humcase · {{title}}",
+    "openSource": "Abrir el caso {{title}}",
+    "noAi": "Ninguna IA conectada.",
+    "connectAi": "Conectar una IA",
+    "error": "Sin respuesta: {{error}}",
+    "actionError": "No se hizo: {{error}}",
+    "action": {
+      "kind": {
+        "proposed": "Propuesto",
+        "conflict": "Va contra una decisión",
+        "supersede": "Decisión reemplazada",
+        "archive": "Por archivar",
+        "group": "Por reunir",
+        "move": "Por ubicar"
+      },
+      "subCase": "Crear la tarea “{{title}}” en “{{parent}}”.",
+      "createSubCase": "Crear el subcaso",
+      "subCaseDone": "Subcaso “{{title}}” creado en “{{parent}}”.",
+      "archiveText": "Archivar “{{title}}”. Se podrá seguir encontrando.",
+      "archive": "Archivar",
+      "archiveDone": "“{{title}}” archivado.",
+      "moveText": "Ubicar “{{title}}” en {{project}}.",
+      "move": "Ubicar en {{project}}",
+      "moveDone": "“{{title}}” ubicado en {{project}}.",
+      "markReplaced": "Marcar la anterior como reemplazada",
+      "bothHold": "Las dos siguen vigentes",
+      "replacedDone": "“{{title}}” marcada como reemplazada por “{{other}}”.",
+      "iFix": "Corregiré el caso",
+      "noConflict": "No es una contradicción",
+      "fixDone": "“{{title}}” por corregir.",
+      "openBoth": "Abrir los dos",
+      "keep": "Conservar",
+      "refusedDone": "Se queda como está. No se volverá a proponer.",
+      "groupText": "Reunir “{{title}}” dentro de “{{other}}”.",
+      "fileTogether": "Reunir",
+      "keepApart": "Mantenerlos aparte",
+      "groupDone": "“{{title}}” reunido dentro de “{{other}}”."
+    },
+    "you": "Tú",
+    "keptSources": "Fuentes",
+    "keptSource": "{{title}}: «{{passage}}»"
   }
 }

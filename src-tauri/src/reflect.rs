@@ -726,6 +726,7 @@ where
         "reply",
         REPLY_CALLS_MAX,
         parse_reply,
+        |_, _, _, _| None,
         call_model,
     )
     .await

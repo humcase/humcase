@@ -254,7 +254,8 @@
       "check_gather": "Cases to file together read (TypeSafe)",
       "check_profile": "Profile suggestions read (TypeSafe)",
       "ask": "Questions to Humcase",
-      "reflect": "Thinking it through with Humcase"
+      "reflect": "Thinking it through with Humcase",
+      "assistant": "Assistant"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} session",
