@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- Security alerts: `rustls` 0.23.46 (through `reqwest`), and the vulnerable packages in the lockfiles of the interface (`lodash-es`, `postcss-selector-parser`) and the website (`undici`, `vite`, `zod`) moved to their patched versions (`npm audit fix`, no breaking update).
 - A result to review shows the agent's report in the decision band of the case, above Accept and Ask for a rework (it sat folded at the bottom of the case, so the decision came before the result).
 - Settings: the "Back to the app" button is named by its visible text for screen readers and voice control (it was announced as "Close settings").
 
