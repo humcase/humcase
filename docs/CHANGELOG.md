@@ -24,6 +24,7 @@
 - To tidy: unchecking a case before "Archive" refused it for good, without saying so (archiving 2 cases refused the 181 others). An unchecked case now stays proposed; only "Refuse all" refuses.
 - To tidy proposed to archive results an agent declared and the person had not accepted yet. A result waiting for "Accept" or sent back for a rework is no longer proposed, and a waiting proposal is withdrawn when its case becomes one.
 - To tidy's count climbed on its own (155, then 183): each refresh added up to 100 more cases to archive. At most 100 wait at once now.
+- Security alerts: `rustls` 0.23.46 (through `reqwest`); in the interface, `lodash-es` 4.17.23 and `postcss-selector-parser` 6.1.5 (pinned through `overrides`, both reached through the Excalidraw and Tailwind dependencies), `dompurify` 3.4.17 and `markdown-it` 14.3.3; on the website, `undici` 8.12.4, `vite` 8.3.8, `zod` 4.6.7 and `postcss` 8.5.32 (`npm audit fix`, no breaking update).
 - A result to review shows the agent's report in the decision band of the case, above Accept and Ask for a rework (it sat folded at the bottom of the case, so the decision came before the result).
 - Settings: the "Back to the app" button is named by its visible text for screen readers and voice control (it was announced as "Close settings").
 
