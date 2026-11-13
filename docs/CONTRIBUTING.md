@@ -4,7 +4,7 @@ Complements [AGENTS](../AGENTS.md) (rules). Maintainers keep dated verification 
 
 ## Contributor License Agreement
 
-Before your first pull request is merged, you sign the [Contributor License Agreement](../CLA.md) once: the CLA Assistant bot comments on the pull request and you reply as it asks. You keep the copyright of your work; the agreement lets the maintainer license Humcase as a whole, and every contribution stays available under the AGPL-3.0.
+Before your first pull request is merged, you sign the [Contributor License Agreement](../CLA.md) once: the CLA Assistant bot comments on the pull request and you reply as it asks. You keep the copyright of your work; the agreement lets the maintainer license Humcase as a whole, and every contribution stays available under the AGPL-3.0. If part of your contribution was produced with an AI tool, say so in the pull request and review it as your own work (section 6 of the agreement).
 
 ## Verification
 
