@@ -72,6 +72,7 @@
       "unknownTranscription": "Fournisseur de transcription inconnu : {{id}}",
       "missingUrl": "URL manquante pour le fournisseur « {{provider}} » ({{source}}).",
       "missingKey": "{{name}} manquante",
+      "chosenNoKey": "L’IA choisie dans les paramètres ({{provider}}) n’a pas de clé API.",
       "missingModel": "Modèle manquant pour le fournisseur « {{provider}} ».",
       "emptyResponse": "Réponse du fournisseur vide ou inattendue",
       "custom": "Personnalisé (OpenAI-compatible)",
@@ -371,6 +372,7 @@
     "weeks": "Durée non proposée : {{weeks}} semaines."
   },
   "ask": {
-    "unreadable": "Réponse de l’IA illisible : {{error}}"
+    "unreadable": "Réponse de l’IA illisible : {{error}}",
+    "deadline": "L’IA a mis trop de temps à répondre (plus de {{seconds}} secondes). Réessayez."
   }
 }

@@ -22,9 +22,8 @@ const api = vi.hoisted(() => ({
 vi.mock('../../services/tauriApi', () => ({ api }));
 const startDragging = vi.fn(async () => {});
 vi.mock('@tauri-apps/api/window', () => ({ getCurrentWindow: () => ({ startDragging }) }));
-vi.mock('./useComposerDictation', () => ({
-  useComposerDictation: () => ({ listening: false, starting: false, interim: '', error: null, start: vi.fn(), stop: vi.fn(async () => '') }),
-}));
+const dictation = vi.hoisted(() => ({ listening: false, starting: false, interim: '', error: null, start: vi.fn(), stop: vi.fn(async () => ''), cancel: vi.fn() }));
+vi.mock('./useComposerDictation', () => ({ useComposerDictation: () => dictation }));
 
 const reply = (extra: Partial<AssistantReply> = {}): AssistantReply => ({
   kind: 'reply',
@@ -61,6 +60,7 @@ describe('Assistant window', () => {
   beforeEach(async () => {
     await i18n.changeLanguage('fr');
     vi.clearAllMocks();
+    dictation.listening = false;
     try { localStorage.clear(); } catch { /* no storage */ }
     api.assistantStatus.mockResolvedValue({ model_label: 'Claude Haiku 5.5', cases: 142, to_decide: 3, conflicts: 0, to_tidy: 2 });
   });
@@ -168,6 +168,32 @@ describe('Assistant window', () => {
     // Undone: the proposal is back, to answer again.
     expect(await screen.findByRole('button', { name: 'Créer la sous-case' })).toBeTruthy();
     expect(onChanged).toHaveBeenCalledTimes(2);
+  });
+
+  it('an action done stays done after the window closes and reopens, never offered twice', async () => {
+    api.assistantReply.mockResolvedValue(reply({ actions: [{ kind: 'create_sub_case', case_id: 'release', case_title: 'Mise en public', title: 'Ouvrir le dépôt' }] }));
+    render(<Harness />);
+    await say('Que reste-t-il ?');
+    fireEvent.click(await screen.findByRole('button', { name: 'Créer la sous-case' }));
+    expect(await screen.findByText('Sous-case « Ouvrir le dépôt » créée dans « Mise en public ».')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Réduire' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
+    expect(await screen.findByText('Sous-case « Ouvrir le dépôt » créée dans « Mise en public ».')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Créer la sous-case' })).toBeNull();
+    // The Undo is still there, and still works.
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    await waitFor(() => expect(api.deleteNote).toHaveBeenCalledWith('new-task'));
+    expect(api.createSubCase).toHaveBeenCalledTimes(1);
+  });
+
+  it('closing the window while dictating stops the microphone, and focus goes back to the key', async () => {
+    dictation.listening = true;
+    render(<Harness />);
+    expect(dictation.cancel).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Réduire' }));
+    expect(dictation.cancel).toHaveBeenCalledTimes(1);
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
   });
 
   it('answers a "To tidy" item with its two passages, and Undo takes the answer back', async () => {

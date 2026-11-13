@@ -534,7 +534,13 @@ function App() {
     if (note) openNote(note);
     else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
   };
-  const germinateFromAssistant = (id: string) => { const note = allScoped.find(candidate => candidate.id === id); if (note && openNote(note)) setGerminateNoteId(id); };
+  // A case outside the cases loaded here is read from the database, as for opening one.
+  const germinateFromAssistant = (id: string) => {
+    const start = (note: Note) => { if (openNote(note)) setGerminateNoteId(id); };
+    const note = allScoped.find(candidate => candidate.id === id);
+    if (note) start(note);
+    else void api.getNote(id).then(start).catch(() => reportAction(t('workspace.app.noteNotFound')));
+  };
   // What Mini Humcase asks: the main window comes to the front for a case or Settings.
   const fromMini = (request: MiniRequest) => {
     if (request.kind === 'changed') { void loadNotes(); void loadProjects(); return; }

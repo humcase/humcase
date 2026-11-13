@@ -9,7 +9,7 @@ import { Menu, MenuCheckboxItem, MenuItem, MenuLabel, MenuRadioGroup, MenuSepara
 import { HumcaseKey } from '../brand/HumcaseKey';
 import { api } from '../../services/tauriApi';
 import { getAiCleanProvider, getAiModel, getAssistantSeen, setAssistantSeen } from '../../utils/prefs';
-import { previousTurnsV2, type AssistantEntry, type AssistantPreviousTurnV2, type AssistantReply, type AssistantStatus } from '../../types/assistant';
+import { previousTurnsV2, type AssistantDone, type AssistantEntry, type AssistantPreviousTurnV2, type AssistantReply, type AssistantStatus } from '../../types/assistant';
 import type { ProjectSpace } from '../../types';
 import { AssistantReplyView } from './AssistantReplyView';
 import { conversationSources, keptConversationMarkdown } from './keptConversation';
@@ -98,9 +98,25 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
+  // The × holds for the case it was clicked on, until another case is opened.
+  const [dismissedFor, setDismissedFor] = useState(openCase?.id ?? null);
+  if ((openCase?.id ?? null) !== dismissedFor) { setDismissedFor(openCase?.id ?? null); if (dismissed) setDismissed(null); }
   const context = openCase && openCase.id !== dismissed ? openCase : null;
 
-  useEffect(() => { openRef.current = open; if (open) inputRef.current?.focus(); }, [open]);
+  const keyRef = useRef<HTMLButtonElement>(null);
+  const wasShown = useRef(open && !hidden);
+  useEffect(() => {
+    openRef.current = open;
+    const shown = open && !hidden;
+    if (shown) inputRef.current?.focus();
+    // Closed or handed to the other window while focused inside: focus returns to the key.
+    else if (wasShown.current && !hidden && variant === 'inside') keyRef.current?.focus();
+    wasShown.current = shown;
+  }, [open, hidden, variant]);
+  // Closed or hidden while listening: the microphone and the transcription stop, what was heard is
+  // dropped (nothing is sent without the person reading it).
+  const { listening, cancel: cancelDictation } = dictation;
+  useEffect(() => { if (listening && (!open || hidden)) cancelDictation(); }, [listening, open, hidden, cancelDictation]);
   useEffect(() => { endRef.current?.scrollIntoView?.({ block: 'end' }); }, [entries, pending, kept]);
   // The composer grows with a dictated text, so it can be read before sending.
   useEffect(() => {
@@ -143,13 +159,15 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
       const reply = await api.assistantReply(said ?? '', previous, space, contextId, provider, getAiModel(provider) || undefined);
       result = { id, reply };
       if (reply.model_label) setModelLabel(reply.model_label);
-      if (!openRef.current) setUnseen(true);
     } catch (error) {
       result = { id, error: message(error) };
     }
+    // A new conversation dropped this exchange: nothing lights, nothing goes to the other window.
+    if (run !== epoch.current) return;
+    if (result.reply && !openRef.current) setUnseen(true);
     settle(result);
     handover.current.onLanded?.(result);
-    if (run === epoch.current) inputRef.current?.focus();
+    inputRef.current?.focus();
   };
 
   // A conversation handed over by the other window, and replies that landed there.
@@ -179,6 +197,13 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   };
 
   const changed = () => { onChanged(); setStatusTick(tick => tick + 1); };
+  // An action done (or undone) is recorded in its exchange, which the other window receives too.
+  const markDone = (id: number, index: number, next: AssistantDone | null) => setEntries(list => list.map(entry => {
+    if (entry.id !== id) return entry;
+    const done = { ...entry.done };
+    if (next) done[index] = next; else delete done[index];
+    return { ...entry, done };
+  }));
 
   const keep = async () => {
     setKeepError(null);
@@ -215,7 +240,7 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
     const attention = !!status && !!seen && (status.to_decide > seen.toDecide || status.conflicts > seen.conflicts);
     return (
       <Hint label={t('workspace.assistantWindow.reopen')} side="left">
-        <button type="button" className="assistant-window-key" onClick={() => onOpenChange(true)} aria-label={t('workspace.assistantWindow.reopen')}>
+        <button ref={keyRef} type="button" className="assistant-window-key" onClick={() => onOpenChange(true)} aria-label={t('workspace.assistantWindow.reopen')}>
           <HumcaseKey size={54} />
           {unseen
             ? <i className="assistant-window-key__light" role="status" aria-label={t('workspace.assistantWindow.newReply')} />
@@ -334,7 +359,8 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
             <Fragment key={entry.id}>
               {entry.said && <p className="assistant-window__said">{entry.said}</p>}
               {entry.error && <p className="assistant-window__error" role="alert">{t('workspace.assistantWindow.error', { error: entry.error })}</p>}
-              {entry.reply && <AssistantReplyView reply={entry.reply} onOpenCase={onOpenCase} onConnectAi={onConnectAi} onChanged={changed} onGerminate={onGerminate} />}
+              {entry.reply && <AssistantReplyView reply={entry.reply} done={entry.done} onDone={(index, next) => markDone(entry.id, index, next)}
+                onOpenCase={onOpenCase} onConnectAi={onConnectAi} onChanged={changed} onGerminate={onGerminate} />}
             </Fragment>
           ))}
           {pending && <div className="assistant-window__typing" role="status" aria-label={t('workspace.assistantWindow.status.reading')}><i /><i /><i /></div>}

@@ -95,7 +95,20 @@ export function useComposerDictation() {
     return finals.current.trim();
   }, [release]);
 
-  // The panel closes while listening: the microphone and the session are released.
+  /** Stops at once and drops what was heard: the window closed or went to the other one. */
+  const cancel = useCallback(() => {
+    const rec = recorder.current;
+    if (rec && rec.state === 'recording') rec.stop();
+    void api.stopTranscription().catch(() => {});
+    sends.current = Promise.resolve();
+    closed.current = null;
+    release();
+    finals.current = '';
+    setListening(false);
+    setInterim('');
+  }, [release]);
+
+  // The panel unmounts while listening: the microphone and the session are released.
   useEffect(() => () => {
     if (recorder.current?.state === 'recording') recorder.current.stop();
     unlisten.current.forEach(off => off());
@@ -103,5 +116,5 @@ export function useComposerDictation() {
     if (recorder.current) void api.stopTranscription().catch(() => {});
   }, []);
 
-  return { listening, starting, interim, error, start, stop };
+  return { listening, starting, interim, error, start, stop, cancel };
 }

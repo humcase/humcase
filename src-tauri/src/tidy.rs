@@ -339,16 +339,16 @@ pub fn pending(conn: &Connection, space: Option<&str>) -> Result<Vec<TidyItem>, 
 
 // --- Archiving ------------------------------------------------------------------------------
 
-/// Proposes to archive the top-level cases of the database resolved for the chosen weeks, with
-/// nothing open under them and nothing in force: a decision that no newer one replaced stays.
-/// A case the person refused, or archived then took back, is not proposed again; a waiting
-/// proposal whose case no longer qualifies is withdrawn (`replaced`). Returns the count added.
 /// A result an agent declared that the person has not accepted yet, or sent back for a rework.
 fn awaits_decision(conn: &Connection, note_id: &str) -> Result<bool, String> {
     let state = crate::db::journal::review_state(conn, note_id)?.state;
     Ok(state == "to_review" || state == "rework_requested")
 }
 
+/// Proposes to archive the top-level cases of the database resolved for the chosen weeks, with
+/// nothing open under them and nothing in force: a decision that no newer one replaced stays.
+/// A case the person refused, or archived then took back, is not proposed again; a waiting
+/// proposal whose case no longer qualifies is withdrawn (`replaced`). Returns the count added.
 pub fn refresh_archive(conn: &Connection) -> Result<usize, String> {
     let weeks = settings(conn)?.archive_weeks;
     let tx = crate::db::write_transaction(conn).map_err(crate::db::db_error)?;
@@ -395,27 +395,33 @@ pub fn refresh_archive(conn: &Connection) -> Result<usize, String> {
                         SELECT 1 FROM proposals pr
                          WHERE pr.note_id = n.id AND pr.kind = 'archive'
                            AND (pr.answer IS NULL OR pr.answer IN ('refused', 'accepted')))
-                  ORDER BY n.updated_at
-                  LIMIT ?2",
+                  ORDER BY n.updated_at",
             )
             .map_err(crate::db::db_error)?;
         let rows = stmt
-            .query_map(params![format!("-{} days", weeks * 7), room as i64], |r| {
-                Ok((r.get(0)?, r.get(1)?, r.get(2)?))
+            .query_map(params![format!("-{} days", weeks * 7)], |r| {
+                Ok((
+                    r.get::<_, String>(0)?,
+                    r.get::<_, String>(1)?,
+                    r.get::<_, String>(2)?,
+                ))
             })
-            .map_err(crate::db::db_error)?
-            .collect::<Result<Vec<_>, _>>()
             .map_err(crate::db::db_error)?;
-        rows
-    };
-    // A result still waiting for the person's decision is never archived behind their back.
-    let mut eligible_now = Vec::with_capacity(eligible.len());
-    for row in eligible {
-        if !awaits_decision(&tx, &row.0)? {
-            eligible_now.push(row);
+        // A result still waiting for the person's decision is never archived behind their back.
+        // The room is filled after that filter (not by a SQL LIMIT before it): results awaiting
+        // a decision would otherwise take the whole window, oldest first, forever.
+        let mut picked = Vec::with_capacity(room);
+        for row in rows {
+            let row = row.map_err(crate::db::db_error)?;
+            if !awaits_decision(&tx, &row.0)? {
+                picked.push(row);
+                if picked.len() == room {
+                    break;
+                }
+            }
         }
-    }
-    let eligible = eligible_now;
+        picked
+    };
     // Waiting proposals whose case changed since: reopened, archived, trashed, given work, or
     // now a result waiting for the person's decision.
     let waiting: Vec<String> = {
@@ -1535,6 +1541,66 @@ mod tests {
         journal::review_case(&conn, &result, journal::Decision::Accept, revision, None).unwrap();
         resolved_since(&conn, &result, 40);
         assert_eq!(refresh_archive(&conn).unwrap(), 1);
+    }
+
+    /// Results awaiting the person's decision, oldest first, must not fill the window of
+    /// proposals: a later eligible case is still proposed.
+    #[test]
+    fn results_awaiting_a_decision_do_not_fill_the_archive_window() {
+        use crate::db::journal::{self, Actor};
+        let conn = db();
+        journal::install(&conn, &Actor::Agent(Some("Codex".into()))).unwrap();
+        let p = project(&conn, "Humcase");
+        for i in 0..ARCHIVE_LIMIT {
+            let waiting = case(&conn, &p, &format!("Waiting {i}"), NoteType::Todo, "Draft.");
+            queries::update_note(
+                &conn,
+                &waiting,
+                crate::models::note::UpdateNoteInput {
+                    status: Some(crate::models::note::NoteStatus::Resolved),
+                    content: None,
+                    resolution_comment: Some("Written, to check.".into()),
+                    title: None,
+                    note_type: None,
+                    raw_content: None,
+                    priority: None,
+                    git_branch: None,
+                    tags: None,
+                    due_at: None,
+                },
+            )
+            .unwrap();
+            // Older than the case below, so they come first in the order of the query.
+            resolved_since(&conn, &waiting, 80);
+            assert_eq!(
+                journal::review_state(&conn, &waiting).unwrap().state,
+                "to_review"
+            );
+        }
+        journal::set_actor(&conn, &Actor::Human).unwrap();
+        let done = case(&conn, &p, "Done by hand", NoteType::Todo, "Done.");
+        queries::update_note(
+            &conn,
+            &done,
+            crate::models::note::UpdateNoteInput {
+                status: Some(crate::models::note::NoteStatus::Resolved),
+                content: None,
+                resolution_comment: None,
+                title: None,
+                note_type: None,
+                raw_content: None,
+                priority: None,
+                git_branch: None,
+                tags: None,
+                due_at: None,
+            },
+        )
+        .unwrap();
+        resolved_since(&conn, &done, 40);
+        assert_eq!(refresh_archive(&conn).unwrap(), 1);
+        let items = pending(&conn, None).unwrap();
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].case.id, done);
     }
 
     #[test]

@@ -61,12 +61,30 @@ export interface AssistantStatus {
   to_tidy: number;
 }
 
+/** How a done action is taken back: data, not a function, so it survives closing the window and
+ * the handover between the app and Mini Humcase. */
+export type AssistantUndo =
+  | { kind: 'delete_note'; id: string }
+  | { kind: 'unarchive'; id: string }
+  | { kind: 'move'; id: string; project_id: string }
+  | { kind: 'untidy'; tidy_id: string };
+
+/** An action of a reply once done: what changed, the case to open, how to undo it. */
+export interface AssistantDone {
+  text: string;
+  open_id?: string;
+  undo?: AssistantUndo;
+}
+
 /** One exchange of the window. */
 export interface AssistantEntry {
   id: number;
   said: string | null;
   reply?: AssistantReply;
   error?: string;
+  /** The actions of the reply already done, by index: a closed and reopened window, or the other
+   * window, shows them done instead of proposing them again. */
+  done?: Record<number, AssistantDone>;
 }
 
 /** How many earlier exchanges the engine receives. */

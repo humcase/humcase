@@ -72,6 +72,7 @@
       "unknownTranscription": "Unbekannter Transkriptionsanbieter: {{id}}",
       "missingUrl": "URL für den Anbieter „{{provider}}“ fehlt ({{source}}).",
       "missingKey": "{{name}} fehlt",
+      "chosenNoKey": "Die in den Einstellungen gewählte KI ({{provider}}) hat keinen API-Schlüssel.",
       "missingModel": "Modell für den Anbieter „{{provider}}“ fehlt.",
       "emptyResponse": "Leere oder unerwartete Antwort des Anbieters",
       "custom": "Benutzerdefiniert (OpenAI-kompatibel)",
@@ -371,6 +372,7 @@
     "weeks": "Dauer nicht angeboten: {{weeks}} Wochen."
   },
   "ask": {
-    "unreadable": "Unlesbare Antwort der KI: {{error}}"
+    "unreadable": "Unlesbare Antwort der KI: {{error}}",
+    "deadline": "Die KI hat zu lange für die Antwort gebraucht (über {{seconds}} Sekunden). Versuche es erneut."
   }
 }

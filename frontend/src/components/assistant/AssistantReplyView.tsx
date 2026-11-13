@@ -3,15 +3,18 @@ import { useTranslation } from 'react-i18next';
 import { Check } from '@phosphor-icons/react';
 import { Button } from '../ui/Button';
 import { api } from '../../services/tauriApi';
-import type { AssistantActionV2, AssistantReply } from '../../types/assistant';
+import type { AssistantActionV2, AssistantDone, AssistantReply, AssistantUndo } from '../../types/assistant';
 import type { TidyOutcome } from '../../types';
 
 const message = (error: unknown) => String(error instanceof Error ? error.message : error);
 
 /** A reply of the assistant: its paragraph with citation numbers, its question, its sources and
  * the actions it proposes. */
-export function AssistantReplyView({ reply, onOpenCase, onConnectAi, onChanged, onGerminate }: {
+export function AssistantReplyView({ reply, done = {}, onDone, onOpenCase, onConnectAi, onChanged, onGerminate }: {
   reply: AssistantReply;
+  /** Actions already done, by index (kept in the conversation, not in the card). */
+  done?: Record<number, AssistantDone>;
+  onDone: (index: number, done: AssistantDone | null) => void;
   onOpenCase: (id: string) => void;
   onConnectAi: () => void;
   /** Something was written (an action or its undo): the workspace reloads. */
@@ -62,30 +65,42 @@ export function AssistantReplyView({ reply, onOpenCase, onConnectAi, onChanged, 
           </ol>
         </details>
       )}
-      {reply.actions.map((action, index) => <ActionCard key={index} action={action} onOpenCase={onOpenCase} onChanged={onChanged} onGerminate={onGerminate} />)}
+      {reply.actions.map((action, index) => <ActionCard key={index} action={action} done={done[index] ?? null} onDone={next => onDone(index, next)}
+        onOpenCase={onOpenCase} onChanged={onChanged} onGerminate={onGerminate} />)}
     </div>
   );
 }
 
-/** `undo` is absent when nothing was written (Sprout only opens: its proposals wait in the case). */
-type Done = { text: string; undo?: () => Promise<void>; openId?: string };
+const undoAction = (undo: AssistantUndo): Promise<void> => {
+  switch (undo.kind) {
+    case 'delete_note': return api.deleteNote(undo.id);
+    case 'unarchive': return api.setNoteArchived(undo.id, false);
+    case 'move': return api.moveNoteToProject(undo.id, undo.project_id);
+    case 'untidy': return api.undoTidy([undo.tidy_id]);
+  }
+};
 
 /** A proposed action: nothing happens before the click; once done, a line says what changed and
- * offers to undo it. */
-function ActionCard({ action, onOpenCase, onChanged, onGerminate }: { action: AssistantActionV2; onOpenCase: (id: string) => void; onChanged: () => void; onGerminate: (id: string) => void }) {
+ * offers to undo it. `undo` is absent when nothing was written (Sprout only opens: its proposals
+ * wait in the case). The done state lives in the conversation, so closing the window or handing it
+ * to Mini Humcase never offers the same action twice. */
+function ActionCard({ action, done, onDone, onOpenCase, onChanged, onGerminate }: {
+  action: AssistantActionV2; done: AssistantDone | null; onDone: (done: AssistantDone | null) => void;
+  onOpenCase: (id: string) => void; onChanged: () => void; onGerminate: (id: string) => void;
+}) {
   const { t } = useTranslation();
-  const [done, setDone] = useState<Done | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const run = async (task: () => Promise<Done>) => {
+  const run = async (task: () => Promise<AssistantDone>) => {
+    if (busy) return;
     setBusy(true); setError(null);
-    try { setDone(await task()); onChanged(); } catch (err) { setError(message(err)); } finally { setBusy(false); }
+    try { onDone(await task()); onChanged(); } catch (err) { setError(message(err)); } finally { setBusy(false); }
   };
   const undo = async () => {
-    if (!done?.undo) return;
+    if (!done?.undo || busy) return;
     setBusy(true); setError(null);
-    try { await done.undo(); setDone(null); onChanged(); } catch (err) { setError(message(err)); } finally { setBusy(false); }
+    try { await undoAction(done.undo); onDone(null); onChanged(); } catch (err) { setError(message(err)); } finally { setBusy(false); }
   };
   const failed = error && <p className="assistant-window__error" role="alert">{t('workspace.assistantWindow.actionError', { error })}</p>;
 
@@ -95,7 +110,7 @@ function ActionCard({ action, onOpenCase, onChanged, onGerminate }: { action: As
         <div className="assistant-window__done" role="status">
           <Check size={15} weight="bold" aria-hidden="true" />
           <span>{done.text}</span>
-          {done.openId && <button type="button" onClick={() => onOpenCase(done.openId!)}>{t('workspace.assistantWindow.open')}</button>}
+          {done.open_id && <button type="button" onClick={() => onOpenCase(done.open_id!)}>{t('workspace.assistantWindow.open')}</button>}
           {done.undo && <button type="button" disabled={busy} onClick={() => void undo()}>{t('workspace.assistantWindow.undo')}</button>}
         </div>
         {failed}
@@ -112,12 +127,12 @@ function ActionCard({ action, onOpenCase, onChanged, onGerminate }: { action: As
     body = t('workspace.assistantWindow.action.subCase', { title: action.title, parent: title });
     buttons = <Button size="sm" disabled={busy} onClick={() => void run(async () => {
       const id = await api.createSubCase(action.case_id, action.title, 'todo');
-      return { text: t('workspace.assistantWindow.action.subCaseDone', { title: action.title, parent: title }), openId: id, undo: () => api.deleteNote(id) };
+      return { text: t('workspace.assistantWindow.action.subCaseDone', { title: action.title, parent: title }), open_id: id, undo: { kind: 'delete_note', id } };
     })}>{t('workspace.assistantWindow.action.createSubCase')}</Button>;
   } else if (action.kind === 'germinate') {
     kind = 'germinate';
     body = t('workspace.assistantWindow.action.germinateText', { title });
-    buttons = <Button size="sm" disabled={busy} onClick={() => { onGerminate(action.case_id); setDone({ text: t('workspace.assistantWindow.action.germinateDone', { title }) }); }}>
+    buttons = <Button size="sm" disabled={busy} onClick={() => { onGerminate(action.case_id); onDone({ text: t('workspace.assistantWindow.action.germinateDone', { title }) }); }}>
       {t('workspace.assistantWindow.action.germinate')}
     </Button>;
   } else if (action.kind === 'archive') {
@@ -125,14 +140,14 @@ function ActionCard({ action, onOpenCase, onChanged, onGerminate }: { action: As
     body = t('workspace.assistantWindow.action.archiveText', { title });
     buttons = <Button size="sm" disabled={busy} onClick={() => void run(async () => {
       await api.setNoteArchived(action.case_id, true);
-      return { text: t('workspace.assistantWindow.action.archiveDone', { title }), undo: () => api.setNoteArchived(action.case_id, false) };
+      return { text: t('workspace.assistantWindow.action.archiveDone', { title }), undo: { kind: 'unarchive', id: action.case_id } };
     })}>{t('workspace.assistantWindow.action.archive')}</Button>;
   } else if (action.kind === 'move') {
     kind = 'move';
     body = t('workspace.assistantWindow.action.moveText', { title, project: action.project_name });
     buttons = <Button size="sm" disabled={busy} onClick={() => void run(async () => {
       await api.moveNoteToProject(action.case_id, action.project_id);
-      return { text: t('workspace.assistantWindow.action.moveDone', { title, project: action.project_name }), openId: action.case_id, undo: () => api.moveNoteToProject(action.case_id, action.from_project_id) };
+      return { text: t('workspace.assistantWindow.action.moveDone', { title, project: action.project_name }), open_id: action.case_id, undo: { kind: 'move', id: action.case_id, project_id: action.from_project_id } };
     })}>{t('workspace.assistantWindow.action.move', { project: action.project_name })}</Button>;
   } else {
     // An item of "To tidy": answered like on its page, taken back with its Undo.
@@ -141,8 +156,8 @@ function ActionCard({ action, onOpenCase, onChanged, onGerminate }: { action: As
       const outcome: TidyOutcome = await api.answerTidy([{ id: action.tidy_id, accept }]);
       return {
         text: outcome.skipped > 0 ? t('workspace.tidy.doneSkipped', { count: outcome.skipped }) : text,
-        openId,
-        undo: () => api.undoTidy([action.tidy_id]),
+        open_id: openId,
+        undo: { kind: 'untidy', tidy_id: action.tidy_id },
       };
     });
     const refused = t('workspace.assistantWindow.action.refusedDone');

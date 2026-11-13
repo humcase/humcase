@@ -72,6 +72,7 @@
       "unknownTranscription": "Provider di trascrizione sconosciuto: {{id}}",
       "missingUrl": "URL mancante per il provider \"{{provider}}\" ({{source}}).",
       "missingKey": "{{name}} è mancante",
+      "chosenNoKey": "L’IA scelta nelle impostazioni ({{provider}}) non ha una chiave API.",
       "missingModel": "Modello mancante per il provider \"{{provider}}\".",
       "emptyResponse": "Risposta del provider vuota o inattesa",
       "custom": "Personalizzato (compatibile con OpenAI)",
@@ -371,6 +372,7 @@
     "weeks": "Durata non prevista: {{weeks}} settimane."
   },
   "ask": {
-    "unreadable": "Risposta dell’IA illeggibile: {{error}}"
+    "unreadable": "Risposta dell’IA illeggibile: {{error}}",
+    "deadline": "L’IA ha impiegato troppo tempo a rispondere (oltre {{seconds}} secondi). Riprova."
   }
 }

@@ -115,15 +115,17 @@ pub(crate) fn first_ready_provider() -> Option<String> {
     crate::ask::ready_provider(&providers::providers_info().cleanup, None).map(|(id, _)| id)
 }
 
-/// The provider to call: the one asked when it is ready, else the first other ready one (a key
-/// set for another AI is used without choosing it), else the one asked, whose error says what
-/// is missing.
-pub(crate) fn pick_provider(asked: Option<String>) -> String {
+/// The provider to call: the one asked, when it is ready; an error when it is asked and has no
+/// key (another AI is never substituted: its key, possibly only a Windows variable, was not
+/// chosen for this use). With none asked: the first ready one, else "cerebras", whose error says
+/// what is missing.
+pub(crate) fn pick_provider(asked: Option<String>) -> Result<String, String> {
     let asked = asked.filter(|id| !id.is_empty());
-    crate::ask::ready_provider(&providers::providers_info().cleanup, asked.as_deref())
-        .map(|(id, _)| id)
-        .or(asked)
-        .unwrap_or_else(|| "cerebras".to_string())
+    Ok(
+        crate::ask::provider_to_ask(&providers::providers_info().cleanup, asked.as_deref())?
+            .map(|(id, _)| id)
+            .unwrap_or_else(|| "cerebras".to_string()),
+    )
 }
 
 /// Structuring asked by an agent (MCP and CLI `structure_note`): Humcase structures the case
@@ -342,7 +344,7 @@ async fn call_llm_with(
     log: Option<UsageLog<'_>>,
 ) -> Result<LlmAnswer, (String, Option<u16>)> {
     let asked = provider.clone();
-    let provider_id = pick_provider(provider);
+    let provider_id = pick_provider(provider).map_err(|e| (e, None))?;
     // A model chosen for another provider means nothing to this one.
     let model = model.filter(|_| asked.as_deref().is_none_or(|id| id == provider_id));
     // Error propagated as is: a missing key keeps its stable code
@@ -464,7 +466,7 @@ pub(crate) async fn call_llm_chat(
     reasoning_effort: Option<&str>,
 ) -> Result<serde_json::Value, (String, Option<u16>)> {
     let asked = provider.clone();
-    let provider_id = pick_provider(provider);
+    let provider_id = pick_provider(provider).map_err(|e| (e, None))?;
     // A model chosen for another provider means nothing to this one.
     let model = model.filter(|_| asked.as_deref().is_none_or(|id| id == provider_id));
     let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;

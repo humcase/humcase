@@ -72,6 +72,7 @@
       "unknownTranscription": "Unknown transcription provider: {{id}}",
       "missingUrl": "Missing URL for provider \"{{provider}}\" ({{source}}).",
       "missingKey": "{{name}} is missing",
+      "chosenNoKey": "The AI chosen in Settings ({{provider}}) has no API key.",
       "missingModel": "Missing model for provider \"{{provider}}\".",
       "emptyResponse": "Empty or unexpected provider response",
       "custom": "Custom (OpenAI-compatible)",
@@ -371,6 +372,7 @@
     "weeks": "Duration not offered: {{weeks}} weeks."
   },
   "ask": {
-    "unreadable": "Unreadable answer from the AI: {{error}}"
+    "unreadable": "Unreadable answer from the AI: {{error}}",
+    "deadline": "The AI took too long to answer (over {{seconds}} seconds). Try again."
   }
 }

@@ -72,6 +72,7 @@
       "unknownTranscription": "Proveedor de transcripción desconocido: {{id}}",
       "missingUrl": "Falta la URL del proveedor \"{{provider}}\" ({{source}}).",
       "missingKey": "Falta {{name}}",
+      "chosenNoKey": "La IA elegida en los ajustes ({{provider}}) no tiene clave de API.",
       "missingModel": "Falta el modelo del proveedor \"{{provider}}\".",
       "emptyResponse": "Respuesta del proveedor vacía o inesperada",
       "custom": "Personalizado (compatible con OpenAI)",
@@ -371,6 +372,7 @@
     "weeks": "Duración no ofrecida: {{weeks}} semanas."
   },
   "ask": {
-    "unreadable": "Respuesta de la IA ilegible: {{error}}"
+    "unreadable": "Respuesta de la IA ilegible: {{error}}",
+    "deadline": "La IA tardó demasiado en responder (más de {{seconds}} segundos). Inténtalo de nuevo."
   }
 }

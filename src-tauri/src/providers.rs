@@ -192,6 +192,16 @@ fn missing_key_error(key_env: &str) -> String {
     )
 }
 
+/// The AI the person chose in Settings has no key: the error that replaces any substitution by
+/// another AI (its key, possibly only a Windows variable, was never meant for this use). Same
+/// stable code as a missing key, so the interface recognizes it.
+pub fn chosen_without_key_error(label: &str) -> String {
+    format!(
+        "[{MISSING_KEY_CODE}] {}",
+        crate::tr!("ai.provider.chosenNoKey", provider = label)
+    )
+}
+
 /// Resolved cleaning provider (URL, optional key, model) ready for the HTTP call.
 #[derive(Debug)]
 pub struct ResolvedLlm {

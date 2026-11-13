@@ -24,6 +24,9 @@ pub(crate) const OWN_KINDS: [&str; 2] = [KEPT_KIND, REFLECT_KIND];
 /// The provenance of a summary kept by "Think it through", before the assistant replaced it.
 pub(crate) const REFLECT_KIND: &str = "reflect";
 const KEPT_TITLE_MAX: usize = 200;
+/// Characters of a kept answer, and sources kept with it (the interface sends what it shows).
+const KEPT_CONTENT_MAX: usize = 20_000;
+const KEPT_SOURCES_MAX: usize = 30;
 
 /// Cases whose sentences are sent in full.
 const DETAILED_MAX: usize = 7;
@@ -402,13 +405,17 @@ pub fn keep(
     content: &str,
     sources: &[KeptSource],
 ) -> Result<String, String> {
-    let inbox = queries::get_or_create_inbox(conn, space)?;
+    // One transaction: a case never exists without its kept marker (it would then be read as a
+    // source of its own question). `create_note` and `add_provenance` join it when one is open.
+    let tx = crate::db::write_transaction(conn).map_err(crate::db::db_error)?;
+    let inbox = queries::get_or_create_inbox(&tx, space)?;
     let id = queries::create_note(
-        conn,
+        &tx,
         crate::models::note::CreateNoteInput {
             project_id: inbox,
             title: clip(question, KEPT_TITLE_MAX),
-            content: Some(content.to_string()),
+            // Line breaks kept: the answer is Markdown; only its length is bounded.
+            content: Some(content.chars().take(KEPT_CONTENT_MAX).collect()),
             note_type: crate::models::note::NoteType::Note,
             priority: None,
             git_branch: None,
@@ -418,7 +425,7 @@ pub fn keep(
         },
     )?;
     crate::db::cases::add_provenance(
-        conn,
+        &tx,
         &id,
         KEPT_KIND,
         Some("Humcase"),
@@ -426,10 +433,16 @@ pub fn keep(
         Some(&clip(question, QUESTION_MAX)),
         None,
     )?;
-    for source in sources {
-        let excerpt = source.passages.join(" … ");
+    for source in sources.iter().take(KEPT_SOURCES_MAX) {
+        let excerpt = source
+            .passages
+            .iter()
+            .take(PASSAGES_MAX)
+            .map(String::as_str)
+            .collect::<Vec<_>>()
+            .join(" … ");
         crate::db::cases::add_provenance(
-            conn,
+            &tx,
             &id,
             "source",
             Some(&clip(&source.title, 400)),
@@ -438,6 +451,7 @@ pub fn keep(
             None,
         )?;
     }
+    tx.commit().map_err(crate::db::db_error)?;
     Ok(id)
 }
 
@@ -671,20 +685,42 @@ pub(crate) fn words_of(text: &str) -> HashSet<String> {
 /// ready even when nothing runs there, so it is used only when chosen.
 const LOCAL_BY_DEFAULT: &str = "ollama";
 
-/// The provider to ask: the one chosen in Settings when it is ready, else the first other ready
-/// one (never the local server by default); `None` when no AI is connected.
+/// The provider to ask. With one chosen in Settings: that one when it is ready, and nothing
+/// else (`None`): another AI is never substituted, its key may never have been meant for this use
+/// (see [`provider_to_ask`] for the error). With none chosen: the first ready one, never the
+/// local server by default; `None` when no AI is connected.
 pub(crate) fn ready_provider(
     providers: &[crate::providers::ProviderInfo],
     chosen: Option<&str>,
 ) -> Option<(String, String)> {
-    chosen
-        .and_then(|id| providers.iter().find(|p| p.id == id && p.ready))
-        .or_else(|| {
-            providers
+    let chosen = chosen.filter(|id| !id.is_empty());
+    match chosen {
+        Some(id) => providers.iter().find(|p| p.id == id && p.ready),
+        None => providers
+            .iter()
+            .find(|p| p.ready && p.id != LOCAL_BY_DEFAULT),
+    }
+    .map(|p| (p.id.clone(), p.label.clone()))
+}
+
+/// [`ready_provider`] as a result: `Err` (the chosen AI has no key, translated) when one is chosen
+/// and not ready; `Ok(None)` only when none is chosen and no AI is connected.
+pub(crate) fn provider_to_ask(
+    providers: &[crate::providers::ProviderInfo],
+    chosen: Option<&str>,
+) -> Result<Option<(String, String)>, String> {
+    let chosen = chosen.filter(|id| !id.is_empty());
+    match (ready_provider(providers, chosen), chosen) {
+        (Some(found), _) => Ok(Some(found)),
+        (None, Some(id)) => {
+            let label = providers
                 .iter()
-                .find(|p| p.ready && p.id != LOCAL_BY_DEFAULT)
-        })
-        .map(|p| (p.id.clone(), p.label.clone()))
+                .find(|p| p.id == id)
+                .map_or(id, |p| p.label.as_str());
+            Err(crate::providers::chosen_without_key_error(label))
+        }
+        (None, None) => Ok(None),
+    }
 }
 
 /// Cases `search_cases` returns, and lines `list_cases` returns.
@@ -850,6 +886,11 @@ pub(crate) struct AgentOutcome<T> {
     pub(crate) tools: Vec<String>,
 }
 
+/// The error of a reply that outlasted its overall deadline.
+pub(crate) fn deadline_error(deadline: std::time::Duration) -> String {
+    crate::tr!("ask.deadline", seconds = deadline.as_secs())
+}
+
 /// The assistant's message as sent back to the model.
 pub(crate) fn assistant_turn(reply: &Value) -> Value {
     let mut turn = reply.clone();
@@ -861,7 +902,9 @@ pub(crate) fn assistant_turn(reply: &Value) -> Value {
 /// `final_tool`, whose arguments `parse` reads (the same reader is tried on a JSON object
 /// written as plain text); at most `max_calls` model calls, the last forced to `final_tool`.
 /// `query` is what the question words of the search tools are taken from. `extra_tool` runs the
-/// tools of the caller beyond the shared read-only ones (`None`: not one of its tools).
+/// tools of the caller beyond the shared read-only ones (`None`: not one of its tools). The whole
+/// loop, all its model calls together, stops after `deadline` with an error (each call has its own
+/// shorter limit besides).
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn run_agent_with<T, F, Fut>(
     db: &std::sync::Mutex<Connection>,
@@ -872,6 +915,7 @@ pub(crate) async fn run_agent_with<T, F, Fut>(
     first: Value,
     final_tool: &str,
     max_calls: usize,
+    deadline: std::time::Duration,
     parse: impl Fn(Value) -> Result<T, String>,
     extra_tool: impl Fn(&Connection, &mut Reading, &str, &Value) -> Option<Result<Value, String>>,
     mut call_model: F,
@@ -881,6 +925,7 @@ where
     Fut: std::future::Future<Output = Result<Value, (String, Option<u16>)>>,
 {
     let question_words = words_of(query);
+    let stop_at = tokio::time::Instant::now() + deadline;
     let mut tools_used = Vec::new();
     let mut messages = vec![
         json!({ "role": "system", "content": system }),
@@ -892,10 +937,13 @@ where
         } else {
             json!("auto")
         };
-        let reply = match call_model(messages.clone(), choice).await {
-            Ok(reply) => reply,
-            Err((_, Some(400 | 422))) if call == 1 => return Err(AgentFailure::ToolsRefused),
-            Err((error, _)) => return Err(AgentFailure::Failed(error)),
+        let reply = match tokio::time::timeout_at(stop_at, call_model(messages.clone(), choice))
+            .await
+        {
+            Err(_) => return Err(AgentFailure::Failed(deadline_error(deadline))),
+            Ok(Ok(reply)) => reply,
+            Ok(Err((_, Some(400 | 422)))) if call == 1 => return Err(AgentFailure::ToolsRefused),
+            Ok(Err((error, _))) => return Err(AgentFailure::Failed(error)),
         };
         let tool_calls = reply["tool_calls"].as_array().cloned().unwrap_or_default();
         if tool_calls.is_empty() {
@@ -1659,19 +1707,127 @@ pub(crate) mod tests {
     #[test]
     fn no_key_means_no_ai_even_though_the_local_server_looks_ready() {
         let none = [provider("cerebras", false), provider("ollama", true)];
-        assert_eq!(ready_provider(&none, Some("cerebras")), None);
+        assert_eq!(ready_provider(&none, None), None);
         assert_eq!(
             ready_provider(&none, Some("ollama")),
             Some(("ollama".into(), "OLLAMA".into())),
             "chosen in Settings"
         );
+        assert_eq!(provider_to_ask(&none, None), Ok(None));
+    }
+
+    // Privacy: the AI chosen for a use is the only one that receives it. Removing this rule would
+    // send the text to whichever other AI has a key (maybe only a Windows variable).
+    #[test]
+    fn a_chosen_ai_without_a_key_is_an_error_never_another_ai() {
         let groq = [
             provider("cerebras", false),
             provider("ollama", true),
             provider("groq", true),
         ];
-        assert_eq!(ready_provider(&groq, Some("cerebras")).unwrap().0, "groq");
+        assert_eq!(ready_provider(&groq, Some("cerebras")), None);
+        let error = provider_to_ask(&groq, Some("cerebras")).unwrap_err();
+        assert!(
+            error.starts_with(&format!("[{}]", crate::providers::MISSING_KEY_CODE)),
+            "{error}"
+        );
+        assert_eq!(
+            provider_to_ask(&groq, Some("groq")).unwrap().unwrap().0,
+            "groq"
+        );
+        // An unknown id is no reason to pick another AI either.
+        assert!(provider_to_ask(&groq, Some("nowhere")).is_err());
+    }
+
+    // The founder's earlier decision: with no AI chosen, the first one whose key is set (never
+    // the local server by default); an empty choice counts as none.
+    #[test]
+    fn with_no_ai_chosen_the_first_ready_one_is_used() {
+        let groq = [
+            provider("cerebras", false),
+            provider("ollama", true),
+            provider("groq", true),
+        ];
         assert_eq!(ready_provider(&groq, None).unwrap().0, "groq");
+        assert_eq!(ready_provider(&groq, Some("")).unwrap().0, "groq");
+        assert_eq!(provider_to_ask(&groq, None).unwrap().unwrap().0, "groq");
+    }
+
+    // A reply that never ends is cut at the overall deadline, with its own message.
+    #[tokio::test]
+    async fn the_agent_loop_stops_at_its_overall_deadline() {
+        let conn = db();
+        let db = std::sync::Mutex::new(conn);
+        let mut reading = Reading::default();
+        let outcome = run_agent_with(
+            &db,
+            None,
+            "question",
+            &mut reading,
+            "system",
+            json!({}),
+            "final",
+            6,
+            std::time::Duration::from_millis(50),
+            |_| Ok(()),
+            |_, _, _, _| None,
+            |_, _| async {
+                tokio::time::sleep(std::time::Duration::from_secs(3600)).await;
+                Ok(json!({}))
+            },
+        )
+        .await;
+        match outcome {
+            Err(AgentFailure::Failed(error)) => {
+                assert_eq!(error, deadline_error(std::time::Duration::from_millis(50)))
+            }
+            other => panic!("expected the deadline error, got {other:?}"),
+        }
+    }
+
+    // A kept answer is one transaction: a failing source leaves no case behind, and a long
+    // answer is cut instead of stored whole.
+    #[test]
+    fn keeping_an_answer_is_all_or_nothing_and_bounded() {
+        let conn = db();
+        let space = crate::models::project::ProjectSpace::Work;
+        let count = |conn: &Connection| -> i64 {
+            conn.query_row("SELECT COUNT(*) FROM notes", [], |r| r.get(0))
+                .unwrap()
+        };
+        let before = count(&conn);
+        // A source with neither title nor passage cannot be recorded as a provenance.
+        let failed = keep(
+            &conn,
+            space,
+            "What changed?",
+            "An answer.",
+            &[KeptSource {
+                title: String::new(),
+                passages: Vec::new(),
+            }],
+        );
+        assert!(failed.is_err());
+        assert_eq!(count(&conn), before, "no case without its kept marker");
+        let marked: i64 = conn
+            .query_row("SELECT COUNT(*) FROM case_provenance", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(marked, 0);
+        // The connection is back in autocommit: the next keep works.
+        let long = "x\n".repeat(KEPT_CONTENT_MAX);
+        let sources: Vec<KeptSource> = (0..KEPT_SOURCES_MAX + 5)
+            .map(|i| KeptSource {
+                title: format!("Case {i}"),
+                passages: vec!["Passage.".into()],
+            })
+            .collect();
+        let id = keep(&conn, space, "What changed?", &long, &sources).unwrap();
+        let note = queries::get_note_by_id(&conn, &id).unwrap();
+        assert_eq!(note.content.chars().count(), KEPT_CONTENT_MAX);
+        assert!(note.content.contains('\n'), "line breaks kept");
+        let provenance = crate::db::cases::list_provenance(&conn, &id).unwrap();
+        assert_eq!(provenance.len(), 1 + KEPT_SOURCES_MAX);
+        assert_eq!(provenance[0].kind, KEPT_KIND);
     }
 
     // Removing `load_case`'s checks would let the tools hand the AI what the first reading

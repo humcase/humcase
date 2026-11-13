@@ -28,6 +28,9 @@ const PREVIOUS_REPLY_MAX: usize = 1500;
 const CONTEXT_SENTENCES: usize = 20;
 /// Model calls a reply may take, the last one forced to `reply`.
 const CALLS_MAX: usize = 6;
+/// The whole reply (every model call and the fallback) stops after this long, whatever the
+/// number of calls and the limit of each.
+const REPLY_DEADLINE: std::time::Duration = std::time::Duration::from_secs(120);
 const ACTIONS_MAX: usize = 3;
 const SUB_CASE_TITLE_MAX: usize = 120;
 /// Cases `list_changed` returns, and items `list_tidy` returns.
@@ -206,13 +209,16 @@ pub(crate) fn model_label(model: &str) -> String {
 }
 
 /// The provider to ask and the label of the model it runs: the chosen one when ready, else the
-/// first ready one (`ask::ready_provider`); a model chosen for another provider is dropped.
+/// first ready one only when none is chosen (`ask::provider_to_ask`): a chosen AI without a key
+/// is an error, never replaced by another; a model chosen for another provider is dropped.
 fn provider_and_model(
     providers: &[crate::providers::ProviderInfo],
     provider: Option<&str>,
     model: Option<String>,
-) -> Option<(String, Option<String>, String)> {
-    let (id, label) = ask::ready_provider(providers, provider)?;
+) -> Result<Option<(String, Option<String>, String)>, String> {
+    let Some((id, label)) = ask::provider_to_ask(providers, provider)? else {
+        return Ok(None);
+    };
     let model = model.filter(|m| !m.trim().is_empty() && provider == Some(id.as_str()));
     let default = providers
         .iter()
@@ -225,7 +231,7 @@ fn provider_and_model(
     } else {
         model_label(&shown)
     };
-    Some((id, model, shown))
+    Ok(Some((id, model, shown)))
 }
 
 // ---- The tools of the assistant -------------------------------------------------------------
@@ -355,6 +361,7 @@ fn list_changed(
                     date(n.created_at, 'localtime') BETWEEN ?2 AND ?3
                FROM notes n JOIN projects p ON p.id = n.project_id
               WHERE n.deleted_at IS NULL AND n.archived_at IS NULL
+                AND n.content_kind != 'sketch'
                 AND date(n.updated_at, 'localtime') BETWEEN ?2 AND ?3
                 AND NOT EXISTS (SELECT 1 FROM case_provenance cp
                                  WHERE cp.note_id = n.id AND cp.kind IN ('ask', 'reflect'))
@@ -933,7 +940,7 @@ pub async fn reply(
         })
         .collect();
     let providers = crate::providers::providers_info().cleanup;
-    let chosen = provider_and_model(&providers, provider.as_deref(), model);
+    let chosen = provider_and_model(&providers, provider.as_deref(), model)?;
     let Some((provider_id, model, label)) = chosen else {
         return Ok(Reply::empty(ReplyKind::NoAi, None));
     };
@@ -967,6 +974,7 @@ pub async fn reply(
         "{latest} {}",
         previous.last().map(|t| t.said.as_str()).unwrap_or_default()
     );
+    let started = std::time::Instant::now();
     let outcome = ask::run_agent_with(
         db,
         space.as_deref(),
@@ -976,6 +984,7 @@ pub async fn reply(
         first.clone(),
         "reply",
         CALLS_MAX,
+        REPLY_DEADLINE,
         parse_reply,
         |conn, reading, name, args| run_tool(conn, space.as_deref(), reading, name, args),
         |messages, choice| {
@@ -997,17 +1006,22 @@ pub async fn reply(
         Err(ask::AgentFailure::Failed(error)) => return Err(error),
         // A provider without tools: one call on the first reading.
         Err(ask::AgentFailure::ToolsRefused) => {
-            let text = crate::commands::ai::call_llm_json(
-                SYSTEM_PROMPT,
-                first,
-                Some(provider_id),
-                model,
-                "reply",
-                reply_schema(),
-                db_path,
-                crate::ai_usage::operation::ASSISTANT,
+            let left = REPLY_DEADLINE.saturating_sub(started.elapsed());
+            let text = tokio::time::timeout(
+                left,
+                crate::commands::ai::call_llm_json(
+                    SYSTEM_PROMPT,
+                    first,
+                    Some(provider_id),
+                    model,
+                    "reply",
+                    reply_schema(),
+                    db_path,
+                    crate::ai_usage::operation::ASSISTANT,
+                ),
             )
-            .await?;
+            .await
+            .map_err(|_| ask::deadline_error(REPLY_DEADLINE))??;
             let value = ask::json_object_in(&text)
                 .ok_or_else(|| crate::tr!("ask.unreadable", error = "no JSON object"))?;
             (
@@ -1034,7 +1048,11 @@ pub fn status(
     model: Option<String>,
 ) -> Result<Status, String> {
     let providers = crate::providers::providers_info().cleanup;
-    let model_label = provider_and_model(&providers, provider, model).map(|(_, _, label)| label);
+    // A chosen AI without a key shows no model (the reply itself says why).
+    let model_label = provider_and_model(&providers, provider, model)
+        .ok()
+        .flatten()
+        .map(|(_, _, label)| label);
     let mut stmt = conn
         .prepare(
             "SELECT n.id, n.status FROM notes n JOIN projects p ON p.id = n.project_id
@@ -1297,6 +1315,56 @@ mod tests {
         )
         .unwrap();
         assert!(bad["error"].is_string());
+    }
+
+    // `list_changed` has its own SQL: it must refuse a drawing as `ask::load_case` does.
+    #[test]
+    fn a_period_never_lists_a_sketch() {
+        let conn = db();
+        let work = project(&conn, "Shop", ProjectSpace::Work);
+        add(&conn, &work, "Checkout", "One page.");
+        let drawing = add(&conn, &work, "Wireframe", "{}");
+        conn.execute(
+            "UPDATE notes SET content_kind = 'sketch' WHERE id = ?1",
+            [&drawing],
+        )
+        .unwrap();
+        let today: String = conn
+            .query_row("SELECT date('now', 'localtime')", [], |r| r.get(0))
+            .unwrap();
+        let mut reading = Reading::default();
+        let listed = list_changed(
+            &conn,
+            Some("work"),
+            &mut reading,
+            &json!({ "since": today, "until": today }),
+        )
+        .unwrap();
+        assert_eq!(listed["changed"], 1);
+        assert_eq!(listed["cases"].as_array().unwrap().len(), 1);
+        assert_eq!(listed["cases"][0]["excerpts"][0]["text"], "Checkout");
+    }
+
+    #[test]
+    fn a_chosen_ai_without_a_key_is_never_replaced_by_another() {
+        let info = |id: &str, ready: bool| crate::providers::ProviderInfo {
+            id: id.into(),
+            label: id.to_uppercase(),
+            key_env: String::new(),
+            default_model: String::new(),
+            url_env: String::new(),
+            model_env: String::new(),
+            needs_key: true,
+            key_defined: ready,
+            key_source: crate::ai_settings::KeyProvenance::None,
+            url_editable: false,
+            url: String::new(),
+            ready,
+        };
+        let providers = [info("cerebras", false), info("groq", true)];
+        assert!(provider_and_model(&providers, Some("cerebras"), None).is_err());
+        let (id, _, _) = provider_and_model(&providers, None, None).unwrap().unwrap();
+        assert_eq!(id, "groq");
     }
 
     #[test]
