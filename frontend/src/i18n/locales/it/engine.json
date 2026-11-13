@@ -187,6 +187,7 @@
     "versionMismatch": "La versione del database non corrisponde al manifest",
     "zipEntryTooLarge": "Voce ZIP troppo grande: {{name}}",
     "zipInvalid": "ZIP non valido: {{error}}",
+    "zipInconsistent": "Archivio ZIP incoerente: nomi duplicati o intestazioni contraddittorie",
     "zipPathInvalid": "Percorso ZIP non valido o duplicato: {{name}}",
     "archiveChanged": "L’archivio è cambiato dopo l’anteprima",
     "countsInvalid": "Conteggi non validi dopo l’importazione",

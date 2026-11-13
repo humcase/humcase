@@ -187,6 +187,7 @@
     "versionMismatch": "Version de base incohérente avec le manifeste",
     "zipEntryTooLarge": "Entrée ZIP trop volumineuse : {{name}}",
     "zipInvalid": "ZIP invalide : {{error}}",
+    "zipInconsistent": "Archive ZIP incohérente : noms dupliqués ou en-têtes contradictoires",
     "zipPathInvalid": "Chemin ZIP invalide ou dupliqué : {{name}}",
     "archiveChanged": "L’archive a changé depuis la prévisualisation",
     "countsInvalid": "Comptages invalides après import",

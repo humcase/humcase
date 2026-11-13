@@ -1257,10 +1257,43 @@ fn malformed_zip(names: &[&str]) -> (tempfile::TempDir, PathBuf) {
     (root, path)
 }
 
+/// Renames an entry by rewriting its name in the bytes: in its local header only (`all` false),
+/// or in its local header and the central directory. The writer refuses these archives itself.
+fn rename_in_bytes(path: &Path, from: &str, to: &str, all: bool) {
+    assert_eq!(from.len(), to.len());
+    let mut bytes = fs::read(path).unwrap();
+    let mut found = 0;
+    let mut at = 0;
+    while let Some(i) = bytes[at..]
+        .windows(from.len())
+        .position(|w| w == from.as_bytes())
+    {
+        bytes[at + i..at + i + from.len()].copy_from_slice(to.as_bytes());
+        found += 1;
+        at += i + from.len();
+        if !all {
+            break;
+        }
+    }
+    assert!(found > 0);
+    fs::write(path, bytes).unwrap();
+}
+
 #[test]
 fn duplicate_entry_is_rejected() {
-    let (_root, path) = malformed_zip(&["manifest.json", "humcase.db", "humcase.db"]);
+    // The reader keeps one entry per name: without the consistency check, the second database
+    // would go unseen.
+    let (_root, path) = malformed_zip(&["manifest.json", "humcase.db", "humcase.dc"]);
+    rename_in_bytes(&path, "humcase.dc", "humcase.db", true);
     assert!(inspect_archive(&path).unwrap_err().contains("dupliqué"));
+}
+
+#[test]
+fn local_header_naming_another_file_is_rejected() {
+    // A local header that names another file than the central directory ("zip cloaking").
+    let (_root, path) = malformed_zip(&["manifest.json", "humcase.db", "images/a.png"]);
+    rename_in_bytes(&path, "images/a.png", "images/b.png", false);
+    assert!(inspect_archive(&path).unwrap_err().contains("incohérente"));
 }
 
 #[test]
@@ -1288,7 +1321,7 @@ fn altered_image_fails_hash_validation() {
     let mut new_zip = ZipWriter::new(File::create(&bad).unwrap());
     for index in 0..original.len() {
         let mut item = original.by_index(index).unwrap();
-        let name = item.name().to_string();
+        let name = item.name().unwrap().to_string();
         let mut data = Vec::new();
         item.read_to_end(&mut data).unwrap();
         if name == "images/image.png" {
@@ -2310,10 +2343,10 @@ fn archive_as_older_schema(
         vec![("humcase.db".to_string(), fs::read(&db_copy).unwrap())];
     for index in 0..zip.len() {
         let mut entry = zip.by_index(index).unwrap();
-        if entry.name().starts_with("images/") {
+        if entry.name().unwrap().starts_with("images/") {
             let mut bytes = Vec::new();
             entry.read_to_end(&mut bytes).unwrap();
-            files.push((entry.name().to_string(), bytes));
+            files.push((entry.name().unwrap().to_string(), bytes));
         }
     }
     let manifest = Manifest {

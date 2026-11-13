@@ -187,6 +187,7 @@
     "versionMismatch": "Die Datenbankversion passt nicht zum Manifest",
     "zipEntryTooLarge": "ZIP-Eintrag zu groß: {{name}}",
     "zipInvalid": "Ungültiges ZIP: {{error}}",
+    "zipInconsistent": "Inkonsistentes ZIP-Archiv: doppelte Namen oder widersprüchliche Header",
     "zipPathInvalid": "Ungültiger oder doppelter ZIP-Pfad: {{name}}",
     "archiveChanged": "Das Archiv hat sich seit der Vorschau geändert",
     "countsInvalid": "Ungültige Zahlen nach dem Import",

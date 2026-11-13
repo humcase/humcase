@@ -187,6 +187,7 @@
     "versionMismatch": "La versión de la base de datos no coincide con el manifiesto",
     "zipEntryTooLarge": "Entrada ZIP demasiado grande: {{name}}",
     "zipInvalid": "ZIP no válido: {{error}}",
+    "zipInconsistent": "Archivo ZIP incoherente: nombres duplicados o encabezados contradictorios",
     "zipPathInvalid": "Ruta ZIP no válida o duplicada: {{name}}",
     "archiveChanged": "El archivo ha cambiado desde la vista previa",
     "countsInvalid": "Recuentos no válidos tras la importación",

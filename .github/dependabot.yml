@@ -23,10 +23,6 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 2
-    ignore:
-      # Pinned on purpose: zip 8 silently drops a duplicate entry when reading an archive, which
-      # hides it from the restore guard (test `duplicate_entry_is_rejected`). Upgrade by hand.
-      - dependency-name: zip
     groups:
       rust:
         patterns: ["*"]
