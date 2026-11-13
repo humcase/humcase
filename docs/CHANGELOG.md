@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
-- Security alerts: `rustls` 0.23.46 (through `reqwest`), and the vulnerable packages in the lockfiles of the interface (`lodash-es`, `postcss-selector-parser`) and the website (`undici`, `vite`, `zod`) moved to their patched versions (`npm audit fix`, no breaking update).
+- Security alerts: `rustls` 0.23.46 (through `reqwest`); in the interface, `lodash-es` 4.17.23 and `postcss-selector-parser` 6.1.5 (pinned through `overrides`, both reached through the Excalidraw and Tailwind dependencies), `dompurify` 3.4.17 and `markdown-it` 14.3.3; on the website, `undici` 8.12.4, `vite` 8.3.8, `zod` 4.6.7 and `postcss` 8.5.32 (`npm audit fix`, no breaking update).
 - A result to review shows the agent's report in the decision band of the case, above Accept and Ask for a rework (it sat folded at the bottom of the case, so the decision came before the result).
 - Settings: the "Back to the app" button is named by its visible text for screen readers and voice control (it was announced as "Close settings").
 
