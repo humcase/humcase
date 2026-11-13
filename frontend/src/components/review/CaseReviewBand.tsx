@@ -1,7 +1,10 @@
 import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { CheckCircle, HourglassMedium, Robot } from '@phosphor-icons/react';
 import type { CaseJournal, CaseReview, Note } from '../../types';
 import { formatDateTime, formatRelative } from '../../utils/datetime';
+import { transformerUrlMarkdown } from '../../utils/imageRefs';
 import { Badge } from '../ui/Badge';
 import { ReviewActions } from './ReviewActions';
 import { actorTitle } from './journalText';
@@ -55,6 +58,12 @@ export function CaseReviewBand({ note, journal, onReviewed }: CaseReviewBandProp
         {declared && <time className="case-review-band__when" dateTime={declared.created_at} title={formatDateTime(declared.created_at)}>{formatRelative(declared.created_at)}</time>}
         {review.rework_count > 0 && <Badge tone="warning">{t('notes.review.reworkHandedBack', { number: review.rework_count })}</Badge>}
       </div>
+      {/* The decision is taken on the result: show it here, not only in the folded report below. */}
+      {note.resolution_comment?.trim() && (
+        <div className="case-review-band__report prose max-w-none" role="group" aria-label={t('notes.followUp.report')} tabIndex={0}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={transformerUrlMarkdown}>{note.resolution_comment}</ReactMarkdown>
+        </div>
+      )}
       <p className="case-review-band__hint">{t('notes.review.declaredHint')}</p>
       <ReviewActions note={note} onReviewed={onReviewed} />
     </section>

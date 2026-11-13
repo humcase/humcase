@@ -568,7 +568,7 @@ describe('SettingsModal — restore from an archive', () => {
     await waitFor(() => expect(mockApi.restoreBackupArchive).toHaveBeenCalledOnce());
 
     expect((screen.getByLabelText('Restaurer depuis une archive') as HTMLInputElement).disabled).toBe(true);
-    fireEvent.click(screen.getByRole('button', { name: 'Fermer les paramètres' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Revenir à l’application' }));
     fireEvent.keyDown(document.activeElement ?? document.body, { key: 'Escape' });
     expect(onClose).not.toHaveBeenCalled();
 

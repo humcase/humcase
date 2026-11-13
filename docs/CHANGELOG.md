@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+- A result to review shows the agent's report in the decision band of the case, above Accept and Ask for a rework (it sat folded at the bottom of the case, so the decision came before the result).
+- Settings: the "Back to the app" button is named by its visible text for screen readers and voice control (it was announced as "Close settings").
+
 ### Changed
 - Contributor License Agreement, version 2: governed by French law, each right, place, duration and purpose stated, each contribution licensed on the day it is submitted, the maintainer named, contributions made with AI tools (disclosed, reviewed, no ownership claimed on parts copyright does not protect), and what is kept of a signature. The pull request template asks to say when part of a change was produced with an AI tool.
 - Going public: the website's download buttons point to the installer of the latest GitHub release and its GitHub links show (`GITHUB = true`); the source code is "on GitHub" instead of "on request" (landing page and license pages). The download buttons no longer say "Preview", and the SmartScreen answer says the installer isn't signed yet. The README opens with the logo and three badges (CI, latest release, license).
