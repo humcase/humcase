@@ -14,6 +14,7 @@ import type { ProjectSpace } from '../../types';
 import { AssistantReplyView } from './AssistantReplyView';
 import { conversationSources, keptConversationMarkdown } from './keptConversation';
 import { useComposerDictation } from './useComposerDictation';
+import { aiErrorMessage, isMissingKeyError } from '../../utils/aiErrors';
 import { useFloatingWindow } from './useFloatingWindow';
 import './assistant-window.css';
 
@@ -358,7 +359,10 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
           {entries.map(entry => (
             <Fragment key={entry.id}>
               {entry.said && <p className="assistant-window__said">{entry.said}</p>}
-              {entry.error && <p className="assistant-window__error" role="alert">{t('workspace.assistantWindow.error', { error: entry.error })}</p>}
+              {entry.error && <p className="assistant-window__error" role="alert">
+                {t('workspace.assistantWindow.error', { error: aiErrorMessage(entry.error) })}
+                {isMissingKeyError(entry.error) && <>{' '}<Button variant="link" size="sm" onClick={onConnectAi}>{t('workspace.assistantWindow.connectAi')}</Button></>}
+              </p>}
               {entry.reply && <AssistantReplyView reply={entry.reply} done={entry.done} onDone={(index, next) => markDone(entry.id, index, next)}
                 onOpenCase={onOpenCase} onConnectAi={onConnectAi} onChanged={changed} onGerminate={onGerminate} />}
             </Fragment>

@@ -275,6 +275,18 @@ describe('Assistant window', () => {
     expect(onConnectAi).toHaveBeenCalled();
   });
 
+  it('the chosen AI without its key: the message without its code, and a way to connect one', async () => {
+    api.assistantReply.mockRejectedValue('[ai_key_missing] L’IA choisie dans les paramètres (Cerebras) n’a pas de clé API.');
+    const onConnectAi = vi.fn();
+    render(<Harness props={{ onConnectAi }} />);
+    await say('Résume ma semaine');
+    const alert = await screen.findByRole('alert');
+    expect(alert.textContent).not.toContain('[ai_key_missing]');
+    expect(alert.textContent).toContain('Cerebras');
+    fireEvent.click(within(alert).getByRole('button'));
+    expect(onConnectAi).toHaveBeenCalledTimes(1);
+  });
+
   it('shows an engine error inline', async () => {
     api.assistantReply.mockRejectedValue(new Error('délai dépassé'));
     render(<Harness />);
