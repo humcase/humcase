@@ -1,11 +1,11 @@
 {
-  "about": "Situations of the assistant on the bases of ask_eval_cases.json (by name): what the person writes, the cases it should cite, the facts it should hold, the documentation, the tool, the action it should propose, the question it should ask. Read by the ignored test assistant_eval in assistant.rs. `forbid` on a base applies to every reply on it.",
+  "about": "Situations of the assistant on the bases of ask_eval_cases.json (by name): what the person writes, the cases it should cite, the facts it should hold, the documentation, the tool, the action it should propose, the question it should ask. Read by the ignored test assistant_eval in assistant.rs. `forbid` on a base applies to every reply on it. `{model}` in `must` stands for the label of the model that answered.",
   "scenarios": [
     {
       "base": "fr",
       "projects": ["Marketing"],
       "items": [
-        {"q": "Tu tournes sur quel modèle ?", "must": [["haiku"]], "no_action": true},
+        {"q": "Tu tournes sur quel modèle ?", "must": [["{model}"]], "no_action": true},
         {"q": "Comment je range une pensée de la boîte de réception dans un projet ?", "help": true, "no_action": true},
         {"q": "Résume ma semaine", "tool": "list_changed", "min_sources": 3, "no_action": true},
         {"q": "Qu’est-ce qui reste ouvert ?", "context": "kiln", "expect": ["kiln"], "no_action": true},
@@ -23,7 +23,7 @@
       "base": "en",
       "projects": ["Clients"],
       "items": [
-        {"q": "Which model are you running on?", "must": [["haiku"]], "no_action": true},
+        {"q": "Which model are you running on?", "must": [["{model}"]], "no_action": true},
         {"q": "How do I move a case to another project?", "help": true, "no_action": true},
         {"q": "What changed this week?", "tool": "list_changed", "min_sources": 3, "no_action": true},
         {"q": "What is still open?", "context": "workshop", "expect": ["workshop"], "no_action": true},

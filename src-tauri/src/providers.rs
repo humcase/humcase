@@ -28,7 +28,8 @@ pub struct LlmProvider {
     pub url_editable: bool,
     /// `reasoning_effort` sent with the default model when the caller gives none (`None` = the
     /// model's own default). Mistral Large 4 reasons by default and then outlasts the client's
-    /// timeout on a reply; its documented values are `high` and `none`.
+    /// timeout on a reply; its API accepts `low`, `medium` and `high` and refuses `none` with
+    /// HTTP 400 (answer of api.mistral.ai on 2026-11-13), so `low` is the least it can reason.
     pub default_effort: Option<&'static str>,
 }
 
@@ -105,7 +106,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
-        default_effort: Some("none"),
+        default_effort: Some("low"),
     },
     LlmProvider {
         id: "ollama",
@@ -824,8 +825,8 @@ mod tests {
     }
 
     #[test]
-    fn mistral_large_4_does_not_reason_unless_asked() {
-        assert_eq!(effort_for("mistral", "mistral-large-4", None), Some("none"));
+    fn mistral_large_4_reasons_little_unless_asked() {
+        assert_eq!(effort_for("mistral", "mistral-large-4", None), Some("low"));
         assert_eq!(
             effort_for("mistral", "mistral-large-4", Some("high")),
             Some("high")

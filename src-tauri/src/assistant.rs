@@ -1656,12 +1656,21 @@ mod tests {
                     }
                 }
                 for fact in item["must"].as_array().into_iter().flatten() {
+                    // `{model}`: the label of the model that answered, whichever was benched.
+                    let model = answer.model_label.as_deref().unwrap_or("").to_lowercase();
                     let spellings: Vec<&str> = fact
                         .as_array()
                         .unwrap()
                         .iter()
                         .filter_map(|f| f.as_str())
+                        .map(|f| if f == "{model}" { model.as_str() } else { f })
+                        .filter(|f| !f.is_empty())
                         .collect();
+                    let spellings = if spellings.is_empty() {
+                        vec!["{model}"]
+                    } else {
+                        spellings
+                    };
                     if !spellings.iter().any(|f| lower.contains(f)) {
                         faults.push(format!("fact missing {}", spellings[0]));
                     }

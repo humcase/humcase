@@ -14,6 +14,7 @@
 - A kept conversation no longer names the AI service in its provenance ("Humcase · Cerebras"); its kind says Humcase wrote it. The privacy policy lists what the assistant sends.
 
 ### Fixed
+- Mistral Large 4 answers again: its API now refuses `reasoning_effort: none` (HTTP 400 on every call), so Humcase asks it for `low`, the least reasoning it accepts.
 - "Back" from a sub-case opened from its case leads to that case, then to the page the case was opened from; it led straight to that page.
 - Settings → AI services: choosing an AI said nothing although it is saved at once, and "Save" stayed clickable with an empty key field and then did nothing. Choosing now shows "Choice saved: Anthropic." under the section, Save waits for a typed key, Clear is offered only for a key saved in Humcase, and each message appears under the section it concerns (they all appeared under transcription).
 - The assistant: a brace or bracket closing nothing at the end of a sentence ("… ici.}", seen with Claude Haiku 5.5) is removed.
