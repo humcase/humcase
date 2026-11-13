@@ -23,7 +23,30 @@ jobs:
         with:
           python-version: '3.12'
 
+      # With tools/new-user/BUILD_FROM_SOURCE, the installer is built from this commit instead
+      # (to check a fix before it is released); otherwise it is the public download.
+      - name: Build from source?
+        id: src
+        shell: pwsh
+        run: '"build=$(Test-Path tools/new-user/BUILD_FROM_SOURCE)".ToLower() >> $env:GITHUB_OUTPUT'
+      - uses: dtolnay/rust-toolchain@stable
+        if: steps.src.outputs.build == 'true'
+      - uses: Swatinem/rust-cache@v2
+        if: steps.src.outputs.build == 'true'
+        with:
+          workspaces: src-tauri
+      - name: Build the installer from this commit
+        if: steps.src.outputs.build == 'true'
+        shell: pwsh
+        run: |
+          npm ci
+          npm ci --prefix frontend
+          node scripts/build-meaning.mjs
+          npx tauri build --config src-tauri/tauri.meaning.conf.json --bundles nsis
+          Copy-Item (Get-ChildItem src-tauri/target/release/bundle/nsis/*.exe | Select-Object -First 1).FullName "$env:RUNNER_TEMP\Humcase-setup-x64.exe"
+
       - name: Download from the website
+        if: steps.src.outputs.build != 'true'
         shell: pwsh
         run: |
           # humcase.com answers datacenter addresses with a Cloudflare challenge: fall back to the link the site shows.
