@@ -2,11 +2,15 @@
 
 ## [Unreleased]
 
+## [0.9.99] - 2026-11-13
+
+Replaces 0.9.98, withdrawn the same day, and holds all of it (the assistant in the app and as Mini Humcase, Anthropic and Mistral as providers, the agent's report beside the review decision, To tidy and date fixes, patched dependencies; see 0.9.98 below). New: an agent's report is never replaced blindly any more, and an agent can add to it.
+
 ### Fixed
 - Agents: `update_note_status` no longer replaces an existing report blindly. Without `expected_resolution_comment` (the report read before), it writes only a first report or the same text and otherwise refuses, since adding two lines replaced a whole report; the new `append: true` adds the text after the stored report. The CLI `status` goes through the same handler (`--append` added).
 - Agents: a yes/no option sent as the text `"true"` or `"false"` is understood. An MCP client that read the list of tools before an update sends a new option as text, and `append` was refused.
 
-## [0.9.98] - 2026-11-13
+## [0.9.98] - 2026-11-13 [YANKED]
 
 The assistant (in the app and as Mini Humcase), Anthropic and Mistral as providers, the agent's report beside the review decision, To tidy and date fixes, and patched dependencies (zip 9).
 
