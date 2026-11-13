@@ -57,6 +57,30 @@ async function say(text: string) {
 }
 
 describe('Assistant window', () => {
+  // Lived on 13/11: the items of the header's menu did nothing. The menu is drawn in a portal, so
+  // React passed a press on an item up to the header, which started a drag and captured the pointer.
+  it('a press on an item of the header menu never starts moving the window, inside or as Mini Humcase', async () => {
+    const capture = vi.fn();
+    const original = HTMLElement.prototype.setPointerCapture;
+    HTMLElement.prototype.setPointerCapture = capture;
+    try {
+      for (const variant of ['inside', 'mini']) {
+        startDragging.mockClear();
+        const { unmount } = render(<Harness props={{ variant, onPin: vi.fn() }} />);
+        fireEvent.keyDown(screen.getByRole('button', { name: 'Options' }), { key: 'Enter' });
+        const item = await screen.findByRole('menuitem', { name: 'Nouvelle conversation' });
+        fireEvent.pointerDown(item, { button: 0, pointerId: 1 });
+        expect(capture).not.toHaveBeenCalled();
+        expect(startDragging).not.toHaveBeenCalled();
+        fireEvent.click(item);
+        expect(screen.queryByRole('menu')).toBeNull();
+        unmount();
+      }
+    } finally {
+      HTMLElement.prototype.setPointerCapture = original;
+    }
+  });
+
   beforeEach(async () => {
     await i18n.changeLanguage('fr');
     vi.clearAllMocks();

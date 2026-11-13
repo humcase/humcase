@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- The assistant's menu ("Keep as a case", "New conversation", "Stay on top") did nothing on click: the menu is drawn outside the window, the press reached the window's header, which took it for the start of a move and kept the pointer. The header now moves the window only for a press on itself.
+
 ## [0.9.99] - 2026-11-13
 
 Replaces 0.9.98, withdrawn the same day, and holds all of it (the assistant in the app and as Mini Humcase, Anthropic and Mistral as providers, the agent's report beside the review decision, To tidy and date fixes, patched dependencies; see 0.9.98 below). New: an agent's report is never replaced blindly any more, and an agent can add to it.

@@ -83,7 +83,7 @@ export function useFloatingWindow() {
   };
 
   const onDragStart = (event: PointerEvent<HTMLElement>) => {
-    if (event.button !== 0 || (event.target as HTMLElement).closest('button')) return;
+    if (event.button !== 0 || !startsADrag(event)) return;
     const offsetX = event.clientX - rectRef.current.x;
     const offsetY = event.clientY - rectRef.current.y;
     let snap: { x: number; y: number } | null = null;
@@ -112,4 +112,13 @@ export function useFloatingWindow() {
   };
 
   return { rect, ghost, snapping, onDragStart, onResizeStart };
+}
+
+/** A press moves the window only on the header itself, not on its buttons. A menu opened from the
+ * header is drawn elsewhere in the page (a portal), but React still passes its events up to the
+ * header: without this check, pressing a menu item started a drag that captured the pointer, and
+ * the item never received its click. */
+export function startsADrag(event: PointerEvent<HTMLElement>): boolean {
+  const target = event.target as HTMLElement;
+  return event.currentTarget.contains(target) && !target.closest('button');
 }

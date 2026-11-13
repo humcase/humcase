@@ -15,7 +15,7 @@ import { AssistantReplyView } from './AssistantReplyView';
 import { conversationSources, keptConversationMarkdown } from './keptConversation';
 import { useComposerDictation } from './useComposerDictation';
 import { aiErrorMessage, isMissingKeyError } from '../../utils/aiErrors';
-import { useFloatingWindow } from './useFloatingWindow';
+import { startsADrag, useFloatingWindow } from './useFloatingWindow';
 import './assistant-window.css';
 
 export type CaseRef = { id: string; title: string };
@@ -260,7 +260,7 @@ export function AssistantWindow({ open, hidden = false, onOpenChange, space, sco
   const title = t(isMini ? 'workspace.assistantWindow.miniTitle' : 'workspace.assistantWindow.title');
   // Mini Humcase is a window of its own: the system carries it, the app's frame does not.
   const onHeadDown = isMini
-    ? (event: ReactPointerEvent) => { if (!(event.target as HTMLElement).closest('button') && event.button === 0) void getCurrentWindow().startDragging(); }
+    ? (event: ReactPointerEvent<HTMLElement>) => { if (event.button === 0 && startsADrag(event)) void getCurrentWindow().startDragging(); }
     : frame.onDragStart;
 
   return (
