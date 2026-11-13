@@ -39,7 +39,7 @@ exact, short. Never a blog, never an ad, never a chat.
 
 | Before (EN) | After (EN) | Après (FR) | Rule |
 |---|---|---|---|
-| Which AI to connect? Free to start: Groq or Cerebras. Most capable: OpenAI or OpenRouter. | Supported: Groq, Cerebras, OpenAI, OpenRouter (API key) · Ollama, LM Studio (local). | Compatibles : Groq, Cerebras, OpenAI, OpenRouter (clé API) · Ollama, LM Studio (local). | 1, 5, 7 |
+| Which AI to connect? Free to start: Groq or Cerebras. Most capable: OpenAI or OpenRouter. | Supported: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (API key) · Ollama, LM Studio (local). | Compatibles : Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (clé API) · Ollama, LM Studio (local). | 1, 5, 7 |
 | Online: Groq, Cerebras… | …(API key) | …(clé API) | 1 |
 | Appearance. Adjust the look of the app and your reading comfort. Changes apply immediately. | Appearance | Apparence | 2, 3 |
 | What the agent can do. What an agent can do in your cases. | What the agent can do | Ce que l’agent peut faire | 2 |

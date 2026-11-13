@@ -11,7 +11,7 @@ import i18n from '../i18n';
 import NoteRelations from '../components/NoteRelations';
 import { statusLabel } from './statuses';
 import { shortDay, fullDay, dueLabel } from './dueDates';
-import { formatDateTime, formatRelative } from './datetime';
+import { formatChanged, formatDateTime, formatRelative } from './datetime';
 import { formatClock, uses12HourClock } from './dayTimeline';
 import { TYPE_LABELS } from './notePresentation';
 import { spaceLabel } from './spaces';
@@ -47,25 +47,35 @@ describe('Note texts in English', () => {
   it('due date and relative time follow the current language', async () => {
     const now = new Date(2026, 8, 29, 12, 0, 0);
     expect(dueLabel('2026-09-27', now)).toBe('En retard');
-    expect(shortDay('2026-09-27')).toBe('27/09');
+    expect(shortDay('2026-09-27', now)).toBe('27/09');
     expect(fullDay('2026-09-27')).toBe('27/09/2026');
+    // A day of another year keeps its year: last year's overdue date must not read like this month's.
+    expect(shortDay('2025-10-19', now)).toBe('19/10/2025');
+    // "This week" is the calendar week: from Friday 9 October, Sunday 11 is this week, Tuesday 13 is not.
+    const friday = new Date(2026, 9, 9, 12);
+    expect(dueLabel('2026-10-11', friday)).toBe('Cette semaine');
+    expect(dueLabel('2026-10-13', friday)).toBe('À venir');
     await inEnglish(() => {
       expect(dueLabel('2026-09-27', now)).toBe('Overdue');
       expect(dueLabel('2026-09-29', now)).toBe('Today');
-      expect(shortDay('2026-09-27')).toBe('09/27');
+      expect(shortDay('2026-09-27', now)).toBe('09/27');
       expect(fullDay('2026-09-27')).toBe('09/27/2026');
+      expect(shortDay('2025-10-19', now)).toBe('10/19/2025');
       const il = new Date(now.getTime() - 5 * 60_000).toISOString();
       expect(formatRelative(il, now)).toBe('5 min ago');
       expect(formatRelative(now.toISOString(), now)).toBe('just now');
     });
     expect(formatRelative(new Date(now.getTime() - 3 * 3_600_000).toISOString(), now)).toBe('il y a 3 h');
+    // Beyond a month the relative form is the date itself: shown once, with its year when it is another one.
+    expect(formatChanged('2025-12-13T10:00:00Z', now)).toBe('13 déc. 2025');
+    expect(formatChanged(new Date(now.getTime() - 3 * 86_400_000).toISOString(), now)).toBe('il y a 3 j · 26 sept.');
   });
 
   it('in English on a French Windows, dates read day/month and 24 h, like the date fields of Windows', async () => {
     const languages = vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['fr-FR', 'fr', 'en-US', 'en']);
     try {
       await inEnglish(() => {
-        expect(shortDay('2026-10-07')).toBe('07/10');
+        expect(shortDay('2026-10-07', new Date(2026, 9, 9))).toBe('07/10');
         expect(fullDay('2026-10-07')).toBe('07/10/2026');
         expect(formatClock(new Date(2026, 9, 5, 16, 48))).toBe('16:48');
         expect(uses12HourClock()).toBe(false);
@@ -80,7 +90,7 @@ describe('Note texts in English', () => {
     const languages = vi.spyOn(navigator, 'languages', 'get').mockReturnValue(['en-US', 'en']);
     try {
       await inEnglish(() => {
-        expect(shortDay('2026-10-07')).toBe('10/07');
+        expect(shortDay('2026-10-07', new Date(2026, 9, 9))).toBe('10/07');
         expect(uses12HourClock()).toBe(true);
         expect(formatClock(new Date(2026, 9, 5, 16, 48))).toMatch(/PM/);
       });

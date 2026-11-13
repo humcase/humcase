@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import i18n from '../i18n';
 import type { Activity, Brief, CaseEvent, CaseJournal, CaseReview, CaseContext, CasePosition, ContentKind, NoteType, Project, ProjectSpace, Note, NoteRelations, NoteRevision, CreateNoteInput, UpdateNoteInput, AiProvidersInfo, AiUsageRecord, AgentSeen, Recognition, MeaningHit, MeaningStatus, NatureReview, NatureReadingStatus, Germination, Proposal, ProposalAnswer, ProposalOutcome, TidyItem, TidyAnswer, TidyOutcome, TidySettings, Supersession, ProjectSummary, ProfileView, ProfileAnswer, ProfileOutcome, ProfileSettings, Nudge, NudgeAnswer } from '../types';
+import type { AssistantPreviousTurnV2, AssistantReply, AssistantStatus } from '../types/assistant';
 
 export interface BackupArchivePreview {
   archive_sha256: string;
@@ -282,6 +283,19 @@ export const api = {
   /** The person's answer: change to `proposed`, or keep `reviewed`. False if the case changed meanwhile. */
   answerNature: async (noteId: string, reviewed: NoteType, proposed: NoteType, change: boolean): Promise<boolean> => {
     return await invoke('answer_nature', { noteId, reviewed, proposed, change });
+  },
+
+  /** The assistant window's reply: answers, cites, asks at most one question and proposes actions;
+   * writes nothing. */
+  assistantReply: async (message: string, previous: AssistantPreviousTurnV2[], space?: ProjectSpace | 'unassigned', contextId?: string, provider?: string, model?: string): Promise<AssistantReply> =>
+    await invoke('assistant_reply', { message, previous, space, contextId, provider, model }),
+  /** The window's small screen: the AI used and the counts of the space. */
+  assistantStatus: async (space?: ProjectSpace | 'unassigned', provider?: string): Promise<AssistantStatus> =>
+    await invoke('assistant_status', { space, provider }),
+
+  /** Keeps an assistant conversation as a case of the Inbox of `space`, marked so it is never read as a source. */
+  keepAnswer: async (space: ProjectSpace, question: string, content: string, sources: { title: string; passages: string[] }[]): Promise<string> => {
+    return await invoke('keep_answer', { space, question, content, sources });
   },
 
   /** Faire germer: the AI proposes the next steps of a case, kept as proposals. */

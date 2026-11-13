@@ -70,6 +70,7 @@ interface NoteEditorProps {
   germinateOnOpen?: string | null;
   /** The sprouting asked by `germinateOnOpen` started. */
   onGerminateStarted?: () => void;
+  /** Think this case through with Humcase (the panel opens on the right). */
   /** The case was just created by the person: the cursor goes in its text. */
   focusOnOpen?: boolean;
 }

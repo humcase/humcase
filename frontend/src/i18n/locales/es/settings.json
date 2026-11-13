@@ -73,14 +73,16 @@
     "dictationLanguageHint": "«Varios idiomas» entiende una mezcla de 10 idiomas, algo menos preciso y alrededor de un 20 % más caro en Deepgram.",
     "autoStructure": "Estructurar el caso al terminar el dictado",
     "autoStructureHint": "El dictado se integra en el caso y se pasa a limpio. La versión anterior queda en el historial, el texto bruto siempre se conserva. Desactivado: el dictado se añade al final.",
-    "cleanLabel": "Limpieza del dictado (LLM)",
-    "cleanModelAria": "Modelo (limpieza)",
+    "cleanLabel": "IA para el texto",
+    "cleanHint": "Preguntar, Reflexionar, Estructurar, Germinar y limpieza del dictado.",
+    "cleanModelAria": "Modelo (IA para el texto)",
     "modelPlaceholderDefault": "Modelo (por defecto: {{model}})",
     "modelPlaceholder": "Modelo",
-    "cleanKeyAria": "Clave de API (limpieza)",
+    "cleanKeyAria": "Clave de API (IA para el texto)",
     "keyPlaceholder": "Clave de API (no se vuelve a mostrar)",
-    "cleanSaveAria": "Guardar la clave de limpieza",
-    "cleanClearAria": "Borrar la clave de limpieza",
+    "choiceSaved": "Elección guardada: {{label}}.",
+    "cleanSaveAria": "Guardar la clave de la IA para el texto",
+    "cleanClearAria": "Borrar la clave de la IA para el texto",
     "clear": "Borrar",
     "sttLabel": "Transcripción (voz)",
     "sttKeyAria": "Clave de API (transcripción)",
@@ -130,7 +132,7 @@
     "testFailed": "Falló la conexión: {{error}}",
     "ready": "Conectado.",
     "notReady": "Aún sin conectar: añade una clave o una dirección y prueba la conexión.",
-    "recommendations": "Compatibles: Groq, Cerebras, OpenAI, OpenRouter (clave de API) · Ollama, LM Studio (local)."
+    "recommendations": "Compatibles: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (clave de API) · Ollama, LM Studio (local)."
   },
   "agent": {
     "heading": "Agentes",
@@ -255,7 +257,10 @@
       "check_proposals": "Propuestas leídas (TypeSafe)",
       "check_decisions": "Decisiones leídas (TypeSafe)",
       "check_gather": "Casos por reunir leídos (TypeSafe)",
-      "check_profile": "Sugerencias de perfil leídas (TypeSafe)"
+      "check_profile": "Sugerencias de perfil leídas (TypeSafe)",
+      "ask": "Preguntas a Humcase",
+      "reflect": "Reflexiones con Humcase",
+      "assistant": "Asistente"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} sesión",

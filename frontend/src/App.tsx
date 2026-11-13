@@ -5,6 +5,10 @@ import { TrashView, WorkspaceNotes } from './components/workspace';
 import { HomePage } from './components/workspace/HomePage';
 import { InboxPreview } from './components/workspace/InboxPreview';
 import WorkspaceTopbar from './components/workspace/WorkspaceTopbar';
+import { AssistantWindow } from './components/assistant/AssistantWindow';
+import { getCurrentWindow } from '@tauri-apps/api/window';
+import { useAssistantMini } from './hooks/useAssistantMini';
+import type { MiniRequest } from './components/assistant/miniBridge';
 import NotesViewbar from './components/workspace/NotesViewbar';
 import { CaseFilterBar } from './components/workspace/CaseFilterBar';
 import InboxPlacement from './components/workspace/InboxPlacement';
@@ -96,6 +100,9 @@ function App() {
   const [natureView, setNatureView] = useState<NatureShortcut | null>(null);
   // Page the open case came from; null when it was opened from nowhere in particular.
   const [returnTo, setReturnTo] = useState<ReturnPoint | null>(null);
+  // Cases opened one from another (a sub-case from its case), oldest first: "Back" walks them back
+  // before leading to `returnTo`.
+  const [caseTrail, setCaseTrail] = useState<string[]>([]);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [noteTargetDialogOpen, setNoteTargetDialogOpen] = useState(false);
   const [noteTargetId, setNoteTargetId] = useState('');
@@ -161,6 +168,17 @@ function App() {
   // Notes view: show only archived notes ("Archived" button of the display bar).
   const [showArchived, setShowArchived] = useState(false);
   const [todayView, setTodayView] = useState(false);
+  // The assistant window, with the AI chosen in Settings: closed, it is a key in the corner (the
+  // only way in, with Ctrl+J); its conversation lives for the session.
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const toggleAssistant = useCallback(() => setAssistantOpen(open => !open), []);
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') { event.preventDefault(); toggleAssistant(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [toggleAssistant]);
   // Creation lock: two quick Ctrl+N must not create two notes.
   const creationEnCoursRef = useRef(false);
   // Error of a one-off action (Handoff, Standup, creation): visible and non-blocking.
@@ -237,12 +255,14 @@ function App() {
   }, [initialProjectsSettled, activeProjectId, projects, spacePreferences.scope]);
 
   const hereRef = useRef<ReturnPoint>({ page: 'home', projectId: null, today: false, shortcut: null, activityId: null, inbox: null });
+  const openNoteIdRef = useRef<string | null>(null);
   useEffect(() => {
     hereRef.current = { page: workspacePage, projectId: activeProjectId, today: todayView, shortcut: workspacePage === 'nature' ? natureView : null, activityId: activeActivityId, inbox: inboxPreviewSpace };
+    openNoteIdRef.current = workspacePage === 'editor' ? activeNoteId : null;
   });
   // Opening a case from a page remembers that page; going from case to case keeps the first one.
   const rememberOrigin = useCallback(() => {
-    if (hereRef.current.page !== 'editor') setReturnTo(hereRef.current);
+    if (hereRef.current.page !== 'editor') { setReturnTo(hereRef.current); setCaseTrail([]); }
   }, []);
 
   const selectProject = useCallback((id: string | null) => {
@@ -309,6 +329,12 @@ function App() {
     // Any case opened disarms a Sprout asked for another opening (re-armed by the nudge after).
     setGerminateNoteId(null);
     if (hereRef.current.page !== 'editor') setReturnTo(hereRef.current);
+    // From a case, the case left joins the trail; going back to the last one leaves it.
+    const from = openNoteIdRef.current;
+    setCaseTrail(trail => !from ? []
+      : from === note.id ? trail
+      : trail.at(-1) === note.id ? trail.slice(0, -1)
+      : [...trail, from]);
     setActiveActivityId(null);
     setInboxPreviewSpace(null);
     setActiveProjectId(note.project_id);
@@ -492,6 +518,40 @@ function App() {
   const chooseStatus = (status: NoteStatus | '') => { setStatusFilter(status); };
   const chooseNature = (nature: NoteType | '') => { setNatureFilter(nature); };
   const activeProject = scopeProjects.find(project => project.id === activeProjectId);
+  // The assistant reads the space shown and offers the open case as its context; Mini Humcase
+  // follows them while the conversation is there.
+  const assistantOpenCase = workspacePage === 'editor' && activeNote && !activeNote.deleted_at ? activeNote : null;
+  const openCaseId = assistantOpenCase?.id;
+  const openCaseTitle = assistantOpenCase?.title ?? '';
+  const assistantScope = useMemo(() => ({
+    space: spacePreferences.scope === 'all' ? undefined : spacePreferences.scope,
+    scopeLabel: t(spacePreferences.scope === 'private' ? 'workspace.sidebar.scopePrivate' : spacePreferences.scope === 'work' ? 'workspace.sidebar.scopeWork' : 'workspace.sidebar.scopeAll'),
+    openCase: openCaseId ? { id: openCaseId, title: openCaseTitle } : null,
+    keepSpace: (activeProject?.space === 'private' || spacePreferences.scope === 'private' ? 'private' : 'work') as ProjectSpace,
+  }), [spacePreferences.scope, t, openCaseId, openCaseTitle, activeProject?.space]);
+  const openAssistantCase = (id: string) => {
+    const note = allScoped.find(candidate => candidate.id === id);
+    if (note) openNote(note);
+    else void api.getNote(id).then(openNote).catch(() => reportAction(t('workspace.app.noteNotFound')));
+  };
+  // A case outside the cases loaded here is read from the database, as for opening one.
+  const germinateFromAssistant = (id: string) => {
+    const start = (note: Note) => { if (openNote(note)) setGerminateNoteId(id); };
+    const note = allScoped.find(candidate => candidate.id === id);
+    if (note) start(note);
+    else void api.getNote(id).then(start).catch(() => reportAction(t('workspace.app.noteNotFound')));
+  };
+  // What Mini Humcase asks: the main window comes to the front for a case or Settings.
+  const fromMini = (request: MiniRequest) => {
+    if (request.kind === 'changed') { void loadNotes(); void loadProjects(); return; }
+    const main = getCurrentWindow();
+    void main.show().then(() => main.unminimize()).then(() => main.setFocus()).catch(() => {});
+    if (request.kind === 'open-case') openAssistantCase(request.id);
+    else if (request.kind === 'germinate') germinateFromAssistant(request.id);
+    else { setFocusAiSettings(true); setIsSettingsOpen(true); }
+  };
+  const assistantMini = useAssistantMini({ open: assistantOpen, setOpen: setAssistantOpen, scope: assistantScope, blocked: isMiniMode, onRequest: fromMini });
+
   const settingsProject = projects.find(project => project.id === projectActivityDialogId);
   const noteProject = projects.find(project => project.id === activeNote?.project_id);
   const structuringContextLabel = noteProject ? [
@@ -519,7 +579,10 @@ function App() {
     setTodayView(false);
     setWorkspacePage('notes');
   };
+  const previousCase = caseTrail.length > 0 ? allScoped.find(note => note.id === caseTrail[caseTrail.length - 1]) : undefined;
   const goBack = () => {
+    if (previousCase && openNote(previousCase)) return;
+    setCaseTrail([]);
     setActiveNoteId(null);
     if (!returnTo) { setWorkspacePage('notes'); return; }
     // The page may have changed meanwhile: an activity deleted would hide every project, and the
@@ -536,7 +599,8 @@ function App() {
     setWorkspacePage(returnTo.page === 'editor' ? 'notes' : returnTo.page);
   };
   const returnProject = returnTo?.projectId ? projects.find(project => project.id === returnTo.projectId) : undefined;
-  const returnLabel = !returnTo ? null
+  const returnLabel = previousCase ? previousCase.title
+    : !returnTo ? null
     : returnTo.page === 'home' ? t('workspace.sidebar.home')
     : returnTo.page === 'nature' && returnTo.shortcut ? t(`workspace.shortcuts.${returnTo.shortcut}`)
     : returnTo.page === 'trash' ? t('workspace.sidebar.trash')
@@ -839,6 +903,28 @@ function App() {
           </>
         )}
       </div>
+      {/* Always mounted (its conversation lives for the session); hidden in the sticky-note mode
+          and while it is in Mini Humcase. */}
+      <AssistantWindow
+        open={assistantOpen}
+        hidden={isMiniMode || assistantMini.away !== null}
+        onOpenChange={setAssistantOpen}
+        space={assistantScope.space}
+        scopeLabel={assistantScope.scopeLabel}
+        openCase={assistantScope.openCase}
+        keepSpace={assistantScope.keepSpace}
+        onOpenCase={openAssistantCase}
+        onChanged={() => { void loadNotes(); void loadProjects(); }}
+        onGerminate={germinateFromAssistant}
+        onConnectAi={() => { setFocusAiSettings(true); setIsSettingsOpen(true); }}
+        seed={assistantMini.seed}
+        landed={assistantMini.landed}
+        onSnapshot={assistantMini.onSnapshot}
+        onLanded={assistantMini.onLanded}
+        onPin={assistantMini.pin}
+        stayOnTop={assistantMini.stayOnTop}
+        onStayOnTopChange={assistantMini.changeStayOnTop}
+      />
 
       {projectDialogOpen && <ProjectCreateDialog
         name={projectDraftName}

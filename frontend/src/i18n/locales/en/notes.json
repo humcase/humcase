@@ -198,7 +198,13 @@
     "recordedByPerson": "Added on {{date}}",
     "pathLabel": "Case path",
     "subCasesBadge_one": "{{count}} sub-case",
-    "subCasesBadge_other": "{{count}} sub-cases"
+    "subCasesBadge_other": "{{count}} sub-cases",
+    "provenanceKind": {
+      "ask": "Humcase answer",
+      "reflect": "Thinking it through with Humcase",
+      "source": "Source",
+      "germinated": "Sprout"
+    }
   },
   "review": {
     "declaredBy": "Result declared by {{actor}}",

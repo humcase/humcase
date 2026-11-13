@@ -1987,7 +1987,7 @@ describe('NoteEditor — smart dictation (0.9.80)', () => {
     await dictate('idée dictée');
 
     await waitFor(() => expect(mockApi.applyStructuredNote).toHaveBeenCalledWith('n1', 'Note existante', INTEGRATED));
-    expect(mockApi.integrateDictation).toHaveBeenCalledWith('n1', 'Note existante', 'idée dictée', 'cerebras', undefined, 'auto');
+    expect(mockApi.integrateDictation).toHaveBeenCalledWith('n1', 'Note existante', 'idée dictée', '', undefined, 'auto');
     // Dictation safeguard: the raw text is written before the AI call.
     expect(mockApi.appendRawContent.mock.invocationCallOrder[0]).toBeLessThan(mockApi.integrateDictation.mock.invocationCallOrder[0]);
     expect(mockApi.cleanTranscript).not.toHaveBeenCalled();
@@ -2005,7 +2005,7 @@ describe('NoteEditor — smart dictation (0.9.80)', () => {
     await startDictation();
     await dictate('idée dictée');
 
-    await waitFor(() => expect(mockApi.cleanTranscript).toHaveBeenCalledWith('idée dictée', 'cerebras', undefined, 'n1'));
+    await waitFor(() => expect(mockApi.cleanTranscript).toHaveBeenCalledWith('idée dictée', '', undefined, 'n1'));
     await waitFor(() => expect(mockApi.updateNote).toHaveBeenCalledWith('n1', expect.objectContaining({ content: 'Note existante\n\nTexte nettoyé' })));
     expect(mockApi.applyStructuredNote).not.toHaveBeenCalled();
   });

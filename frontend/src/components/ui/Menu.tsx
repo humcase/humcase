@@ -68,6 +68,21 @@ export function MenuRadioGroup<T extends string>({ value, onValueChange, options
   );
 }
 
+/** An option turned on or off in a menu: menuitemcheckbox role, check mark when on; the menu stays open. */
+export function MenuCheckboxItem({ checked, onCheckedChange, children, detail }: { checked: boolean; onCheckedChange: (checked: boolean) => void; children: ReactNode; detail?: ReactNode }) {
+  return (
+    <DropdownMenu.CheckboxItem className="ui-menu__item" checked={checked} onCheckedChange={next => onCheckedChange(next === true)} onSelect={event => event.preventDefault()}>
+      <span className="ui-menu__text"><span>{children}</span>{detail && <small>{detail}</small>}</span>
+      <DropdownMenu.ItemIndicator className="ui-menu__check"><Check size={15} aria-hidden="true" /></DropdownMenu.ItemIndicator>
+    </DropdownMenu.CheckboxItem>
+  );
+}
+
+/** Heading of a group of items, inside the menu (not focusable). */
+export function MenuLabel({ children }: { children: ReactNode }) {
+  return <DropdownMenu.Label className="ui-menu__label">{children}</DropdownMenu.Label>;
+}
+
 export function MenuSeparator() {
   return <DropdownMenu.Separator className="ui-menu__separator" />;
 }

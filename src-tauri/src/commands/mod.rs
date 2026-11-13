@@ -3,6 +3,8 @@ use std::sync::{Mutex, RwLock, RwLockReadGuard};
 
 mod agents;
 pub(crate) mod ai;
+mod ask;
+mod assistant;
 mod backup;
 mod cases;
 mod germinate;
@@ -17,6 +19,8 @@ mod transcription;
 
 pub use agents::*;
 pub use ai::*;
+pub use ask::*;
+pub use assistant::*;
 pub use backup::*;
 pub use cases::*;
 pub use germinate::*;

@@ -73,14 +73,16 @@
     "dictationLanguageHint": "“Vários idiomas” entende uma mistura de 10 idiomas, um pouco menos preciso e cerca de 20% mais caro na Deepgram.",
     "autoStructure": "Estruturar o caso ao fim do ditado",
     "autoStructureHint": "O ditado é incorporado ao caso e passado a limpo. A versão anterior fica no histórico, o texto bruto é sempre mantido. Desligado: o ditado é adicionado ao final.",
-    "cleanLabel": "Limpeza do ditado (LLM)",
-    "cleanModelAria": "Modelo (limpeza)",
+    "cleanLabel": "IA para o texto",
+    "cleanHint": "Perguntar, Refletir, Estruturar, Germinar e limpeza do ditado.",
+    "cleanModelAria": "Modelo (IA para o texto)",
     "modelPlaceholderDefault": "Modelo (padrão: {{model}})",
     "modelPlaceholder": "Modelo",
-    "cleanKeyAria": "Chave de API (limpeza)",
+    "cleanKeyAria": "Chave de API (IA para o texto)",
     "keyPlaceholder": "Chave de API (nunca mostrada de novo)",
-    "cleanSaveAria": "Salvar a chave de limpeza",
-    "cleanClearAria": "Apagar a chave de limpeza",
+    "choiceSaved": "Escolha salva: {{label}}.",
+    "cleanSaveAria": "Salvar a chave da IA para o texto",
+    "cleanClearAria": "Apagar a chave da IA para o texto",
     "clear": "Apagar",
     "sttLabel": "Transcrição (voz)",
     "sttKeyAria": "Chave de API (transcrição)",
@@ -130,7 +132,7 @@
     "testFailed": "A conexão falhou: {{error}}",
     "ready": "Conectado.",
     "notReady": "Ainda não conectado: adicione uma chave ou um endereço e teste a conexão.",
-    "recommendations": "Compatíveis: Groq, Cerebras, OpenAI, OpenRouter (chave de API) · Ollama, LM Studio (local)."
+    "recommendations": "Compatíveis: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (chave de API) · Ollama, LM Studio (local)."
   },
   "agent": {
     "heading": "Agentes",
@@ -255,7 +257,10 @@
       "check_proposals": "Propostas lidas (TypeSafe)",
       "check_decisions": "Decisões lidas (TypeSafe)",
       "check_gather": "Casos a agrupar lidos (TypeSafe)",
-      "check_profile": "Sugestões de perfil lidas (TypeSafe)"
+      "check_profile": "Sugestões de perfil lidas (TypeSafe)",
+      "ask": "Perguntas ao Humcase",
+      "reflect": "Reflexões com o Humcase",
+      "assistant": "Assistente"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} sessão",

@@ -44,6 +44,8 @@ vi.mock('./services/tauriApi', () => ({
     notesChangeMarker: vi.fn(async () => 'stable'),
     meaningStatus: vi.fn(async () => ({ state: 'ready', done: 0, total: 0, error: null })),
     searchByMeaning: vi.fn(async () => []),
+    assistantStatus: vi.fn(async () => ({ model_label: 'Claude Haiku 5.5', cases: 3, to_decide: 0, conflicts: 0, to_tidy: 0 })),
+    assistantReply: vi.fn(),
   },
 }));
 
@@ -100,12 +102,25 @@ vi.mock('./utils/prefs', () => ({
   getLastProjectId: () => 'p1',
   setLastProjectId: () => {},
   getMiniMode: () => false,
+  getAssistantStayOnTop: () => false,
+  setAssistantStayOnTop: () => {},
+  getAssistantMiniPlace: () => null,
+  setAssistantMiniPlace: () => {},
+  getAssistantSeen: () => null,
+  setAssistantSeen: () => {},
   getMiniSize: () => ({ width: 400, height: 500 }),
   setMiniMode: () => {},
   setMiniSize: () => {},
+  getAssistantWindow: () => null,
+  setAssistantWindow: () => {},
 }));
 
-vi.mock('./components/NoteEditor', () => ({ default: ({ note }: { note: Note | null }) => <div data-testid="editor-note">{note?.id}</div> }));
+vi.mock('./components/NoteEditor', () => ({
+  default: ({ note, allNotes, onOpenRelatedNote }: { note: Note | null; allNotes: Note[]; onOpenRelatedNote: (target: Note) => void }) => <>
+    <div data-testid="editor-note">{note?.id}</div>
+    {note && allNotes.filter(child => child.parent_id === note.id).map(child => <button key={child.id} onClick={() => onOpenRelatedNote(child)}>Sous-case {child.title}</button>)}
+  </>,
+}));
 vi.mock('./components/TiptapEditor', () => ({ default: ({ value, onChange }: { value: string; onChange: (value: string) => void }) => <textarea aria-label="Contenu de la note" value={value} onChange={event => onChange(event.target.value)} /> }));
 vi.mock('./components/CommandPalette', () => ({ default: ({ isOpen, projects, notes }: { isOpen: boolean; projects: Project[]; notes: Note[] }) => isOpen ? <div data-testid="palette">{projects.map(project => <span key={project.id}>{project.name}</span>)}{notes.map(note => <span key={note.id}>{note.title}</span>)}</div> : null }));
 vi.mock('./components/KanbanBoard', () => ({
@@ -367,6 +382,18 @@ describe('App — raccordement du nouvel espace', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Reprendre le fil' })).toBeTruthy();
   });
 
+  it('goes back from a sub-case to its case, then to the page the case was opened from', async () => {
+    notesEnBase.current = [makeNote('parent', 'Audit', 'open', null), { ...makeNote('child', 'Bouton retour', 'open', null), parent_id: 'parent' }];
+    render(<App />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Ouvrir Audit' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Sous-case Bouton retour' }));
+    await waitFor(() => expect(screen.getByTestId('editor-note').textContent).toBe('child'));
+    fireEvent.click(screen.getByRole('button', { name: 'Retour : Audit' }));
+    await waitFor(() => expect(screen.getByTestId('editor-note').textContent).toBe('parent'));
+    fireEvent.click(screen.getByRole('button', { name: 'Retour : Accueil' }));
+    expect(await screen.findByRole('heading', { level: 1, name: 'Reprendre le fil' })).toBeTruthy();
+  });
+
   it('opens a new note directly on its page with a way back to the notes', async () => {
     mockApi.createNote.mockImplementation(async () => {
       notesEnBase.current = [...notesEnBase.current, makeNote('nouvelle', 'Nouvelle case', 'open', null)];
@@ -557,6 +584,21 @@ describe('App — Today view', () => {
     await screen.findByRole('button', { name: 'Ouvrir Urgente' });
     fireEvent.keyDown(window, { key: 'F', ctrlKey: true });
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('searchbox', { name: 'Rechercher une case' })));
+  });
+
+  it('the key in the corner and Ctrl+J are the way to the assistant; no button in the top bar', async () => {
+    render(<App />);
+    await screen.findByRole('button', { name: 'Ouvrir Urgente' });
+    expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Assistant' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' }));
+    expect(await screen.findByRole('region', { name: 'Assistant' })).toBeTruthy();
+    expect(await screen.findByText('Claude Haiku 5.5 · prêt')).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
+    expect(screen.queryByRole('region', { name: 'Assistant' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Assistant (Ctrl+J)' })).toBeTruthy();
+    fireEvent.keyDown(window, { key: 'j', ctrlKey: true });
+    expect(screen.getByRole('region', { name: 'Assistant' })).toBeTruthy();
   });
 
   it('Ctrl+F searches the whole space, leaving Today and the open project', async () => {

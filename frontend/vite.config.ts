@@ -47,7 +47,8 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
-        quick_capture: './quick_capture.html'
+        quick_capture: './quick_capture.html',
+        assistant_mini: './assistant_mini.html'
       }
     }
   }

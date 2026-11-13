@@ -1,4 +1,5 @@
 use super::{mutation_allowed, AppState};
+use crate::anthropic;
 use crate::db::{queries, structure};
 use crate::models::note::Note;
 use crate::providers;
@@ -108,13 +109,23 @@ fn resolve_frame<'a>(frame: Option<&'a str>, text: &str) -> &'a str {
     }
 }
 
-/// First AI provider ready in Humcase's settings (a key, or a local server address).
+/// First AI provider ready in Humcase's settings (a key, or a local server address chosen):
+/// the local server is never taken by default, since its address is always known.
 pub(crate) fn first_ready_provider() -> Option<String> {
-    providers::providers_info()
-        .cleanup
-        .into_iter()
-        .find(|provider| provider.ready)
-        .map(|provider| provider.id)
+    crate::ask::ready_provider(&providers::providers_info().cleanup, None).map(|(id, _)| id)
+}
+
+/// The provider to call: the one asked, when it is ready; an error when it is asked and has no
+/// key (another AI is never substituted: its key, possibly only a Windows variable, was not
+/// chosen for this use). With none asked: the first ready one, else "cerebras", whose error says
+/// what is missing.
+pub(crate) fn pick_provider(asked: Option<String>) -> Result<String, String> {
+    let asked = asked.filter(|id| !id.is_empty());
+    Ok(
+        crate::ask::provider_to_ask(&providers::providers_info().cleanup, asked.as_deref())?
+            .map(|(id, _)| id)
+            .unwrap_or_else(|| "cerebras".to_string()),
+    )
 }
 
 /// Structuring asked by an agent (MCP and CLI `structure_note`): Humcase structures the case
@@ -261,6 +272,34 @@ pub(crate) async fn call_llm_json(
     db_path: &std::path::Path,
     operation: &str,
 ) -> Result<String, String> {
+    call_llm_json_effort(
+        system_prompt,
+        user_content,
+        provider,
+        model,
+        schema_name,
+        schema,
+        db_path,
+        operation,
+        None,
+    )
+    .await
+}
+
+/// [`call_llm_json`] sending `reasoning_effort` (`low`, `medium` or `high`, for the reasoning
+/// models that take it) when given.
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn call_llm_json_effort(
+    system_prompt: &str,
+    user_content: serde_json::Value,
+    provider: Option<String>,
+    model: Option<String>,
+    schema_name: &str,
+    schema: serde_json::Value,
+    db_path: &std::path::Path,
+    operation: &str,
+    reasoning_effort: Option<&str>,
+) -> Result<String, String> {
     let format = serde_json::json!({
         "type": "json_schema",
         "json_schema": { "name": schema_name, "strict": true, "schema": schema }
@@ -271,7 +310,7 @@ pub(crate) async fn call_llm_json(
         user_content.clone(),
         provider.clone(),
         model.clone(),
-        None,
+        reasoning_effort,
         Some(&format),
         Some(log),
     )
@@ -283,7 +322,7 @@ pub(crate) async fn call_llm_json(
             user_content,
             provider,
             model,
-            None,
+            reasoning_effort,
             Some(log),
         )
         .await
@@ -304,54 +343,53 @@ async fn call_llm_with(
     response_format: Option<&serde_json::Value>,
     log: Option<UsageLog<'_>>,
 ) -> Result<LlmAnswer, (String, Option<u16>)> {
-    let provider_id = provider.unwrap_or_else(|| "cerebras".to_string());
+    let asked = provider.clone();
+    let provider_id = pick_provider(provider).map_err(|e| (e, None))?;
+    // A model chosen for another provider means nothing to this one.
+    let model = model.filter(|_| asked.as_deref().is_none_or(|id| id == provider_id));
     // Error propagated as is: a missing key keeps its stable code
     // (`providers::MISSING_KEY_CODE`), which the interface tests without reading the translated text.
     let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;
-    let mut body = serde_json::json!({
-        "model": resolved.model,
-        "messages": [
-            { "role": "system", "content": system_prompt },
-            { "role": "user", "content": user_content.to_string() }
-        ]
-    });
-    if let Some(effort) = reasoning_effort {
-        body["reasoning_effort"] = serde_json::Value::from(effort);
-    }
-    if let Some(format) = response_format {
-        body["response_format"] = format.clone();
-    }
-    // Explicit bounds: a connection left open without finishing would block the AI processing.
-    let client = reqwest::Client::builder()
-        .connect_timeout(std::time::Duration::from_secs(10))
-        .timeout(std::time::Duration::from_secs(90))
-        .build()
-        .map_err(|e| (crate::tr!("ai.http.clientUnavailable", error = e), None))?;
-    let mut request = client.post(&resolved.url).json(&body);
-    if let Some(key) = resolved.key {
-        request = request.bearer_auth(key);
-    }
+    let messages = [
+        serde_json::json!({ "role": "system", "content": system_prompt }),
+        serde_json::json!({ "role": "user", "content": user_content.to_string() }),
+    ];
+    let effort = providers::effort_for(&provider_id, &resolved.model, reasoning_effort);
+    let body = if provider_id == anthropic::ID {
+        anthropic::request(
+            &resolved.model,
+            &messages,
+            None,
+            None,
+            effort,
+            response_format,
+        )
+    } else {
+        let mut body = serde_json::json!({ "model": resolved.model, "messages": messages });
+        if let Some(effort) = effort {
+            body["reasoning_effort"] = serde_json::Value::from(effort);
+        }
+        if let Some(format) = response_format {
+            body["response_format"] = format.clone();
+        }
+        body
+    };
+    let client = llm_client()?;
+    let request = authorized(
+        client.post(&resolved.url).json(&body),
+        &provider_id,
+        resolved.key,
+    );
     let started = std::time::Instant::now();
     let (text, tokens, status) = send_llm(request, &provider_id).await;
     if let Some(log) = log {
-        crate::ai_usage::record(
-            log.db_path,
-            &crate::ai_usage::UsageEntry {
-                operation: log.operation,
-                provider: &provider_id,
-                model: &resolved.model,
-                language: None,
-                estimated_cost_usd: crate::ai_usage::token_cost(
-                    &provider_id,
-                    &resolved.model,
-                    &tokens,
-                ),
-                tokens: tokens.clone(),
-                audio_seconds: None,
-                duration_ms: started.elapsed().as_millis() as u64,
-                ok: text.is_ok(),
-                prices_as_of: crate::ai_usage::PRICES_AS_OF,
-            },
+        record_usage(
+            log,
+            &provider_id,
+            &resolved.model,
+            &tokens,
+            started,
+            text.is_ok(),
         );
     }
     Ok(LlmAnswer {
@@ -361,13 +399,141 @@ async fn call_llm_with(
     })
 }
 
-/// Sends the request; the tokens are read even from an answer without content. The HTTP status
+/// The HTTP client of every call. Explicit bounds: a connection left open without finishing
+/// would block the AI processing.
+fn llm_client() -> Result<reqwest::Client, (String, Option<u16>)> {
+    reqwest::Client::builder()
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(90))
+        .build()
+        .map_err(|e| (crate::tr!("ai.http.clientUnavailable", error = e), None))
+}
+
+/// The request with the provider's key: a bearer token, or Anthropic's own headers.
+fn authorized(
+    request: reqwest::RequestBuilder,
+    provider_id: &str,
+    key: Option<String>,
+) -> reqwest::RequestBuilder {
+    match key {
+        Some(key) if provider_id == anthropic::ID => request
+            .header("x-api-key", key)
+            .header("anthropic-version", anthropic::VERSION),
+        Some(key) => request.bearer_auth(key),
+        None => request,
+    }
+}
+
+/// Records a call that reached the provider in the consumption journal.
+fn record_usage(
+    log: UsageLog<'_>,
+    provider_id: &str,
+    model: &str,
+    tokens: &crate::ai_usage::TokenUsage,
+    started: std::time::Instant,
+    ok: bool,
+) {
+    crate::ai_usage::record(
+        log.db_path,
+        &crate::ai_usage::UsageEntry {
+            operation: log.operation,
+            provider: provider_id,
+            model,
+            language: None,
+            estimated_cost_usd: crate::ai_usage::token_cost(provider_id, model, tokens),
+            tokens: tokens.clone(),
+            audio_seconds: None,
+            duration_ms: started.elapsed().as_millis() as u64,
+            ok,
+            prices_as_of: crate::ai_usage::PRICES_AS_OF,
+        },
+    );
+}
+
+/// One turn of a conversation with tools (OpenAI-compatible `tools` and `tool_choice`): sends
+/// `messages` and returns the assistant's message, which holds text and/or `tool_calls`. Same
+/// client, key handling and consumption record as the other calls; an error carries the HTTP
+/// status when the provider answered one (a provider that refuses tools answers 400 or 422).
+#[allow(clippy::too_many_arguments)]
+pub(crate) async fn call_llm_chat(
+    messages: &[serde_json::Value],
+    tools: &serde_json::Value,
+    tool_choice: &serde_json::Value,
+    provider: Option<String>,
+    model: Option<String>,
+    db_path: &std::path::Path,
+    operation: &str,
+    reasoning_effort: Option<&str>,
+) -> Result<serde_json::Value, (String, Option<u16>)> {
+    let asked = provider.clone();
+    let provider_id = pick_provider(provider).map_err(|e| (e, None))?;
+    // A model chosen for another provider means nothing to this one.
+    let model = model.filter(|_| asked.as_deref().is_none_or(|id| id == provider_id));
+    let resolved = providers::resolve_llm(&provider_id, model.as_deref()).map_err(|e| (e, None))?;
+    let effort = providers::effort_for(&provider_id, &resolved.model, reasoning_effort);
+    let body = if provider_id == anthropic::ID {
+        anthropic::request(
+            &resolved.model,
+            messages,
+            Some(tools),
+            Some(tool_choice),
+            effort,
+            None,
+        )
+    } else {
+        let mut body = serde_json::json!({
+            "model": resolved.model,
+            "messages": messages,
+            "tools": tools,
+            "tool_choice": tool_choice,
+        });
+        if let Some(effort) = effort {
+            body["reasoning_effort"] = serde_json::Value::from(effort);
+        }
+        body
+    };
+    let client = llm_client()?;
+    let send = |body: &serde_json::Value| {
+        authorized(
+            client.post(&resolved.url).json(body),
+            &provider_id,
+            resolved.key.clone(),
+        )
+    };
+    let started = std::time::Instant::now();
+    let (mut data, mut tokens, mut status) = send_raw(send(&body), &provider_id).await;
+    // Claude Opus 5.5 and Sonnet 5.5 refuse a forced tool while they think: the model then
+    // chooses, and the loop asks again for the final function when it answers in text.
+    if provider_id == anthropic::ID && status == Some(400) && anthropic::forces_tool(&body) {
+        (data, tokens, status) =
+            send_raw(send(&anthropic::without_forced_tool(body)), &provider_id).await;
+    }
+    let message = data.and_then(|data| {
+        let message = data["choices"][0]["message"].clone();
+        if message.is_object() {
+            Ok(message)
+        } else {
+            Err(crate::tr!("ai.provider.emptyResponse"))
+        }
+    });
+    record_usage(
+        UsageLog { db_path, operation },
+        &provider_id,
+        &resolved.model,
+        &tokens,
+        started,
+        message.is_ok(),
+    );
+    message.map_err(|e| (e, status))
+}
+
+/// Sends the request and reads the JSON answer; the tokens are read from it. The HTTP status
 /// comes back with a refusal.
-async fn send_llm(
+async fn send_raw(
     request: reqwest::RequestBuilder,
     provider_id: &str,
 ) -> (
-    Result<String, String>,
+    Result<serde_json::Value, String>,
     crate::ai_usage::TokenUsage,
     Option<u16>,
 ) {
@@ -399,11 +565,15 @@ async fn send_llm(
         );
     }
     match response.json::<serde_json::Value>().await {
-        Ok(data) => (
-            providers::extract_content(&data),
-            crate::ai_usage::TokenUsage::from_response(&data),
-            None,
-        ),
+        Ok(data) => {
+            let data = if provider_id == anthropic::ID {
+                anthropic::to_openai(&data)
+            } else {
+                data
+            };
+            let tokens = crate::ai_usage::TokenUsage::from_response(&data);
+            (Ok(data), tokens, None)
+        }
         Err(e) => (
             Err(crate::tr!(
                 "ai.http.unreadable",
@@ -414,6 +584,24 @@ async fn send_llm(
             None,
         ),
     }
+}
+
+/// Sends the request; the tokens are read even from an answer without content. The HTTP status
+/// comes back with a refusal.
+async fn send_llm(
+    request: reqwest::RequestBuilder,
+    provider_id: &str,
+) -> (
+    Result<String, String>,
+    crate::ai_usage::TokenUsage,
+    Option<u16>,
+) {
+    let (data, tokens, status) = send_raw(request, provider_id).await;
+    (
+        data.and_then(|data| providers::extract_content(&data)),
+        tokens,
+        status,
+    )
 }
 
 fn text_with_context(
@@ -651,10 +839,7 @@ pub async fn test_ai_connection(provider: String) -> Result<Vec<String>, String>
         .build()
         .map_err(|e| crate::tr!("ai.http.clientUnavailable", error = e))?;
     let models_url = providers::models_url(&resolved.url);
-    let mut request = client.get(&models_url);
-    if let Some(key) = resolved.key {
-        request = request.bearer_auth(key);
-    }
+    let request = authorized(client.get(&models_url), &provider, resolved.key);
     let response = request.send().await.map_err(|e| {
         if e.is_connect() || e.is_timeout() {
             crate::tr!("ai.http.unreachable", url = models_url)

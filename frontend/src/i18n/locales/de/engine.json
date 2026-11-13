@@ -72,6 +72,7 @@
       "unknownTranscription": "Unbekannter Transkriptionsanbieter: {{id}}",
       "missingUrl": "URL für den Anbieter „{{provider}}“ fehlt ({{source}}).",
       "missingKey": "{{name}} fehlt",
+      "chosenNoKey": "Die in den Einstellungen gewählte KI ({{provider}}) hat keinen API-Schlüssel.",
       "missingModel": "Modell für den Anbieter „{{provider}}“ fehlt.",
       "emptyResponse": "Leere oder unerwartete Antwort des Anbieters",
       "custom": "Benutzerdefiniert (OpenAI-kompatibel)",
@@ -186,6 +187,7 @@
     "versionMismatch": "Die Datenbankversion passt nicht zum Manifest",
     "zipEntryTooLarge": "ZIP-Eintrag zu groß: {{name}}",
     "zipInvalid": "Ungültiges ZIP: {{error}}",
+    "zipInconsistent": "Inkonsistentes ZIP-Archiv: doppelte Namen oder widersprüchliche Header",
     "zipPathInvalid": "Ungültiger oder doppelter ZIP-Pfad: {{name}}",
     "archiveChanged": "Das Archiv hat sich seit der Vorschau geändert",
     "countsInvalid": "Ungültige Zahlen nach dem Import",
@@ -369,5 +371,9 @@
     "alreadyAnswered": "Dieser Vorschlag existiert nicht mehr oder wurde schon beantwortet.",
     "otherGone": "Der andere Fall existiert nicht mehr.",
     "weeks": "Dauer nicht angeboten: {{weeks}} Wochen."
+  },
+  "ask": {
+    "unreadable": "Unlesbare Antwort der KI: {{error}}",
+    "deadline": "Die KI hat zu lange für die Antwort gebraucht (über {{seconds}} Sekunden). Versuche es erneut."
   }
 }

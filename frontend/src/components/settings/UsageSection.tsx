@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { ArrowsMerge, CaretDown, ChartBar, Eraser, FolderOpen, Gavel, IdentificationCard, ListChecks, Microphone, Plant, Robot, Stack, Swap, TreeStructure } from '@phosphor-icons/react';
+import { ArrowsMerge, CaretDown, ChartBar, ChatCircleText, ChatsCircle, ChatCenteredDots, Eraser, FolderOpen, Gavel, IdentificationCard, ListChecks, Microphone, Plant, Robot, Stack, Swap, TreeStructure } from '@phosphor-icons/react';
 import { api } from '../../services/tauriApi';
 import { formatMinutes, periodDays, summarizeUsage, type ModelSummary, type OperationSummary, type UsagePeriod } from '../../utils/aiUsage';
 import { Button } from '../ui/Button';
@@ -13,13 +13,16 @@ import { currentDateLocale } from '../../i18n';
 
 /** Brand names of the providers; only "custom" is translated. */
 const PROVIDER_NAMES: Record<string, string> = {
-  cerebras: 'Cerebras', deepgram: 'Deepgram', openai: 'OpenAI', groq: 'Groq', openrouter: 'OpenRouter', ollama: 'Ollama', typesafe: 'TypeSafe',
+  cerebras: 'Cerebras', deepgram: 'Deepgram', openai: 'OpenAI', groq: 'Groq', openrouter: 'OpenRouter', mistral: 'Mistral', anthropic: 'Anthropic', ollama: 'Ollama', typesafe: 'TypeSafe',
 };
 
 // One per operation of `ai_usage::operation` (src-tauri), checked by the test.
 const OPERATION_ICONS: Record<string, typeof Microphone> = {
   transcription: Microphone, integrate: ArrowsMerge, structure: TreeStructure, clean: Eraser, structure_agent: Robot, check_nature: Swap,
   germinate: Plant, check_proposals: ListChecks, check_decisions: Gavel, check_gather: Stack, check_profile: IdentificationCard,
+  ask: ChatCircleText,
+  reflect: ChatsCircle,
+  assistant: ChatCenteredDots,
 };
 
 function providerName(provider: string, t: TFunction): string {

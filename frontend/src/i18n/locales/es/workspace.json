@@ -773,5 +773,130 @@
       "logoText": "Mantenemos el logotipo actual: los clientes lo conocen y cambiarlo retrasaría el lanzamiento.",
       "phone": "Probar el pago en un móvil antiguo"
     }
+  },
+  "assistantWindow": {
+    "title": "Asistente",
+    "status": {
+      "ready": "{{model}} · listo",
+      "readyPlain": "Listo",
+      "noAi": "Ninguna IA conectada",
+      "reading": "Leyendo tus casos…"
+    },
+    "options": "Opciones",
+    "minimise": "Minimizar",
+    "close": "Cerrar",
+    "reopen": "Asistente (Ctrl+J)",
+    "newReply": "Nueva respuesta",
+    "newAttention": "Nuevo: por decidir o contradicción",
+    "move": "Arrastra para mover",
+    "resize": "Arrastra para cambiar el tamaño",
+    "context": "Contexto",
+    "removeContext": "Quitar del contexto",
+    "reads": "Qué lee",
+    "keep": "Guardar como caso",
+    "newConversation": "Nueva conversación",
+    "kept": "Guardado como caso en la Bandeja de entrada.",
+    "open": "Abrir",
+    "undo": "Deshacer",
+    "screen": {
+      "cases_one": "{{count}} caso",
+      "cases_many": "{{count}} casos",
+      "cases_other": "{{count}} casos",
+      "toDecide": "Por decidir",
+      "toTidy": "Por ordenar",
+      "conflicts": "Contradicciones",
+      "askToTidy": "¿Qué puedo ordenar?",
+      "ask": "Preguntar al asistente"
+    },
+    "heading": "¿Qué quieres hacer?",
+    "caseHeading": "¿Qué quieres hacer con este caso?",
+    "intro": "Conozco tus casos y el propio Humcase. Cito lo que leo.",
+    "suggest": {
+      "week": {
+        "tag": "Memoria",
+        "text": "Resume mi semana"
+      },
+      "conflict": {
+        "tag": "Coherencia",
+        "text": "¿Hay algo contradictorio?"
+      },
+      "howto": {
+        "tag": "Humcase",
+        "text": "¿Cómo archivo un caso en un proyecto?"
+      },
+      "decide": {
+        "tag": "Decisiones",
+        "text": "¿Qué espera mi decisión?"
+      }
+    },
+    "placeholder": "Escribe o dicta…",
+    "listening": "Te escucho…",
+    "dictate": "Dictar",
+    "stopDictation": "Detener el dictado",
+    "micError": "Micrófono o transcripción no disponibles. Revisa el micrófono y la clave de transcripción en Ajustes.",
+    "send": "Enviar",
+    "footer": "Nada cambia sin tu clic.",
+    "keyEnter": "Intro",
+    "keySend": "enviar",
+    "sources": "Fuentes · {{n}}",
+    "helpSource": "Ayuda de Humcase · {{title}}",
+    "openSource": "Abrir el caso {{title}}",
+    "noAi": "Ninguna IA conectada.",
+    "connectAi": "Conectar una IA",
+    "error": "Sin respuesta: {{error}}",
+    "actionError": "No se hizo: {{error}}",
+    "action": {
+      "kind": {
+        "proposed": "Propuesto",
+        "conflict": "Va contra una decisión",
+        "supersede": "Decisión reemplazada",
+        "archive": "Por archivar",
+        "group": "Por reunir",
+        "move": "Por ubicar",
+        "germinate": "Germinar"
+      },
+      "subCase": "Crear la tarea “{{title}}” en “{{parent}}”.",
+      "createSubCase": "Crear el subcaso",
+      "subCaseDone": "Subcaso “{{title}}” creado en “{{parent}}”.",
+      "archiveText": "Archivar “{{title}}”. Se podrá seguir encontrando.",
+      "archive": "Archivar",
+      "archiveDone": "“{{title}}” archivado.",
+      "moveText": "Ubicar “{{title}}” en {{project}}.",
+      "move": "Ubicar en {{project}}",
+      "moveDone": "“{{title}}” ubicado en {{project}}.",
+      "markReplaced": "Marcar la anterior como reemplazada",
+      "bothHold": "Las dos siguen vigentes",
+      "replacedDone": "“{{title}}” marcada como reemplazada por “{{other}}”.",
+      "iFix": "Corregiré el caso",
+      "noConflict": "No es una contradicción",
+      "fixDone": "“{{title}}” por corregir.",
+      "openBoth": "Abrir los dos",
+      "keep": "Conservar",
+      "refusedDone": "Se queda como está. No se volverá a proponer.",
+      "groupText": "Reunir “{{title}}” dentro de “{{other}}”.",
+      "fileTogether": "Reunir",
+      "keepApart": "Mantenerlos aparte",
+      "groupDone": "“{{title}}” reunido dentro de “{{other}}”.",
+      "germinateText": "Germinar «{{title}}»: subcasos sacados de su texto, para marcar uno a uno.",
+      "germinate": "Germinar",
+      "germinateDone": "Germinar está abierto en «{{title}}»."
+    },
+    "you": "Tú",
+    "keptSources": "Fuentes",
+    "keptSource": "{{title}}: «{{passage}}»",
+    "suggestCase": {
+      "tag": "Este caso",
+      "open": "¿Qué queda abierto?",
+      "sum": "Resume este caso",
+      "split": "Divídelo en subcasos",
+      "against": "¿Algo lo contradice?"
+    },
+    "otherQuestions": "Otras preguntas",
+    "miniTitle": "Mini Humcase",
+    "pin": "Mantener delante, incluso fuera de Humcase",
+    "unpin": "Volver a Humcase",
+    "windowLabel": "Ventana",
+    "stayOnTop": "Quedarse delante cuando Humcase pasa detrás",
+    "stayOnTopDetail": "La ventana se convierte en Mini Humcase y se queda en tu pantalla"
   }
 }

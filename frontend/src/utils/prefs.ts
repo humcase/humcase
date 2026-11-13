@@ -15,6 +15,10 @@ const KEYS = {
   lastProjectId: 'last_project_id',
   miniMode: 'mini_mode',
   miniSize: 'mini_size',
+  assistantWindow: 'assistant_window',
+  assistantStayOnTop: 'assistant_stay_on_top',
+  assistantMiniRect: 'assistant_mini_rect',
+  assistantSeen: 'assistant_seen',
   aiCleanProvider: 'ai_clean_provider',
   aiSttProvider: 'ai_stt_provider',
   structureFrame: 'structure_frame',
@@ -126,6 +130,70 @@ export function setMiniSize(width: number, height: number) {
   localStorage.setItem(KEYS.miniSize, JSON.stringify({ width: Math.round(width), height: Math.round(height) }));
 }
 
+/** "Stay on top when Humcase goes behind": the assistant becomes Mini Humcase (on by default). */
+export function getAssistantStayOnTop(): boolean {
+  try { return localStorage.getItem(KEYS.assistantStayOnTop) !== 'false'; } catch { return true; }
+}
+
+export function setAssistantStayOnTop(enabled: boolean) {
+  try { localStorage.setItem(KEYS.assistantStayOnTop, enabled ? 'true' : 'false'); } catch { /* persistence unavailable */ }
+}
+
+/** Place of Mini Humcase on the screen, in physical pixels (null: the bottom right of the screen). */
+export function getAssistantMiniPlace(): { x: number; y: number } | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEYS.assistantMiniRect) ?? 'null');
+    if (parsed && Number.isFinite(parsed.x) && Number.isFinite(parsed.y)) return { x: parsed.x, y: parsed.y };
+  } catch { /* storage refused or corrupted value */ }
+  return null;
+}
+
+export function setAssistantMiniPlace(place: { x: number; y: number }) {
+  try { localStorage.setItem(KEYS.assistantMiniRect, JSON.stringify({ x: Math.round(place.x), y: Math.round(place.y) })); } catch { /* persistence unavailable */ }
+}
+
+/** What the person last saw on the assistant's screen, per space: more lights the key. */
+export interface AssistantSeen { toDecide: number; conflicts: number }
+
+export function getAssistantSeen(space: string): AssistantSeen | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEYS.assistantSeen) ?? '{}')?.[space];
+    if (parsed && Number.isFinite(parsed.toDecide) && Number.isFinite(parsed.conflicts)) return { toDecide: parsed.toDecide, conflicts: parsed.conflicts };
+  } catch { /* storage refused or corrupted value */ }
+  return null;
+}
+
+export function setAssistantSeen(space: string, seen: AssistantSeen) {
+  try {
+    let all: Record<string, AssistantSeen> = {};
+    try { all = JSON.parse(localStorage.getItem(KEYS.assistantSeen) ?? '{}') ?? {}; } catch { /* corrupted value: start again */ }
+    localStorage.setItem(KEYS.assistantSeen, JSON.stringify({ ...all, [space]: seen }));
+  } catch { /* persistence unavailable */ }
+}
+
+/** Place and size of the assistant window, remembered on this computer (null: the default place). */
+export interface WindowRect { x: number; y: number; width: number; height: number }
+
+export function getAssistantWindow(): WindowRect | null {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(KEYS.assistantWindow) ?? 'null');
+    if (parsed && [parsed.x, parsed.y, parsed.width, parsed.height].every(value => typeof value === 'number' && Number.isFinite(value))) {
+      return { x: parsed.x, y: parsed.y, width: parsed.width, height: parsed.height };
+    }
+  } catch {
+    // storage refused or corrupted value: the default place
+  }
+  return null;
+}
+
+export function setAssistantWindow(rect: WindowRect) {
+  try {
+    localStorage.setItem(KEYS.assistantWindow, JSON.stringify({ x: Math.round(rect.x), y: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) }));
+  } catch {
+    // kept for this session only
+  }
+}
+
 /** **Cleanup** provider (LLM) chosen by the user. */
 /** Identifiers of the structuring templates (expected by the Rust command `structure_note`). */
 const TEMPLATE_IDS = ['auto', 'reflection', 'dev', 'marketing', 'research'] as const;
@@ -199,8 +267,14 @@ export function dictationLanguageCode(preference: DictationLanguage, interfaceLa
   return preference === 'interface' ? interfaceLanguage : preference;
 }
 
+/** The AI chosen in Settings, or `''` when none is: the engine then uses the first one whose key is set. */
 export function getAiCleanProvider(): string {
-  return localStorage.getItem(KEYS.aiCleanProvider) || DEFAULT_AI_CLEAN_PROVIDER;
+  return localStorage.getItem(KEYS.aiCleanProvider) || '';
+}
+
+/** Whether the person chose a cleanup provider in Settings (otherwise the first ready one is used). */
+export function hasAiCleanChoice(): boolean {
+  return Boolean(localStorage.getItem(KEYS.aiCleanProvider));
 }
 
 export function setAiCleanProvider(id: string) {

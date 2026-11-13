@@ -2,6 +2,9 @@ pub mod agent_hooks;
 pub mod agents_seen;
 pub mod ai_settings;
 pub mod ai_usage;
+pub mod anthropic;
+pub mod ask;
+pub mod assistant;
 pub mod backup;
 pub mod commands;
 pub mod common_words;
@@ -21,6 +24,8 @@ pub mod models;
 pub mod natures;
 pub mod process_lease;
 pub mod profile;
+#[cfg(test)]
+mod profile_seed;
 pub mod providers;
 pub mod recognize;
 pub mod test_profile;
@@ -143,7 +148,7 @@ pub fn run() {
                 .map_err(|e| e.to_string())?;
             // Windows are created here rather than from the configuration (`create: false`) so
             // that their WebView2 profile (local storage, including the draft escrow) lives in the
-            // data folder, not in AppData. Both windows share it.
+            // data folder, not in AppData. Every window (main, quick capture, Mini Humcase) shares it.
             let webview_dir = app_dir.join(data_location::WEBVIEW_DIR);
             for config in app.config().app.windows.clone() {
                 tauri::WebviewWindowBuilder::from_config(app.handle(), &config)?
@@ -277,6 +282,9 @@ pub fn run() {
             commands::nature_review,
             commands::answer_nature,
             commands::germinate_case,
+            commands::assistant_reply,
+            commands::assistant_status,
+            commands::keep_answer,
             commands::list_proposals,
             commands::answer_proposals,
             commands::undo_proposals,

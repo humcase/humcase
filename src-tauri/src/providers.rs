@@ -26,9 +26,28 @@ pub struct LlmProvider {
     pub needs_key: bool,
     /// `true`: the server address can be entered in the application (local model, custom server).
     pub url_editable: bool,
+    /// `reasoning_effort` sent with the default model when the caller gives none (`None` = the
+    /// model's own default). Mistral Large 4 reasons by default and then outlasts the client's
+    /// timeout on a reply; its API accepts `low`, `medium` and `high` and refuses `none` with
+    /// HTTP 400 (answer of api.mistral.ai on 2026-11-13), so `low` is the least it can reason.
+    pub default_effort: Option<&'static str>,
 }
 
 pub const LLM_PROVIDERS: &[LlmProvider] = &[
+    // The first ready provider is the one used when nothing is chosen (`ask::ready_provider`):
+    // Claude Haiku 5.5 answered best on `ask_eval` and `reflect_quality` (09/10), for less.
+    LlmProvider {
+        id: "anthropic",
+        label: "Anthropic",
+        base_url: "https://api.anthropic.com/v1/messages",
+        key_env: "ANTHROPIC_API_KEY",
+        default_model: "claude-haiku-5-5",
+        model_env: "ANTHROPIC_MODEL",
+        url_env: "",
+        needs_key: true,
+        url_editable: false,
+        default_effort: None,
+    },
     LlmProvider {
         id: "cerebras",
         label: "Cerebras",
@@ -39,6 +58,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "openai",
@@ -50,6 +70,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "groq",
@@ -61,6 +82,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
     },
     LlmProvider {
         id: "openrouter",
@@ -72,6 +94,19 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: true,
         url_editable: false,
+        default_effort: None,
+    },
+    LlmProvider {
+        id: "mistral",
+        label: "Mistral",
+        base_url: "https://api.mistral.ai/v1/chat/completions",
+        key_env: "MISTRAL_API_KEY",
+        default_model: "mistral-large-4",
+        model_env: "MISTRAL_MODEL",
+        url_env: "",
+        needs_key: true,
+        url_editable: false,
+        default_effort: Some("low"),
     },
     LlmProvider {
         id: "ollama",
@@ -83,6 +118,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "",
         needs_key: false,
         url_editable: true,
+        default_effort: None,
     },
     LlmProvider {
         id: "custom",
@@ -94,6 +130,7 @@ pub const LLM_PROVIDERS: &[LlmProvider] = &[
         url_env: "CUSTOM_LLM_BASE_URL",
         needs_key: false,
         url_editable: true,
+        default_effort: None,
     },
 ];
 
@@ -153,6 +190,16 @@ fn missing_key_error(key_env: &str) -> String {
     format!(
         "[{MISSING_KEY_CODE}] {}",
         crate::tr!("ai.provider.missingKey", name = key_env)
+    )
+}
+
+/// The AI the person chose in Settings has no key: the error that replaces any substitution by
+/// another AI (its key, possibly only a Windows variable, was never meant for this use). Same
+/// stable code as a missing key, so the interface recognizes it.
+pub fn chosen_without_key_error(label: &str) -> String {
+    format!(
+        "[{MISSING_KEY_CODE}] {}",
+        crate::tr!("ai.provider.chosenNoKey", provider = label)
     )
 }
 
@@ -287,7 +334,10 @@ pub fn normalize_llm_url(input: &str) -> Result<String, String> {
 
 /// Model-list endpoint (`GET .../models`) next to a completion endpoint.
 pub fn models_url(completion_url: &str) -> String {
-    match completion_url.strip_suffix("/chat/completions") {
+    match completion_url
+        .strip_suffix("/chat/completions")
+        .or_else(|| completion_url.strip_suffix("/messages"))
+    {
         Some(base) => format!("{base}/models"),
         None => format!("{}/models", completion_url.trim_end_matches('/')),
     }
@@ -315,7 +365,7 @@ pub fn resolve_llm(id: &str, requested_model: Option<&str>) -> Result<ResolvedLl
         requested_model,
         app_key.as_deref(),
         app_url.as_deref(),
-        |key| std::env::var(key).ok(),
+        crate::ai_settings::env_value,
     )
 }
 
@@ -329,15 +379,39 @@ pub fn is_known_provider(id: &str) -> bool {
 /// Key of a **transcription** provider: the application's key takes precedence over the environment.
 pub fn stt_key(id: &str) -> Result<String, String> {
     let f = find_stt_provider(id)?;
-    let (key, _) = crate::ai_settings::effective_key(id, f.key_env, |k| std::env::var(k).ok());
+    let (key, _) = crate::ai_settings::effective_key(id, f.key_env, crate::ai_settings::env_value);
     key.ok_or_else(|| missing_key_error(f.key_env))
+}
+
+/// The `reasoning_effort` to send: the caller's, or the provider's default for its default model
+/// (another model may not accept that value).
+pub fn effort_for<'a>(provider_id: &str, model: &str, asked: Option<&'a str>) -> Option<&'a str> {
+    asked.or_else(|| {
+        LLM_PROVIDERS
+            .iter()
+            .find(|p| p.id == provider_id && p.default_model == model)
+            .and_then(|p| p.default_effort)
+    })
+}
+
+/// The text of a message `content`: a string, or the list of typed chunks some providers send
+/// (Mistral: `thinking` chunks, then `text` chunks); only the `text` chunks are the answer.
+pub fn content_text(content: &serde_json::Value) -> String {
+    match content {
+        serde_json::Value::String(text) => text.clone(),
+        serde_json::Value::Array(chunks) => chunks
+            .iter()
+            .filter(|chunk| chunk["type"] == "text")
+            .filter_map(|chunk| chunk["text"].as_str())
+            .collect::<Vec<_>>()
+            .join(""),
+        _ => String::new(),
+    }
 }
 
 /// Extracts the cleaned text from an **OpenAI-compatible** completion response.
 pub fn extract_content(data: &serde_json::Value) -> Result<String, String> {
-    data["choices"][0]["message"]["content"]
-        .as_str()
-        .map(str::to_string)
+    Some(content_text(&data["choices"][0]["message"]["content"]))
         .filter(|s| !s.trim().is_empty())
         .ok_or_else(|| crate::tr!("ai.provider.emptyResponse"))
 }
@@ -464,7 +538,7 @@ pub fn providers_info_in<F: Fn(&str) -> Option<String>>(path: &Path, env: F) -> 
 
 pub fn providers_info() -> ProvidersInfo {
     match crate::ai_settings::config_path() {
-        Ok(path) => providers_info_in(&path, |k| std::env::var(k).ok()),
+        Ok(path) => providers_info_in(&path, crate::ai_settings::env_value),
         // Without a resolvable path (APPDATA missing): no app key can be resolved,
         // but the environment and the already known alert remain exposed.
         Err(_) => {
@@ -474,9 +548,13 @@ pub fn providers_info() -> ProvidersInfo {
                     info_llm_with(
                         f,
                         |id, key_env| {
-                            crate::ai_settings::key_status(id, key_env, |k| std::env::var(k).ok())
+                            crate::ai_settings::key_status(
+                                id,
+                                key_env,
+                                crate::ai_settings::env_value,
+                            )
                         },
-                        effective_url(f, None, &|k: &str| std::env::var(k).ok()),
+                        effective_url(f, None, &crate::ai_settings::env_value),
                     )
                 })
                 .collect();
@@ -484,7 +562,7 @@ pub fn providers_info() -> ProvidersInfo {
                 .iter()
                 .map(|f| {
                     info_stt_with(f, |id, key_env| {
-                        crate::ai_settings::key_status(id, key_env, |k| std::env::var(k).ok())
+                        crate::ai_settings::key_status(id, key_env, crate::ai_settings::env_value)
                     })
                 })
                 .collect();
@@ -492,7 +570,7 @@ pub fn providers_info() -> ProvidersInfo {
                 .iter()
                 .map(|f| {
                     info_stt_with(f, |id, key_env| {
-                        crate::ai_settings::key_status(id, key_env, |k| std::env::var(k).ok())
+                        crate::ai_settings::key_status(id, key_env, crate::ai_settings::env_value)
                     })
                 })
                 .collect();
@@ -509,6 +587,21 @@ pub fn providers_info() -> ProvidersInfo {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_content_made_of_chunks_gives_its_text_chunks_only() {
+        let data = serde_json::json!({ "choices": [{ "message": { "content": [
+            { "type": "thinking", "thinking": [{ "type": "text", "text": "reasoning" }] },
+            { "type": "text", "text": "{\"a\":" },
+            { "type": "text", "text": "1}" }
+        ] } }] });
+        assert_eq!(extract_content(&data).unwrap(), "{\"a\":1}");
+        let plain = serde_json::json!({ "choices": [{ "message": { "content": "hello" } }] });
+        assert_eq!(extract_content(&plain).unwrap(), "hello");
+        let only_thinking = serde_json::json!({ "choices": [{ "message": { "content": [
+            { "type": "thinking", "thinking": [] }] } }] });
+        assert!(extract_content(&only_thinking).is_err());
+    }
 
     fn empty_env(_: &str) -> Option<String> {
         None
@@ -729,5 +822,21 @@ mod tests {
             f.key_source,
             KeyProvenance::App | KeyProvenance::Env | KeyProvenance::None
         )));
+    }
+
+    #[test]
+    fn mistral_large_4_reasons_little_unless_asked() {
+        assert_eq!(effort_for("mistral", "mistral-large-4", None), Some("low"));
+        assert_eq!(
+            effort_for("mistral", "mistral-large-4", Some("high")),
+            Some("high")
+        );
+        // Another model may refuse the value: nothing is sent for it.
+        assert_eq!(effort_for("mistral", "mistral-small-latest", None), None);
+        assert_eq!(effort_for("cerebras", "gpt-oss-120b", None), None);
+        assert_eq!(
+            effort_for("cerebras", "gpt-oss-120b", Some("low")),
+            Some("low")
+        );
     }
 }

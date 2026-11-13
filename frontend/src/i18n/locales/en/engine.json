@@ -72,6 +72,7 @@
       "unknownTranscription": "Unknown transcription provider: {{id}}",
       "missingUrl": "Missing URL for provider \"{{provider}}\" ({{source}}).",
       "missingKey": "{{name}} is missing",
+      "chosenNoKey": "The AI chosen in Settings ({{provider}}) has no API key.",
       "missingModel": "Missing model for provider \"{{provider}}\".",
       "emptyResponse": "Empty or unexpected provider response",
       "custom": "Custom (OpenAI-compatible)",
@@ -186,6 +187,7 @@
     "versionMismatch": "Database version does not match the manifest",
     "zipEntryTooLarge": "ZIP entry too large: {{name}}",
     "zipInvalid": "Invalid ZIP: {{error}}",
+    "zipInconsistent": "Inconsistent ZIP archive: duplicated names or contradictory headers",
     "zipPathInvalid": "Invalid or duplicate ZIP path: {{name}}",
     "archiveChanged": "The archive has changed since the preview",
     "countsInvalid": "Invalid counts after import",
@@ -369,5 +371,9 @@
     "alreadyAnswered": "This proposal is gone or was already answered.",
     "otherGone": "The other case is gone.",
     "weeks": "Duration not offered: {{weeks}} weeks."
+  },
+  "ask": {
+    "unreadable": "Unreadable answer from the AI: {{error}}",
+    "deadline": "The AI took too long to answer (over {{seconds}} seconds). Try again."
   }
 }

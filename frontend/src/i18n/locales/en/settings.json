@@ -71,14 +71,16 @@
     "dictationLanguageHint": "“Several languages” understands a mix of 10 languages, slightly less accurate and about 20% more at Deepgram.",
     "autoStructure": "Structure the case when dictation ends",
     "autoStructureHint": "The dictation is merged into the case and cleaned up. The previous version stays in the history, the raw text is always kept. Off: the dictation is added at the end.",
-    "cleanLabel": "Dictation cleanup (LLM)",
-    "cleanModelAria": "Model (cleanup)",
+    "cleanLabel": "AI for text",
+    "cleanHint": "Ask, Think it through, Structure, Sprout and dictation cleanup.",
+    "cleanModelAria": "Model (AI for text)",
     "modelPlaceholderDefault": "Model (default: {{model}})",
     "modelPlaceholder": "Model",
-    "cleanKeyAria": "API key (cleanup)",
+    "cleanKeyAria": "API key (AI for text)",
     "keyPlaceholder": "API key (never shown again)",
-    "cleanSaveAria": "Save the cleanup key",
-    "cleanClearAria": "Clear the cleanup key",
+    "choiceSaved": "Choice saved: {{label}}.",
+    "cleanSaveAria": "Save the key of the AI for text",
+    "cleanClearAria": "Clear the key of the AI for text",
     "clear": "Clear",
     "sttLabel": "Transcription (voice)",
     "sttKeyAria": "API key (transcription)",
@@ -127,7 +129,7 @@
     "testFailed": "Connection failed: {{error}}",
     "ready": "Connected.",
     "notReady": "Not connected yet: add a key or an address, then test the connection.",
-    "recommendations": "Supported: Groq, Cerebras, OpenAI, OpenRouter (API key) · Ollama, LM Studio (local)."
+    "recommendations": "Supported: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (API key) · Ollama, LM Studio (local)."
   },
   "agent": {
     "heading": "Agents",
@@ -249,7 +251,10 @@
       "check_proposals": "Proposals read (TypeSafe)",
       "check_decisions": "Decisions read (TypeSafe)",
       "check_gather": "Cases to file together read (TypeSafe)",
-      "check_profile": "Profile suggestions read (TypeSafe)"
+      "check_profile": "Profile suggestions read (TypeSafe)",
+      "ask": "Questions to Humcase",
+      "reflect": "Thinking it through with Humcase",
+      "assistant": "Assistant"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} session",

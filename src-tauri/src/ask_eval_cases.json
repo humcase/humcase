@@ -1,0 +1,918 @@
+{
+  "_comment": "Questions of the assistant's bench (assistant.rs, assistant_eval), first written for Ask Humcase. Each base is one space of invented cases; `agent_resolved` cases wait for the person's decision; `days_ago` dates the last change; `due_in_days` sets a due day. Each question lists the cases a good answer cites (`expect`), the phrases that would make a proposal sound decided (`forbid`, lowercase), whether nothing should be found (`not_found`), and whether a next step is clearly missing (`sub_case`). `previous` makes it a follow-up. `must` lists facts a good answer states (each a list of accepted spellings, lowercase); `jargon` (per base) lists words of the data the person never uses (statuses, natures). `filler` (a count) adds that many recent, dull cases (\"Notes de réunion 12\") so that the older target cases fall outside the 25-line overview: the first reading cannot hold them and only a search with other words finds them (the question's words are not in the target case). `hard: true` groups those bases in the summary.",
+  "bases": [
+    {
+      "lang": "fr",
+      "cases": [
+        {
+          "key": "clay",
+          "title": "Choisir le fournisseur d'argile",
+          "nature": "research",
+          "status": "resolved",
+          "agent_resolved": true,
+          "content": "Trois fournisseurs comparés : Ceradel, Solargil et Terres du Sud.\n\nProposition : Solargil, livraison en 48 h et 10 % moins cher que les autres.\n\nLe choix reste à faire."
+        },
+        {
+          "key": "price",
+          "title": "Prix des cours du samedi",
+          "nature": "decision",
+          "status": "open",
+          "content": "Décision : le cours du samedi passe à 45 € à partir de novembre.\n\nLes abonnés gardent 40 € jusqu'en janvier."
+        },
+        {
+          "key": "kiln",
+          "title": "Nouveau four électrique",
+          "nature": "todo",
+          "status": "in_progress",
+          "due_in_days": 3,
+          "content": "Le four actuel chauffe mal au-dessus de 1 200 °C.\n\nDevis demandé à deux vendeurs. Budget maximum : 4 000 €."
+        },
+        {
+          "key": "site",
+          "title": "Page des cours sur le site",
+          "nature": "todo",
+          "status": "open",
+          "days_ago": 15,
+          "content": "Refaire la page des cours avec les horaires.\n\nAjouter les photos des pièces des élèves."
+        },
+        {
+          "key": "insurance",
+          "title": "Assurance de l'atelier",
+          "nature": "question",
+          "status": "open",
+          "days_ago": 20,
+          "content": "Est-ce que l'assurance couvre la casse des pièces des élèves ?"
+        },
+        {
+          "key": "camp",
+          "title": "Stage d'été pour enfants",
+          "nature": "idea",
+          "status": "open",
+          "content": "Un stage de cinq jours en juillet pour les 8 à 12 ans.\n\nIl faudrait un deuxième animateur pour encadrer le groupe."
+        },
+        {
+          "key": "glaze",
+          "title": "Fournisseur d'émaux",
+          "nature": "note",
+          "status": "open",
+          "content": "Les émaux viennent de chez Ceradel.\n\nCommande tous les deux mois, le premier lundi."
+        },
+        {
+          "key": "holidays",
+          "title": "Fermeture de fin d'année",
+          "nature": "note",
+          "status": "open",
+          "content": "L'atelier ferme du 24 décembre au 2 janvier."
+        }
+      ],
+      "questions": [
+        {
+          "q": "Qu'a-t-on décidé pour le prix des cours ?",
+          "expect": [
+            "price"
+          ],
+          "must": [
+            [
+              "45"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est le choix du fournisseur d'argile ?",
+          "expect": [
+            "clay"
+          ],
+          "forbid": [
+            "a été choisi",
+            "a été retenu",
+            "avons choisi",
+            "on a choisi",
+            "est retenu",
+            "a choisi solargil",
+            "vous avez proposé",
+            "tu as proposé",
+            "vous proposez"
+          ],
+          "must": [
+            [
+              "solargil"
+            ]
+          ]
+        },
+        {
+          "q": "Et les émaux, on les commande où ?",
+          "previous": [
+            {
+              "question": "Où en est le choix du fournisseur d'argile ?",
+              "answer": "Trois fournisseurs ont été comparés et Solargil est proposé ; le choix reste à faire.",
+              "cites": [
+                "clay"
+              ]
+            }
+          ],
+          "expect": [
+            "glaze"
+          ],
+          "must": [
+            [
+              "ceradel"
+            ]
+          ]
+        },
+        {
+          "q": "Qu'est-ce qui attend ma décision ?",
+          "expect": [
+            "clay"
+          ]
+        },
+        {
+          "q": "Qu'est-ce qui traîne depuis plus de deux semaines ?",
+          "expect": [
+            "site",
+            "insurance"
+          ]
+        },
+        {
+          "q": "Combien coûtent le nouveau four et le cours du samedi ?",
+          "expect": [
+            "kiln",
+            "price"
+          ],
+          "must": [
+            [
+              "4 000",
+              "4000",
+              "4 000"
+            ],
+            [
+              "45"
+            ]
+          ]
+        },
+        {
+          "q": "Que manque-t-il pour lancer le stage d'été ?",
+          "expect": [
+            "camp"
+          ],
+          "sub_case": true,
+          "must": [
+            [
+              "animateur"
+            ]
+          ]
+        },
+        {
+          "q": "À quelle heure ouvre la piscine municipale ?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "le cas ",
+        "ce cas",
+        "résolu",
+        "statut"
+      ]
+    },
+    {
+      "lang": "en",
+      "cases": [
+        {
+          "key": "hosting",
+          "title": "Pick a hosting provider for client sites",
+          "nature": "research",
+          "status": "resolved",
+          "agent_resolved": true,
+          "content": "Compared Netlify, Vercel and a small VPS.\n\nProposal: Netlify, the simplest for small sites.\n\nStill to decide."
+        },
+        {
+          "key": "rate",
+          "title": "Hourly rate for 2027",
+          "nature": "decision",
+          "status": "open",
+          "content": "Decision: the hourly rate goes to 85 € in January.\n\nCurrent clients keep 75 € until March."
+        },
+        {
+          "key": "laptop",
+          "title": "Replace the laptop",
+          "nature": "todo",
+          "status": "in_progress",
+          "due_in_days": 5,
+          "content": "The battery lasts two hours.\n\nBudget up to 2,000 €."
+        },
+        {
+          "key": "portfolio",
+          "title": "Update the portfolio",
+          "nature": "todo",
+          "status": "open",
+          "days_ago": 18,
+          "content": "Add the bakery rebrand and the museum app."
+        },
+        {
+          "key": "accountant",
+          "title": "Ask the accountant about the laptop",
+          "nature": "question",
+          "status": "open",
+          "days_ago": 25,
+          "content": "Can the new laptop be deducted this year?"
+        },
+        {
+          "key": "workshop",
+          "title": "Logo workshop for students",
+          "nature": "idea",
+          "status": "open",
+          "content": "A half-day workshop on logo design at the local school.\n\nWe need a date with the teacher."
+        },
+        {
+          "key": "fonts",
+          "title": "Font licences",
+          "nature": "note",
+          "status": "open",
+          "content": "All fonts come from Fontshare or Google Fonts.\n\nNo paid licence so far."
+        }
+      ],
+      "questions": [
+        {
+          "q": "What did we decide about the hourly rate?",
+          "expect": [
+            "rate"
+          ],
+          "must": [
+            [
+              "85"
+            ]
+          ]
+        },
+        {
+          "q": "Where are we on hosting?",
+          "expect": [
+            "hosting"
+          ],
+          "forbid": [
+            "was chosen",
+            "we chose",
+            "we picked",
+            "was selected",
+            "decided on netlify",
+            "have chosen",
+            "you proposed",
+            "you suggested"
+          ],
+          "must": [
+            [
+              "netlify"
+            ]
+          ]
+        },
+        {
+          "q": "And fonts, do we pay for them?",
+          "previous": [
+            {
+              "question": "Where are we on hosting?",
+              "answer": "Netlify is proposed after comparing three options; the choice is still open.",
+              "cites": [
+                "hosting"
+              ]
+            }
+          ],
+          "expect": [
+            "fonts"
+          ],
+          "must": [
+            [
+              "fontshare",
+              "google",
+              "no paid",
+              "not paid",
+              "free"
+            ]
+          ]
+        },
+        {
+          "q": "What has been stalling for more than two weeks?",
+          "expect": [
+            "portfolio",
+            "accountant"
+          ]
+        },
+        {
+          "q": "What is the budget for the laptop, and what is the new rate?",
+          "expect": [
+            "laptop",
+            "rate"
+          ],
+          "must": [
+            [
+              "2,000",
+              "2000",
+              "2 000"
+            ],
+            [
+              "85"
+            ]
+          ]
+        },
+        {
+          "q": "What is left to organise the logo workshop?",
+          "expect": [
+            "workshop"
+          ],
+          "sub_case": true,
+          "must": [
+            [
+              "date",
+              "teacher"
+            ]
+          ]
+        },
+        {
+          "q": "What will the weather be in Lisbon tomorrow?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        " resolved",
+        "research case",
+        "status",
+        "to_review"
+      ]
+    },
+    {
+      "lang": "es",
+      "cases": [
+        {
+          "key": "supplier",
+          "title": "Elegir proveedor de café",
+          "nature": "research",
+          "status": "resolved",
+          "agent_resolved": true,
+          "content": "Comparados tres tostadores: Café Norte, La Molienda y Tueste Sur.\n\nPropuesta: La Molienda, entrega semanal y precio estable.\n\nFalta decidir."
+        },
+        {
+          "key": "menu",
+          "title": "Precio del menú del día",
+          "nature": "decision",
+          "status": "open",
+          "content": "Decisión: el menú del día pasa a 14 € en enero."
+        },
+        {
+          "key": "fridge",
+          "title": "Cambiar la nevera de la cocina",
+          "nature": "todo",
+          "status": "in_progress",
+          "due_in_days": 4,
+          "content": "La nevera hace ruido y pierde frío.\n\nPresupuesto máximo: 1.800 €."
+        },
+        {
+          "key": "terrace",
+          "title": "Permiso de la terraza",
+          "nature": "question",
+          "status": "open",
+          "days_ago": 22,
+          "content": "¿Hay que renovar el permiso de la terraza antes de marzo?"
+        },
+        {
+          "key": "staff",
+          "title": "Turnos de verano",
+          "nature": "note",
+          "status": "open",
+          "content": "En julio hacen falta dos camareros más los fines de semana."
+        }
+      ],
+      "questions": [
+        {
+          "q": "¿En qué punto está la elección del proveedor de café?",
+          "expect": [
+            "supplier"
+          ],
+          "forbid": [
+            "se eligió",
+            "hemos elegido",
+            "fue elegido",
+            "se decidió por",
+            "elegimos",
+            "propusiste",
+            "usted propuso",
+            "has propuesto"
+          ],
+          "must": [
+            [
+              "molienda"
+            ]
+          ]
+        },
+        {
+          "q": "¿Cuánto cuestan la nevera nueva y el menú del día?",
+          "expect": [
+            "fridge",
+            "menu"
+          ],
+          "must": [
+            [
+              "1.800",
+              "1800",
+              "1 800"
+            ],
+            [
+              "14"
+            ]
+          ]
+        },
+        {
+          "q": "¿Qué lleva parado más de dos semanas?",
+          "expect": [
+            "terrace"
+          ]
+        },
+        {
+          "q": "¿Qué falta para preparar el verano?",
+          "expect": [
+            "staff"
+          ],
+          "sub_case": true,
+          "must": [
+            [
+              "camarero"
+            ]
+          ]
+        },
+        {
+          "q": "¿Quién ganó el partido de anoche?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "resuelto",
+        "investigación",
+        "el caso "
+      ]
+    },
+    {
+      "lang": "de",
+      "cases": [
+        {
+          "key": "software",
+          "title": "Buchhaltungssoftware auswählen",
+          "nature": "research",
+          "status": "resolved",
+          "agent_resolved": true,
+          "content": "Drei Programme verglichen: Lexware, sevDesk und Buchhaltungsbutler.\n\nVorschlag: sevDesk, weil es Belege automatisch erkennt.\n\nNoch offen."
+        },
+        {
+          "key": "fee",
+          "title": "Stundensatz für Beratung",
+          "nature": "decision",
+          "status": "open",
+          "content": "Entscheidung: Der Stundensatz steigt ab Februar auf 95 €."
+        },
+        {
+          "key": "printer",
+          "title": "Neuen Drucker kaufen",
+          "nature": "todo",
+          "status": "in_progress",
+          "due_in_days": 6,
+          "content": "Der alte Drucker zieht das Papier schief ein.\n\nBudget höchstens 600 €."
+        },
+        {
+          "key": "tax",
+          "title": "Frage an die Steuerberaterin",
+          "nature": "question",
+          "status": "open",
+          "days_ago": 19,
+          "content": "Kann das Arbeitszimmer dieses Jahr abgesetzt werden?"
+        },
+        {
+          "key": "fair",
+          "title": "Messe im Frühjahr",
+          "nature": "note",
+          "status": "open",
+          "content": "Die Messe findet im April in Köln statt."
+        }
+      ],
+      "questions": [
+        {
+          "q": "Wie weit sind wir mit der Buchhaltungssoftware?",
+          "expect": [
+            "software"
+          ],
+          "forbid": [
+            "wurde gewählt",
+            "haben uns für",
+            "fiel auf",
+            "wurde ausgewählt",
+            "haben sevdesk gewählt",
+            "du hast vorgeschlagen",
+            "sie haben vorgeschlagen",
+            "hast du vorgeschlagen"
+          ],
+          "must": [
+            [
+              "sevdesk"
+            ]
+          ]
+        },
+        {
+          "q": "Was kosten der neue Drucker und eine Beratungsstunde?",
+          "expect": [
+            "printer",
+            "fee"
+          ],
+          "must": [
+            [
+              "600"
+            ],
+            [
+              "95"
+            ]
+          ]
+        },
+        {
+          "q": "Was wartet auf meine Entscheidung?",
+          "expect": [
+            "software"
+          ]
+        },
+        {
+          "q": "Wann fährt der letzte Zug nach Hamburg?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "abgeschlossen",
+        "forschung",
+        "status"
+      ]
+    },
+    {
+      "lang": "pt-BR",
+      "cases": [
+        {
+          "key": "platform",
+          "title": "Escolher a plataforma da loja",
+          "nature": "research",
+          "status": "resolved",
+          "agent_resolved": true,
+          "content": "Comparadas três plataformas: Shopify, Nuvemshop e WooCommerce.\n\nProposta: Nuvemshop, com Pix integrado.\n\nAinda falta decidir."
+        },
+        {
+          "key": "shipping",
+          "title": "Frete grátis",
+          "nature": "decision",
+          "status": "open",
+          "content": "Decisão: frete grátis para compras acima de 250 reais."
+        },
+        {
+          "key": "photos",
+          "title": "Fotos dos produtos",
+          "nature": "todo",
+          "status": "in_progress",
+          "due_in_days": 2,
+          "content": "Fotografar as vinte peças novas com fundo branco.\n\nOrçamento do fotógrafo: 900 reais."
+        },
+        {
+          "key": "invoice",
+          "title": "Nota fiscal eletrônica",
+          "nature": "question",
+          "status": "open",
+          "days_ago": 21,
+          "content": "Precisamos de um contador para emitir a nota fiscal eletrônica?"
+        },
+        {
+          "key": "fair",
+          "title": "Feira de artesanato",
+          "nature": "note",
+          "status": "open",
+          "content": "A feira acontece no último sábado do mês."
+        }
+      ],
+      "questions": [
+        {
+          "q": "Em que pé está a escolha da plataforma da loja?",
+          "expect": [
+            "platform"
+          ],
+          "forbid": [
+            "foi escolhid",
+            "escolhemos",
+            "decidiu-se por",
+            "optamos",
+            "foi selecionad",
+            "você propôs",
+            "voce propos"
+          ],
+          "must": [
+            [
+              "nuvemshop"
+            ]
+          ]
+        },
+        {
+          "q": "Quanto custa o fotógrafo e a partir de quanto o frete é grátis?",
+          "expect": [
+            "photos",
+            "shipping"
+          ],
+          "must": [
+            [
+              "900"
+            ],
+            [
+              "250"
+            ]
+          ]
+        },
+        {
+          "q": "O que está parado há mais de duas semanas?",
+          "expect": [
+            "invoice"
+          ]
+        },
+        {
+          "q": "Qual é a capital da Austrália?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "resolvido",
+        "pesquisa"
+      ]
+    },
+    {
+      "lang": "it",
+      "cases": [
+        {
+          "key": "van",
+          "title": "Scegliere il furgone",
+          "nature": "research",
+          "status": "resolved",
+          "agent_resolved": true,
+          "content": "Confrontati tre furgoni: Ducato, Transit e Vivaro.\n\nProposta: Transit, consuma meno in città.\n\nResta da decidere."
+        },
+        {
+          "key": "quote",
+          "title": "Prezzo del trasloco al metro cubo",
+          "nature": "decision",
+          "status": "open",
+          "content": "Decisione: il prezzo passa a 38 € al metro cubo da marzo."
+        },
+        {
+          "key": "boxes",
+          "title": "Ordinare gli scatoloni",
+          "nature": "todo",
+          "status": "in_progress",
+          "due_in_days": 3,
+          "content": "Servono trecento scatoloni rinforzati.\n\nBudget massimo: 450 €."
+        },
+        {
+          "key": "permit",
+          "title": "Permesso di sosta in centro",
+          "nature": "question",
+          "status": "open",
+          "days_ago": 17,
+          "content": "Serve un permesso del comune per sostare in zona pedonale?"
+        },
+        {
+          "key": "team",
+          "title": "Squadra di sabato",
+          "nature": "note",
+          "status": "open",
+          "content": "Il sabato lavorano solo Marco e Giulia."
+        }
+      ],
+      "questions": [
+        {
+          "q": "A che punto è la scelta del furgone?",
+          "expect": [
+            "van"
+          ],
+          "forbid": [
+            "è stato scelto",
+            "abbiamo scelto",
+            "si è scelto",
+            "è stato selezionato",
+            "scelta è caduta",
+            "hai proposto",
+            "ha proposto lei"
+          ],
+          "must": [
+            [
+              "transit"
+            ]
+          ]
+        },
+        {
+          "q": "Quanto costano gli scatoloni e il trasloco al metro cubo?",
+          "expect": [
+            "boxes",
+            "quote"
+          ],
+          "must": [
+            [
+              "450"
+            ],
+            [
+              "38"
+            ]
+          ]
+        },
+        {
+          "q": "Cosa aspetta una mia decisione?",
+          "expect": [
+            "van"
+          ]
+        },
+        {
+          "q": "Che tempo farà domani a Roma?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "risolto",
+        "il caso ",
+        "ricerca"
+      ]
+    },
+    {
+      "name": "fr-hard",
+      "hard": true,
+      "lang": "fr",
+      "filler": 35,
+      "cases": [
+        {
+          "key": "insurance",
+          "title": "Contrat RC Pro signé chez Axa",
+          "nature": "note",
+          "status": "resolved",
+          "days_ago": 45,
+          "content": "Contrat RC Pro signé chez Axa, prime annuelle 380 €.\n\nRenouvellement le 1er mars. Franchise de 500 € par sinistre."
+        },
+        {
+          "key": "move",
+          "title": "Visite des nouveaux locaux rue des Tilleuls",
+          "nature": "todo",
+          "status": "open",
+          "days_ago": 30,
+          "content": "Visite le 14 novembre à 10 h. Remise des clés prévue le 2 décembre.\n\nLe loyer passe à 1 150 € par mois."
+        },
+        {
+          "key": "accountant",
+          "title": "Expert-comptable : cabinet Fidelis",
+          "nature": "note",
+          "status": "resolved",
+          "days_ago": 60,
+          "content": "Interlocutrice : Mme Garnier.\n\nBilan à rendre avant le 30 avril, honoraires 1 200 € par an."
+        },
+        {
+          "key": "leave",
+          "title": "Congés d'août de l'équipe",
+          "nature": "note",
+          "status": "open",
+          "days_ago": 40,
+          "content": "Julie absente du 4 au 22 août, Marc du 11 au 29 août.\n\nSofia assure la permanence."
+        },
+        {
+          "key": "fair",
+          "title": "Stand du salon de décembre",
+          "nature": "todo",
+          "status": "in_progress",
+          "days_ago": 5,
+          "content": "Stand de 9 m² réservé au salon de décembre, coût 2 400 €.\n\nIl reste à choisir les affiches."
+        }
+      ],
+      "questions": [
+        {
+          "q": "Combien me coûte mon assurance chaque année ?",
+          "expect": [
+            "insurance"
+          ],
+          "must": [
+            [
+              "380"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est le déménagement ?",
+          "expect": [
+            "move"
+          ],
+          "must": [
+            [
+              "2 décembre",
+              "2 dec"
+            ]
+          ]
+        },
+        {
+          "q": "Qui s'occupe de ma gestion financière ?",
+          "expect": [
+            "accountant"
+          ],
+          "must": [
+            [
+              "garnier",
+              "fidelis"
+            ]
+          ]
+        },
+        {
+          "q": "Qui part en vacances cet été ?",
+          "expect": [
+            "leave"
+          ],
+          "must": [
+            [
+              "julie"
+            ],
+            [
+              "marc"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est le stand du salon de décembre ?",
+          "expect": [
+            "fair"
+          ],
+          "must": [
+            [
+              "2 400",
+              "2400"
+            ]
+          ]
+        },
+        {
+          "q": "Où en est la demande de subvention ?",
+          "expect": [],
+          "not_found": true
+        }
+      ],
+      "jargon": [
+        "le cas ",
+        "ce cas",
+        "résolu",
+        "statut"
+      ]
+    },
+    {
+      "name": "en-hard",
+      "hard": true,
+      "lang": "en",
+      "filler": 35,
+      "cases": [
+        {
+          "key": "cleaning",
+          "title": "Brightline Cleaning contract",
+          "nature": "note",
+          "status": "resolved",
+          "days_ago": 50,
+          "content": "Brightline Cleaning comes twice a week, 220 a month.\n\nThe contract renews in June."
+        },
+        {
+          "key": "desks",
+          "title": "Ergo Nordic order",
+          "nature": "todo",
+          "status": "open",
+          "days_ago": 35,
+          "content": "Six sit-stand desks ordered from Ergo Nordic.\n\nDelivery on March 3, assembly included."
+        }
+      ],
+      "questions": [
+        {
+          "q": "What does the janitorial service cost?",
+          "expect": [
+            "cleaning"
+          ],
+          "must": [
+            [
+              "220"
+            ]
+          ]
+        },
+        {
+          "q": "When does the new furniture arrive?",
+          "expect": [
+            "desks"
+          ],
+          "must": [
+            [
+              "march 3",
+              "3 march"
+            ]
+          ]
+        }
+      ],
+      "jargon": [
+        " resolved",
+        "research case",
+        "status",
+        "to_review"
+      ]
+    }
+  ]
+}

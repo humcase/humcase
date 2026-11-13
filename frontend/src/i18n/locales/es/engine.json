@@ -72,6 +72,7 @@
       "unknownTranscription": "Proveedor de transcripción desconocido: {{id}}",
       "missingUrl": "Falta la URL del proveedor \"{{provider}}\" ({{source}}).",
       "missingKey": "Falta {{name}}",
+      "chosenNoKey": "La IA elegida en los ajustes ({{provider}}) no tiene clave de API.",
       "missingModel": "Falta el modelo del proveedor \"{{provider}}\".",
       "emptyResponse": "Respuesta del proveedor vacía o inesperada",
       "custom": "Personalizado (compatible con OpenAI)",
@@ -186,6 +187,7 @@
     "versionMismatch": "La versión de la base de datos no coincide con el manifiesto",
     "zipEntryTooLarge": "Entrada ZIP demasiado grande: {{name}}",
     "zipInvalid": "ZIP no válido: {{error}}",
+    "zipInconsistent": "Archivo ZIP incoherente: nombres duplicados o encabezados contradictorios",
     "zipPathInvalid": "Ruta ZIP no válida o duplicada: {{name}}",
     "archiveChanged": "El archivo ha cambiado desde la vista previa",
     "countsInvalid": "Recuentos no válidos tras la importación",
@@ -369,5 +371,9 @@
     "alreadyAnswered": "Esta propuesta ya no existe o ya se respondió.",
     "otherGone": "El otro caso ya no existe.",
     "weeks": "Duración no ofrecida: {{weeks}} semanas."
+  },
+  "ask": {
+    "unreadable": "Respuesta de la IA ilegible: {{error}}",
+    "deadline": "La IA tardó demasiado en responder (más de {{seconds}} segundos). Inténtalo de nuevo."
   }
 }

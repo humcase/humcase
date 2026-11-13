@@ -15,4 +15,9 @@ describe('card excerpts', () => {
     expect(preview.endsWith('…')).toBe(true);
     expect(notePreview(note)).toBe(preview);
   });
+
+  it('keeps the underscores of identifiers and removes emphasis markers', () => {
+    const note = { id: 'u', title: 'Clé', content: 'Renommer `mon_identifiant_api` et *vite*, _pas_ __demain__ ~~hier~~.', content_kind: 'text' } as Note;
+    expect(notePreview(note)).toBe('Renommer mon_identifiant_api et vite, pas demain hier.');
+  });
 });

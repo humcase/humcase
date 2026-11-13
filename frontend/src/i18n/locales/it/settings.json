@@ -73,14 +73,16 @@
     "dictationLanguageHint": "«Più lingue» capisce un miscuglio di 10 lingue, un po’ meno preciso e circa il 20 % più caro da Deepgram.",
     "autoStructure": "Struttura il caso al termine della dettatura",
     "autoStructureHint": "La dettatura viene fusa nel caso e messa in ordine. La versione precedente resta nella cronologia, il testo grezzo è sempre conservato. Disattivato: la dettatura è aggiunta in fondo.",
-    "cleanLabel": "Pulizia della dettatura (LLM)",
-    "cleanModelAria": "Modello (pulizia)",
+    "cleanLabel": "IA per il testo",
+    "cleanHint": "Chiedi, Riflettere, Struttura, Fai germogliare e pulizia della dettatura.",
+    "cleanModelAria": "Modello (IA per il testo)",
     "modelPlaceholderDefault": "Modello (predefinito: {{model}})",
     "modelPlaceholder": "Modello",
-    "cleanKeyAria": "Chiave API (pulizia)",
+    "cleanKeyAria": "Chiave API (IA per il testo)",
     "keyPlaceholder": "Chiave API (mai più mostrata)",
-    "cleanSaveAria": "Salva la chiave di pulizia",
-    "cleanClearAria": "Cancella la chiave di pulizia",
+    "choiceSaved": "Scelta salvata: {{label}}.",
+    "cleanSaveAria": "Salva la chiave dell’IA per il testo",
+    "cleanClearAria": "Cancella la chiave dell’IA per il testo",
     "clear": "Cancella",
     "sttLabel": "Trascrizione (voce)",
     "sttKeyAria": "Chiave API (trascrizione)",
@@ -130,7 +132,7 @@
     "testFailed": "Connessione non riuscita: {{error}}",
     "ready": "Connesso.",
     "notReady": "Non ancora connesso: aggiungi una chiave o un indirizzo, poi prova la connessione.",
-    "recommendations": "Compatibili: Groq, Cerebras, OpenAI, OpenRouter (chiave API) · Ollama, LM Studio (locale)."
+    "recommendations": "Compatibili: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (chiave API) · Ollama, LM Studio (locale)."
   },
   "agent": {
     "heading": "Agenti",
@@ -255,7 +257,10 @@
       "check_proposals": "Proposte lette (TypeSafe)",
       "check_decisions": "Decisioni lette (TypeSafe)",
       "check_gather": "Casi da riunire letti (TypeSafe)",
-      "check_profile": "Suggerimenti di profilo letti (TypeSafe)"
+      "check_profile": "Suggerimenti di profilo letti (TypeSafe)",
+      "ask": "Domande a Humcase",
+      "reflect": "Riflessioni con Humcase",
+      "assistant": "Assistente"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} sessione",

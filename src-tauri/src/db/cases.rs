@@ -291,21 +291,30 @@ pub fn add_provenance(
     }
     // A provenance is shown with its case: adding one is a write of the case (invariant 9), so
     // the interface and agents see it through the revision.
-    let tx = crate::db::write_transaction(conn).map_err(crate::db::db_error)?;
-    let (_, in_trash) = project_and_trash(&tx, note_id)?
+    // Called from a caller's transaction (a kept answer), that one is enough: SQLite refuses a
+    // nested transaction.
+    let tx = if conn.is_autocommit() {
+        Some(crate::db::write_transaction(conn).map_err(crate::db::db_error)?)
+    } else {
+        None
+    };
+    let tx_conn: &Connection = tx.as_deref().unwrap_or(conn);
+    let (_, in_trash) = project_and_trash(tx_conn, note_id)?
         .ok_or_else(|| crate::tr!("notes.notFound", id = note_id))?;
     if in_trash {
         return Err(crate::tr!("data.trashedCannotAnnotate"));
     }
     let id = Uuid::new_v4().to_string();
-    tx.execute(
+    tx_conn.execute(
         "INSERT INTO case_provenance (id, note_id, kind, label, url, excerpt, agent, created_at)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))",
         params![id, note_id, kind, label, url, excerpt, agent],
     )
     .map_err(crate::db::db_error)?;
-    queries::bump_revision(&tx, note_id)?;
-    tx.commit().map_err(crate::db::db_error)?;
+    queries::bump_revision(tx_conn, note_id)?;
+    if let Some(tx) = tx {
+        tx.commit().map_err(crate::db::db_error)?;
+    }
     list_provenance(conn, note_id)?
         .into_iter()
         .find(|p| p.id == id)

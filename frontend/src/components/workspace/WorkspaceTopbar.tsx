@@ -24,6 +24,7 @@ interface WorkspaceTopbarProps {
   onStandup: () => void;
   onToggleTheme: () => void;
   onToggleMini: () => void;
+  /** Opens or closes "Ask Humcase"; absent: no button. */
 }
 
 /** Top bar of the normal mode: breadcrumb, briefs, theme, settings and Mini mode. */

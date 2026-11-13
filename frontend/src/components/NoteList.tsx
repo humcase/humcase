@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from './ui/Button';
 import { Hint } from './ui/Hint';
-import { formatDateTime, formatRelative, formatShortDate } from '../utils/datetime';
+import { formatChanged, formatDateTime } from '../utils/datetime';
 import { statusLabel, ORDERED_STATUSES } from '../utils/statuses';
 import { readTags } from '../utils/tags';
 
@@ -87,7 +87,7 @@ export default function NoteList({ notes, activeNoteId, onSelectNote, onCreateNo
                 overline={<><StatusBadge status={n.status} size="sm" />{n.priority && <PriorityBadge priority={n.priority} status={n.status} />}<TypeBadge type={n.note_type} /></>}
                 title={n.title}
                 description={preview || undefined}
-                meta={<>{locate?.(n)}<span>{formatRelative(n.updated_at)} · {formatShortDate(n.updated_at)}</span>{n.due_at && <DueBadge due={n.due_at} />}</>}
+                meta={<>{locate?.(n)}<span>{formatChanged(n.updated_at)}</span>{n.due_at && <DueBadge due={n.due_at} />}</>}
               >
                 {tags.length > 0 && (
                   <span className="workspace-list-row__tags">

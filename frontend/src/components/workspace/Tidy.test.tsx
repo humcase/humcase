@@ -57,20 +57,21 @@ describe('To tidy', () => {
     expect(container.innerHTML).toBe('');
   });
 
-  it('applies the answers: a sure pair accepted, a doubtful one left waiting, an unchecked case refused', async () => {
+  it('applies the answers: a sure pair accepted, a doubtful one and an unchecked case left waiting', async () => {
+    api.answerTidy.mockResolvedValueOnce({ archived: 1, superseded: 1, grouped: 0, to_fix: 0, refused: 0 });
     render(<TidyView notes={notes} onNote={vi.fn()} onChanged={vi.fn()} />);
     expect(await screen.findByText('Héberger sur Supabase')).toBeTruthy();
     expect(screen.getByText(/À vérifier/)).toBeTruthy();
     fireEvent.click(screen.getByRole('checkbox', { name: 'Archiver « Raccourci Ctrl+F »' }));
     fireEvent.click(screen.getByRole('button', { name: 'Marquer 1 remplacée · Archiver 1 case' }));
+    // Unchecking means "not now", never a refusal for good: the case is not answered and stays proposed.
     await waitFor(() => expect(api.answerTidy).toHaveBeenCalledWith([
       { id: 'p1', accept: true },
       { id: 'a1', accept: true },
-      { id: 'a2', accept: false },
     ]));
-    expect(await screen.findByText('1 décision marquée remplacée · 1 case archivée · 1 refusée')).toBeTruthy();
+    expect(await screen.findByText('1 décision marquée remplacée · 1 case archivée')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
-    await waitFor(() => expect(api.undoTidy).toHaveBeenCalledWith(['p1', 'a1', 'a2']));
+    await waitFor(() => expect(api.undoTidy).toHaveBeenCalledWith(['p1', 'a1']));
   });
 
   it('sends the doubtful pair once the person answers it', async () => {

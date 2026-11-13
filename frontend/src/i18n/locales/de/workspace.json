@@ -721,5 +721,129 @@
       "logoText": "Wir behalten das aktuelle Logo: Die Kunden kennen es, und eine Änderung würde den Start verzögern.",
       "phone": "Checkout auf einem alten Handy testen"
     }
+  },
+  "assistantWindow": {
+    "title": "Assistent",
+    "status": {
+      "ready": "{{model}} · bereit",
+      "readyPlain": "Bereit",
+      "noAi": "Keine KI verbunden",
+      "reading": "Liest deine Fälle…"
+    },
+    "options": "Optionen",
+    "minimise": "Minimieren",
+    "close": "Schließen",
+    "reopen": "Assistent (Ctrl+J)",
+    "newReply": "Neue Antwort",
+    "newAttention": "Neu: zu entscheiden oder Widerspruch",
+    "move": "Zum Verschieben ziehen",
+    "resize": "Zum Ändern der Größe ziehen",
+    "context": "Kontext",
+    "removeContext": "Aus dem Kontext entfernen",
+    "reads": "Was er liest",
+    "keep": "Als Fall behalten",
+    "newConversation": "Neues Gespräch",
+    "kept": "Als Fall im Eingang behalten.",
+    "open": "Öffnen",
+    "undo": "Rückgängig",
+    "screen": {
+      "cases_one": "{{count}} Fall",
+      "cases_other": "{{count}} Fälle",
+      "toDecide": "Zu entscheiden",
+      "toTidy": "Aufräumen",
+      "conflicts": "Widersprüche",
+      "askToTidy": "Was kann ich aufräumen?",
+      "ask": "Den Assistenten fragen"
+    },
+    "heading": "Was möchtest du tun?",
+    "caseHeading": "Was möchtest du mit diesem Fall tun?",
+    "intro": "Ich kenne deine Fälle und Humcase selbst. Ich zitiere, was ich lese.",
+    "suggest": {
+      "week": {
+        "tag": "Gedächtnis",
+        "text": "Fass meine Woche zusammen"
+      },
+      "conflict": {
+        "tag": "Stimmigkeit",
+        "text": "Widerspricht sich etwas?"
+      },
+      "howto": {
+        "tag": "Humcase",
+        "text": "Wie lege ich einen Fall in einem Projekt ab?"
+      },
+      "decide": {
+        "tag": "Entscheidungen",
+        "text": "Was wartet auf meine Entscheidung?"
+      }
+    },
+    "placeholder": "Schreiben oder diktieren…",
+    "listening": "Ich höre zu…",
+    "dictate": "Diktieren",
+    "stopDictation": "Diktat beenden",
+    "micError": "Mikrofon oder Transkription nicht verfügbar. Prüfe das Mikrofon und den Transkriptionsschlüssel in den Einstellungen.",
+    "send": "Senden",
+    "footer": "Nichts ändert sich ohne deinen Klick.",
+    "keyEnter": "Enter",
+    "keySend": "senden",
+    "sources": "Quellen · {{n}}",
+    "helpSource": "Humcase-Hilfe · {{title}}",
+    "openSource": "Fall {{title}} öffnen",
+    "noAi": "Keine KI verbunden.",
+    "connectAi": "Eine KI verbinden",
+    "error": "Keine Antwort: {{error}}",
+    "actionError": "Nicht erledigt: {{error}}",
+    "action": {
+      "kind": {
+        "proposed": "Vorgeschlagen",
+        "conflict": "Widerspricht einer Entscheidung",
+        "supersede": "Ersetzte Entscheidung",
+        "archive": "Zu archivieren",
+        "group": "Zusammenzulegen",
+        "move": "Abzulegen",
+        "germinate": "Entfalten"
+      },
+      "subCase": "Die Aufgabe „{{title}}“ in „{{parent}}“ anlegen.",
+      "createSubCase": "Unterfall anlegen",
+      "subCaseDone": "Unterfall „{{title}}“ in „{{parent}}“ angelegt.",
+      "archiveText": "„{{title}}“ archivieren. Er bleibt auffindbar.",
+      "archive": "Archivieren",
+      "archiveDone": "„{{title}}“ archiviert.",
+      "moveText": "„{{title}}“ in {{project}} ablegen.",
+      "move": "In {{project}} ablegen",
+      "moveDone": "„{{title}}“ in {{project}} abgelegt.",
+      "markReplaced": "Die ältere als ersetzt markieren",
+      "bothHold": "Beide gelten weiter",
+      "replacedDone": "„{{title}}“ als ersetzt durch „{{other}}“ markiert.",
+      "iFix": "Ich korrigiere den Fall",
+      "noConflict": "Kein Widerspruch",
+      "fixDone": "„{{title}}“ zu korrigieren.",
+      "openBoth": "Beide öffnen",
+      "keep": "Behalten",
+      "refusedDone": "Bleibt, wie er ist. Wird nicht erneut vorgeschlagen.",
+      "groupText": "„{{title}}“ in „{{other}}“ zusammenlegen.",
+      "fileTogether": "Zusammenlegen",
+      "keepApart": "Getrennt lassen",
+      "groupDone": "„{{title}}“ in „{{other}}“ zusammengelegt.",
+      "germinateText": "„{{title}}“ entfalten: Unterfälle aus seinem Text, einzeln anzuhaken.",
+      "germinate": "Entfalten",
+      "germinateDone": "Entfalten ist in „{{title}}“ geöffnet."
+    },
+    "you": "Du",
+    "keptSources": "Quellen",
+    "keptSource": "{{title}}: „{{passage}}“",
+    "suggestCase": {
+      "tag": "Dieser Fall",
+      "open": "Was ist noch offen?",
+      "sum": "Fasse diesen Fall zusammen",
+      "split": "Teile ihn in Unterfälle",
+      "against": "Widerspricht ihm etwas?"
+    },
+    "otherQuestions": "Andere Fragen",
+    "miniTitle": "Mini Humcase",
+    "pin": "Im Vordergrund halten, auch außerhalb von Humcase",
+    "unpin": "Zurück in Humcase",
+    "windowLabel": "Fenster",
+    "stayOnTop": "Im Vordergrund bleiben, wenn Humcase in den Hintergrund geht",
+    "stayOnTopDetail": "Das Fenster wird zu Mini Humcase und bleibt auf deinem Bildschirm"
   }
 }

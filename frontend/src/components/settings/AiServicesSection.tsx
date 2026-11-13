@@ -64,6 +64,7 @@ export function AiServicesSection({ ai }: { ai: AiProviders }) {
           <label htmlFor="ai-clean-provider" className="settings-label settings-label--small">
             {t('settings.voice.cleanLabel')}
           </label>
+          <p className="text-xs text-muted-foreground">{t('settings.voice.cleanHint')}</p>
           <SelectField
             id="ai-clean-provider"
             value={ai.cleanProvider}
@@ -135,7 +136,7 @@ export function AiServicesSection({ ai }: { ai: AiProviders }) {
             <Button
               onClick={() => { void ai.submitKey('clean'); }}
               aria-label={t('settings.voice.cleanSaveAria')}
-              disabled={ai.savingClean}
+              disabled={ai.savingClean || !ai.cleanKeyInput.trim()}
               className="shrink-0"
             >
               {t('common.save')}
@@ -143,13 +144,14 @@ export function AiServicesSection({ ai }: { ai: AiProviders }) {
             <Button variant="secondary"
               onClick={() => ai.clearKey('clean')}
               aria-label={t('settings.voice.cleanClearAria')}
-              disabled={ai.savingClean}
+              disabled={ai.savingClean || cleanInfo?.key_source !== 'app'}
               className="shrink-0"
             >
               {t('settings.voice.clear')}
             </Button>
           </div>
           <span className="text-[11px] text-muted-foreground">{keyLabel(t, cleanInfo)}</span>
+          {ai.keyStatus?.section === 'clean' && <Notice className="settings-status">{ai.keyStatus.text}</Notice>}
           <div className="flex gap-2 items-center flex-wrap">
             <Button variant="secondary"
               onClick={() => { void ai.testConnection(ai.cleanProvider); }}
@@ -195,7 +197,7 @@ export function AiServicesSection({ ai }: { ai: AiProviders }) {
             <Button
               onClick={() => { void ai.submitKey('stt'); }}
               aria-label={t('settings.voice.sttSaveAria')}
-              disabled={ai.savingStt}
+              disabled={ai.savingStt || !ai.sttKeyInput.trim()}
               className="shrink-0"
             >
               {t('common.save')}
@@ -203,16 +205,15 @@ export function AiServicesSection({ ai }: { ai: AiProviders }) {
             <Button variant="secondary"
               onClick={() => ai.clearKey('stt')}
               aria-label={t('settings.voice.sttClearAria')}
-              disabled={ai.savingStt}
+              disabled={ai.savingStt || sttInfo?.key_source !== 'app'}
               className="shrink-0"
             >
               {t('settings.voice.clear')}
             </Button>
           </div>
           <span className="text-[11px] text-muted-foreground">{keyLabel(t, sttInfo)}</span>
+          {ai.keyStatus?.section === 'stt' && <Notice className="settings-status">{ai.keyStatus.text}</Notice>}
         </div>
-
-        {ai.keyStatus && <Notice className="settings-status">{ai.keyStatus}</Notice>}
       </Card>
       <ReviewServiceCard ai={ai} />
     </div>

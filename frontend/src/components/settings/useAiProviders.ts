@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../../services/tauriApi';
 import type { AiProvidersInfo } from '../../types';
-import { getAiCleanProvider, getAiModel, getAiSttProvider, getDictationAutoStructure, getDictationLanguage, setAiCleanProvider, setAiModel, setAiSttProvider, setDictationAutoStructure, setDictationLanguage, type DictationLanguage } from '../../utils/prefs';
-import { notifyAiConfigChanged } from '../../hooks/useAiReady';
+import { getAiCleanProvider, getAiModel, hasAiCleanChoice, getAiSttProvider, getDictationAutoStructure, getDictationLanguage, setAiCleanProvider, setAiModel, setAiSttProvider, setDictationAutoStructure, setDictationLanguage, type DictationLanguage } from '../../utils/prefs';
+import { effectiveCleanProvider, notifyAiConfigChanged } from '../../hooks/useAiReady';
 import { aiErrorMessage } from '../../utils/aiErrors';
 
 /**
@@ -20,7 +20,8 @@ export function useAiProviders() {
   const [cleanModel, setCleanModel] = useState<string>(() => getAiModel(getAiCleanProvider()));
   const [cleanKeyInput, setCleanKeyInput] = useState('');
   const [sttKeyInput, setSttKeyInput] = useState('');
-  const [keyStatus, setKeyStatus] = useState<string | null>(null);
+  // The last save's message, shown under the section it concerns.
+  const [keyStatus, setKeyStatus] = useState<{ section: 'clean' | 'stt'; text: string } | null>(null);
   // Server address (local or custom provider) and connection test, for the cleanup provider.
   const [cleanUrlInput, setCleanUrlInput] = useState('');
   const [savingUrl, setSavingUrl] = useState(false);
@@ -45,7 +46,15 @@ export function useAiProviders() {
     api
       .listAiProviders()
       .then(list => {
-        if (!disposed) { setProviders(list); setProvidersFailed(false); }
+        if (disposed) return;
+        setProviders(list);
+        setProvidersFailed(false);
+        // Nothing chosen yet: show the AI the engine uses, the first one whose key is set.
+        if (!hasAiCleanChoice()) {
+          const used = effectiveCleanProvider(list.cleanup, getAiCleanProvider());
+          setCleanProvider(used);
+          setCleanModel(getAiModel(used));
+        }
       })
       .catch(e => {
         console.error('AI providers unavailable', e);
@@ -70,9 +79,9 @@ export function useAiProviders() {
       } catch (e) {
         // A stale error message would designate the wrong provider.
         if (keyGenerationRef.current[section] === ticket) {
-          setKeyStatus(section === 'clean'
+          setKeyStatus({ section, text: section === 'clean'
             ? t('settings.voice.keyStatus.clean.saveFailed', { error: String(e) })
-            : t('settings.voice.keyStatus.stt.saveFailed', { error: String(e) }));
+            : t('settings.voice.keyStatus.stt.saveFailed', { error: String(e) }) });
         }
         return false;
       }
@@ -94,13 +103,13 @@ export function useAiProviders() {
       notifyAiConfigChanged();
       const saved = value.trim() !== '';
       if (section === 'clean') {
-        setKeyStatus(refreshed
+        setKeyStatus({ section, text: refreshed
           ? t(saved ? 'settings.voice.keyStatus.clean.saved' : 'settings.voice.keyStatus.clean.cleared')
-          : t(saved ? 'settings.voice.keyStatus.clean.savedNoRefresh' : 'settings.voice.keyStatus.clean.clearedNoRefresh'));
+          : t(saved ? 'settings.voice.keyStatus.clean.savedNoRefresh' : 'settings.voice.keyStatus.clean.clearedNoRefresh') });
       } else {
-        setKeyStatus(refreshed
+        setKeyStatus({ section, text: refreshed
           ? t(saved ? 'settings.voice.keyStatus.stt.saved' : 'settings.voice.keyStatus.stt.cleared')
-          : t(saved ? 'settings.voice.keyStatus.stt.savedNoRefresh' : 'settings.voice.keyStatus.stt.clearedNoRefresh'));
+          : t(saved ? 'settings.voice.keyStatus.stt.savedNoRefresh' : 'settings.voice.keyStatus.stt.clearedNoRefresh') });
       }
       return true;
     } finally {
@@ -114,7 +123,7 @@ export function useAiProviders() {
     try {
       const saved = await api.setAiUrl(provider, value);
       setCleanUrlInput('');
-      setKeyStatus(t(saved ? 'settings.voice.urlSaved' : 'settings.voice.urlCleared'));
+      setKeyStatus({ section: 'clean', text: t(saved ? 'settings.voice.urlSaved' : 'settings.voice.urlCleared') });
       try {
         setProviders(await api.listAiProviders());
       } catch (e) {
@@ -122,7 +131,7 @@ export function useAiProviders() {
       }
       notifyAiConfigChanged();
     } catch (e) {
-      setKeyStatus(t('settings.voice.urlFailed', { error: String(e) }));
+      setKeyStatus({ section: 'clean', text: t('settings.voice.urlFailed', { error: String(e) }) });
     } finally {
       setSavingUrl(false);
     }
@@ -152,7 +161,9 @@ export function useAiProviders() {
     setCleanKeyInput('');
     setCleanUrlInput('');
     setConnectionStatus(null);
-    setKeyStatus(null);
+    // The choice is saved at once: say so, there is no button for it.
+    const label = providers?.cleanup.find(p => p.id === id)?.label ?? id;
+    setKeyStatus({ section: 'clean', text: t('settings.voice.choiceSaved', { label }) });
   };
 
   const chooseSttProvider = (id: string) => {
@@ -160,7 +171,8 @@ export function useAiProviders() {
     setSttProvider(id);
     setAiSttProvider(id);
     setSttKeyInput('');
-    setKeyStatus(null);
+    const label = providers?.transcription.find(p => p.id === id)?.label ?? id;
+    setKeyStatus({ section: 'stt', text: t('settings.voice.choiceSaved', { label }) });
   };
 
   const changeCleanModel = (model: string) => {

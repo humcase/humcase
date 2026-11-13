@@ -132,7 +132,8 @@ export function TidyView({ notes, onNote, onChanged }: {
       ...conflicts.flatMap(answered),
       ...pairs.flatMap(answered),
       ...groups.flatMap(answered),
-      ...archives.map(item => ({ id: item.id, accept: !refuseAll && !unchecked.has(item.id) })),
+      // An unchecked case is "not now": it stays proposed. Only "Refuse all" refuses for good.
+      ...archives.flatMap(item => refuseAll ? [{ id: item.id, accept: false }] : unchecked.has(item.id) ? [] : [{ id: item.id, accept: true }]),
     ];
     if (list.length === 0) return;
     const fix = refuseAll ? undefined : conflicts.find(item => answer(item) === 'yes');

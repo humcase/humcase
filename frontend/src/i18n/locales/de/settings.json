@@ -71,14 +71,16 @@
     "dictationLanguageHint": "„Mehrere Sprachen“ versteht eine Mischung aus 10 Sprachen, etwas ungenauer und bei Deepgram etwa 20 % teurer.",
     "autoStructure": "Fall nach dem Diktat strukturieren",
     "autoStructureHint": "Das Diktat wird in den Fall eingearbeitet und bereinigt. Die vorige Fassung bleibt im Verlauf, der Rohtext wird immer behalten. Aus: Das Diktat wird am Ende angefügt.",
-    "cleanLabel": "Diktat-Bereinigung (LLM)",
-    "cleanModelAria": "Modell (Bereinigung)",
+    "cleanLabel": "KI für Text",
+    "cleanHint": "Fragen, Durchdenken, Strukturieren, Entfalten und Diktat-Bereinigung.",
+    "cleanModelAria": "Modell (KI für Text)",
     "modelPlaceholderDefault": "Modell (Standard: {{model}})",
     "modelPlaceholder": "Modell",
-    "cleanKeyAria": "API-Schlüssel (Bereinigung)",
+    "cleanKeyAria": "API-Schlüssel (KI für Text)",
     "keyPlaceholder": "API-Schlüssel (nie wieder angezeigt)",
-    "cleanSaveAria": "Schlüssel der Bereinigung speichern",
-    "cleanClearAria": "Schlüssel der Bereinigung löschen",
+    "choiceSaved": "Auswahl gespeichert: {{label}}.",
+    "cleanSaveAria": "Schlüssel der KI für Text speichern",
+    "cleanClearAria": "Schlüssel der KI für Text löschen",
     "clear": "Löschen",
     "sttLabel": "Transkription (Sprache)",
     "sttKeyAria": "API-Schlüssel (Transkription)",
@@ -127,7 +129,7 @@
     "testFailed": "Verbindung fehlgeschlagen: {{error}}",
     "ready": "Verbunden.",
     "notReady": "Noch nicht verbunden: Füge einen Schlüssel oder eine Adresse hinzu und teste dann die Verbindung.",
-    "recommendations": "Unterstützt: Groq, Cerebras, OpenAI, OpenRouter (API-Schlüssel) · Ollama, LM Studio (lokal)."
+    "recommendations": "Unterstützt: Groq, Cerebras, OpenAI, OpenRouter, Mistral, Anthropic (API-Schlüssel) · Ollama, LM Studio (lokal)."
   },
   "agent": {
     "heading": "Agents",
@@ -249,7 +251,10 @@
       "check_proposals": "Gelesene Vorschläge (TypeSafe)",
       "check_decisions": "Gelesene Entscheidungen (TypeSafe)",
       "check_gather": "Gelesene Fälle zum Zusammenlegen (TypeSafe)",
-      "check_profile": "Gelesene Profilvorschläge (TypeSafe)"
+      "check_profile": "Gelesene Profilvorschläge (TypeSafe)",
+      "ask": "Fragen an Humcase",
+      "reflect": "Durchdenken mit Humcase",
+      "assistant": "Assistent"
     },
     "minutes": "{{minutes}} min",
     "sessions_one": "{{count}} Sitzung",

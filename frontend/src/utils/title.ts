@@ -1,4 +1,5 @@
 import i18n from '../i18n';
+import { stripInlineMarkdown } from './inlineMarkdown';
 
 /**
  * Recognized default titles, all languages and old versions combined: the title is
@@ -41,13 +42,10 @@ export function deriveTitle(markdown: string): string | null {
   for (const line of lines) {
     const title = /^#{1,6}\s+(.+?)\s*#*\s*$/.exec(line);
     if (title && title[1].trim()) {
-      return truncate(title[1].replace(/[*_`]/g, '').trim());
+      return truncate(stripInlineMarkdown(title[1]).trim());
     }
   }
 
-  const first = lines[0]
-    .replace(/^(?:[-*+]\s+|>\s+|\d+\.\s+)/, '')
-    .replace(/[*_`]/g, '')
-    .trim();
+  const first = stripInlineMarkdown(lines[0].replace(/^(?:[-*+]\s+|>\s+|\d+\.\s+)/, '')).trim();
   return first ? truncate(first) : null;
 }

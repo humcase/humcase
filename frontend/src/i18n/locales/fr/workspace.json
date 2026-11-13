@@ -773,5 +773,130 @@
       "logoText": "On garde le logo actuel : les clients le reconnaissent, et le changer retarderait le lancement.",
       "phone": "Tester le paiement sur un vieux téléphone"
     }
+  },
+  "assistantWindow": {
+    "title": "Assistant",
+    "status": {
+      "ready": "{{model}} · prêt",
+      "readyPlain": "Prêt",
+      "noAi": "Aucune IA branchée",
+      "reading": "Lecture de vos cases…"
+    },
+    "options": "Options",
+    "minimise": "Réduire",
+    "close": "Fermer",
+    "reopen": "Assistant (Ctrl+J)",
+    "newReply": "Nouvelle réponse",
+    "newAttention": "Nouveau : à trancher ou contradiction",
+    "move": "Tirer pour déplacer",
+    "resize": "Tirer pour redimensionner",
+    "context": "Contexte",
+    "removeContext": "Retirer du contexte",
+    "reads": "Ce qu’il lit",
+    "keep": "Garder comme case",
+    "newConversation": "Nouvelle conversation",
+    "kept": "Gardée comme case dans la Réception.",
+    "open": "Ouvrir",
+    "undo": "Annuler",
+    "screen": {
+      "cases_one": "{{count}} case",
+      "cases_many": "{{count}} cases",
+      "cases_other": "{{count}} cases",
+      "toDecide": "À trancher",
+      "toTidy": "À ranger",
+      "conflicts": "Contradictions",
+      "askToTidy": "Qu’est-ce que je peux ranger ?",
+      "ask": "Demander à l’assistant"
+    },
+    "heading": "Que voulez-vous faire ?",
+    "caseHeading": "Que voulez-vous faire de cette case ?",
+    "intro": "Je connais vos cases et Humcase lui-même. Je cite ce que je lis.",
+    "suggest": {
+      "week": {
+        "tag": "Mémoire",
+        "text": "Résume ma semaine"
+      },
+      "conflict": {
+        "tag": "Cohérence",
+        "text": "Y a-t-il des contradictions ?"
+      },
+      "howto": {
+        "tag": "Humcase",
+        "text": "Comment ranger une case dans un projet ?"
+      },
+      "decide": {
+        "tag": "Décisions",
+        "text": "Qu’est-ce qui attend ma décision ?"
+      }
+    },
+    "placeholder": "Écrivez ou dictez…",
+    "listening": "Je vous écoute…",
+    "dictate": "Dicter",
+    "stopDictation": "Arrêter la dictée",
+    "micError": "Micro ou transcription inaccessible. Vérifiez le micro et la clé de transcription dans Paramètres.",
+    "send": "Envoyer",
+    "footer": "Rien ne change sans votre clic.",
+    "keyEnter": "Entrée",
+    "keySend": "envoyer",
+    "sources": "Sources · {{n}}",
+    "helpSource": "Aide de Humcase · {{title}}",
+    "openSource": "Ouvrir la case {{title}}",
+    "noAi": "Aucune IA branchée.",
+    "connectAi": "Brancher une IA",
+    "error": "Pas de réponse : {{error}}",
+    "actionError": "Pas fait : {{error}}",
+    "action": {
+      "kind": {
+        "proposed": "Proposé",
+        "conflict": "Va contre une décision",
+        "supersede": "Décision remplacée",
+        "archive": "À archiver",
+        "group": "À regrouper",
+        "move": "À ranger",
+        "germinate": "Faire germer"
+      },
+      "subCase": "Créer la tâche « {{title}} » dans « {{parent}} ».",
+      "createSubCase": "Créer la sous-case",
+      "subCaseDone": "Sous-case « {{title}} » créée dans « {{parent}} ».",
+      "archiveText": "Archiver « {{title}} ». Elle reste retrouvable.",
+      "archive": "Archiver",
+      "archiveDone": "« {{title}} » archivée.",
+      "moveText": "Ranger « {{title}} » dans {{project}}.",
+      "move": "Ranger dans {{project}}",
+      "moveDone": "« {{title}} » rangée dans {{project}}.",
+      "markReplaced": "Marquer l’ancienne comme remplacée",
+      "bothHold": "Les deux restent valables",
+      "replacedDone": "« {{title}} » marquée remplacée par « {{other}} ».",
+      "iFix": "Je corrige la case",
+      "noConflict": "Pas une contradiction",
+      "fixDone": "« {{title}} » à corriger.",
+      "openBoth": "Ouvrir les deux",
+      "keep": "Garder",
+      "refusedDone": "Gardée telle quelle. Elle ne sera plus proposée.",
+      "groupText": "Regrouper « {{title}} » dans « {{other}} ».",
+      "fileTogether": "Regrouper",
+      "keepApart": "Les laisser séparées",
+      "groupDone": "« {{title}} » regroupée dans « {{other}} ».",
+      "germinateText": "Faire germer « {{title}} » : des sous-cases tirées de son texte, à cocher une par une.",
+      "germinate": "Faire germer",
+      "germinateDone": "Faire germer est ouvert dans « {{title}} »."
+    },
+    "you": "Vous",
+    "keptSources": "Sources",
+    "keptSource": "{{title}} : « {{passage}} »",
+    "suggestCase": {
+      "tag": "Cette case",
+      "open": "Qu’est-ce qui reste ouvert ?",
+      "sum": "Résume cette case",
+      "split": "Découpe-la en sous-cases",
+      "against": "Quelque chose la contredit ?"
+    },
+    "otherQuestions": "Autres questions",
+    "miniTitle": "Mini Humcase",
+    "pin": "Garder au premier plan, même hors de Humcase",
+    "unpin": "Remettre dans Humcase",
+    "windowLabel": "Fenêtre",
+    "stayOnTop": "Rester au premier plan quand Humcase passe derrière",
+    "stayOnTopDetail": "La fenêtre devient Mini Humcase et reste sur votre écran"
   }
 }

@@ -8,7 +8,7 @@ use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};
 use std::fs::{self, File};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
-use zip::{write::FileOptions, CompressionMethod, ZipArchive, ZipWriter};
+use zip::{write::SimpleFileOptions, CompressionMethod, ZipArchive, ZipWriter};
 
 const FORMAT_VERSION: u32 = 1;
 const DB_SCHEMA_VERSION: i32 = 28;
@@ -453,8 +453,8 @@ fn sha_copy<R: Read, W: Write>(
     Ok((length, crate::images::lower_hex(&hasher.finalize())))
 }
 
-fn zip_options() -> FileOptions {
-    FileOptions::default().compression_method(CompressionMethod::Deflated)
+fn zip_options() -> SimpleFileOptions {
+    SimpleFileOptions::default().compression_method(CompressionMethod::Deflated)
 }
 
 /// Validation of a file referenced by the SQLite copy: name, type and size applicable
@@ -681,6 +681,11 @@ pub fn inspect_archive(path: &Path) -> Result<ArchivePreview, String> {
     source.seek(SeekFrom::Start(0)).map_err(|e| e.to_string())?;
     let mut zip =
         ZipArchive::new(source).map_err(|e| crate::tr!("backup.zipInvalid", error = e))?;
+    // The reader keeps one entry per name and reads names from the central directory only: an
+    // archive with two entries of the same name, or whose local headers name other files than
+    // the central directory, is refused before anything is read.
+    zip.validate_header_consistency()
+        .map_err(|_| crate::tr!("backup.zipInconsistent"))?;
     if zip.len() < 2 || zip.len() > MAX_IMAGES + 2 {
         return Err(crate::tr!("backup.entryCountInvalid"));
     }
@@ -689,7 +694,8 @@ pub fn inspect_archive(path: &Path) -> Result<ArchivePreview, String> {
     let mut total = 0u64;
     for index in 0..zip.len() {
         let entry = zip.by_index(index).map_err(|e| e.to_string())?;
-        let name = entry.name();
+        let name = entry.name().map_err(|e| e.to_string())?;
+        let name = name.as_ref();
         let invalid_unix_mode = entry
             .unix_mode()
             .map(|mode| mode & 0o170000 != 0 && mode & 0o170000 != 0o100000)

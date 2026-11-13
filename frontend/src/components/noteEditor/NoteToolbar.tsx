@@ -29,6 +29,7 @@ export function NoteToolbar({
   canGerminate: boolean;
   germinating: boolean;
   onGerminate: () => void;
+  /** Think it through with Humcase, starting from this case (the panel opens on the right). */
   /** Templates are offered in the Work space only. */
   onTemplate?: (type: string) => void;
   isRecording: boolean;

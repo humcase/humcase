@@ -198,7 +198,13 @@
     "recordedByPerson": "Hinzugefügt am {{date}}",
     "pathLabel": "Pfad des Falls",
     "subCasesBadge_one": "{{count}} Unterfall",
-    "subCasesBadge_other": "{{count}} Unterfälle"
+    "subCasesBadge_other": "{{count}} Unterfälle",
+    "provenanceKind": {
+      "ask": "Antwort von Humcase",
+      "reflect": "Durchdacht mit Humcase",
+      "source": "Quelle",
+      "germinated": "Entfalten"
+    }
   },
   "review": {
     "declaredBy": "Ergebnis gemeldet von {{actor}}",
