@@ -31,7 +31,8 @@ jobs:
             if ($found) { $href = $found; "Download link read on the site: $href" }
           } catch { "humcase.com not readable from this runner (challenge), using the site's link: $href" }
           Invoke-WebRequest $href -OutFile "$env:RUNNER_TEMP\Humcase-setup-x64.exe"
-          $sums = (Invoke-WebRequest https://github.com/humcase/humcase/releases/latest/download/SHA256SUMS.txt -UseBasicParsing).Content
+          Invoke-WebRequest https://github.com/humcase/humcase/releases/latest/download/SHA256SUMS.txt -OutFile "$env:RUNNER_TEMP\SHA256SUMS.txt"
+          $sums = Get-Content "$env:RUNNER_TEMP\SHA256SUMS.txt" -Raw
           $hash = (Get-FileHash "$env:RUNNER_TEMP\Humcase-setup-x64.exe" -Algorithm SHA256).Hash.ToLower()
           if ($sums -notmatch $hash) { throw "checksum of the downloaded installer is not in SHA256SUMS.txt" }
           "Checksum OK: $hash"
