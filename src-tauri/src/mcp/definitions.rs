@@ -451,12 +451,13 @@ pub fn tool_definitions() -> Value {
                 "limit": { "type": "integer", "minimum": 1, "maximum": 300, "default": 50, "description": "Most changes returned (default 50)" }
             } })),
         with_output(tool("update_note_status", "Set a case's status or report", SET,
-            "A case (called note in tool names) gets a status and/or a report (resolution_comment). in_progress when you start; resolved declares a result, needs a non-empty resolution_comment (what was done, how it was verified, what remains) and waits for the person to accept it or ask for a rework. Omit status to record a report without changing the status. Pass expected_resolution_comment, the report read before, to refuse the write if someone changed it. Returns {id, status, resolution_comment, revision}, plus parent_ready when this resolved the last open sub-case of a case that is not resolved yet.",
+            "A case (called note in tool names) gets a status and/or a report (resolution_comment). in_progress when you start; resolved declares a result, needs a non-empty resolution_comment (what was done, how it was verified, what remains) and waits for the person to accept it or ask for a rework. Omit status to record a report without changing the status. An existing report is never replaced blindly: pass expected_resolution_comment, the report read before, to replace it (refused if someone changed it), or append: true to add your text after it. Returns {id, status, resolution_comment, revision}, plus parent_ready when this resolved the last open sub-case of a case that is not resolved yet.",
             json!({ "type": "object", "properties": {
                 "note_id": note_id(),
                 "status": { "type": "string", "enum": STATUSES, "description": "New status; omit to only record the report" },
                 "resolution_comment": { "type": "string", "description": "The report: required and non-empty when status is resolved" },
-                "expected_resolution_comment": { "type": "string", "description": "The report read before this call (empty string if none); if the stored one differs, nothing is written" }
+                "expected_resolution_comment": { "type": "string", "description": "The report read before this call (empty string if none); if the stored one differs, nothing is written" },
+                "append": { "type": "boolean", "default": false, "description": "Add resolution_comment after the stored report instead of replacing it" }
             }, "required": ["note_id"] })),
             json!({ "type": "object", "properties": {
                 "id": { "type": "string" },

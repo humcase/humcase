@@ -1237,19 +1237,49 @@ fn handle_tool_call_en(
                 .get("resolution_comment")
                 .and_then(|v| v.as_str())
                 .map(|s| s.to_string());
-            // Version of the report that the agent read. Provided → optimistic check in the same
-            // transaction as the write (refused if a human changed it in the meantime); absent →
-            // direct write, historical behavior preserved (CLI, old MCP clients).
-            let expected_resolution_comment = args
+            // Version of the report that the agent read: optimistic check in the same transaction
+            // as the write (refused if someone changed it in the meantime).
+            let mut expected_resolution_comment = args
                 .get("expected_resolution_comment")
                 .and_then(|v| v.as_str())
                 .map(|s| s.to_string());
+            // `append`: the text is added after the stored report instead of replacing it.
+            let append = match args.get("append") {
+                None | Some(Value::Null) => false,
+                Some(value) => value.as_bool().ok_or("append must be a boolean")?,
+            };
+            let mut resolution_comment = resolution_comment;
             if matches!(status.as_ref(), Some(NoteStatus::Resolved))
                 && resolution_comment
                     .as_deref()
                     .is_none_or(|comment| comment.trim().is_empty())
             {
                 return Err("resolution_comment is required when status is resolved".to_string());
+            }
+            if append && resolution_comment.is_none() {
+                return Err("append needs a resolution_comment to add".to_string());
+            }
+            // A report is never replaced blindly: an agent that did not say which report it read
+            // would erase another agent's or the person's. Without `expected_resolution_comment`,
+            // only an empty report (or the same text) is written; `append` adds to the stored one.
+            // The report read here becomes the expected version, checked again in the write's
+            // transaction.
+            if let Some(new) = resolution_comment.as_deref() {
+                if append || expected_resolution_comment.is_none() {
+                    let stored = queries::get_note_by_id(conn, note_id)
+                        .map_err(|_| crate::tr!("notes.notFound", id = note_id))?
+                        .resolution_comment
+                        .unwrap_or_default();
+                    let (stored_text, new_text) = (stored.trim(), new.trim());
+                    if append {
+                        if !stored_text.is_empty() {
+                            resolution_comment = Some(format!("{stored_text}\n\n{new_text}"));
+                        }
+                    } else if !stored_text.is_empty() && stored_text != new_text {
+                        return Err("this case already has a report: pass expected_resolution_comment with the report you read to replace it, or append: true to add to it".to_string());
+                    }
+                    expected_resolution_comment.get_or_insert(stored);
+                }
             }
 
             let input = UpdateNoteInput {
@@ -2081,21 +2111,65 @@ mod tests {
         assert_eq!(note.status, crate::models::note::NoteStatus::Resolved);
         assert_eq!(note.resolution_comment.as_deref(), Some("Agent report"));
 
-        // Without `expected_resolution_comment`, the write is direct (historical compatibility).
-        handle_tool_call(
+        // Without `expected_resolution_comment`, an existing report is never replaced.
+        let refusal = handle_tool_call(
             &conn,
             "update_note_status",
             Some(json!({
                 "note_id": n_id, "status": "in_progress", "resolution_comment": "Direct write"
             })),
         )
+        .unwrap_err();
+        assert!(refusal.contains("already has a report"), "{refusal}");
+        let note = queries::get_note_by_id(&conn, &n_id).unwrap();
+        assert_eq!(note.resolution_comment.as_deref(), Some("Agent report"));
+        assert_eq!(note.status, crate::models::note::NoteStatus::Resolved);
+    }
+
+    /// Lived on 13/11: adding two lines to a report replaced the whole report. Without the report
+    /// read, only an empty report is written; `append` adds after the stored one.
+    #[test]
+    fn test_mcp_update_note_status_never_erases_a_report_blindly() {
+        let conn = setup_db();
+        let p_id = queries::create_project(&conn, "Reports", None).unwrap();
+        let n_id = queries::create_note(
+            &conn,
+            note_input(&p_id, "N1", crate::models::note::NoteType::Todo),
+        )
         .unwrap();
-        assert_eq!(
+        let report = || {
             queries::get_note_by_id(&conn, &n_id)
                 .unwrap()
                 .resolution_comment
-                .as_deref(),
-            Some("Direct write")
+        };
+        let call = |args: Value| handle_tool_call(&conn, "update_note_status", Some(args));
+
+        // No report yet: written without the expected version.
+        call(json!({ "note_id": n_id, "status": "resolved", "resolution_comment": "Full report" }))
+            .unwrap();
+        // The same text again is not a conflict.
+        call(json!({ "note_id": n_id, "resolution_comment": "Full report" })).unwrap();
+        // Another text without the report read: refused, nothing written.
+        let error =
+            call(json!({ "note_id": n_id, "resolution_comment": "Two lines" })).unwrap_err();
+        assert!(error.contains("already has a report"), "{error}");
+        assert_eq!(report().as_deref(), Some("Full report"));
+        // `append` adds after it.
+        call(json!({ "note_id": n_id, "resolution_comment": "Two lines", "append": true }))
+            .unwrap();
+        assert_eq!(report().as_deref(), Some("Full report\n\nTwo lines"));
+        // `append` with a stale expected version is refused.
+        let error = call(json!({
+            "note_id": n_id, "resolution_comment": "More", "append": true,
+            "expected_resolution_comment": "Full report"
+        }))
+        .unwrap_err();
+        assert!(error.contains("changed"), "{error}");
+        assert_eq!(report().as_deref(), Some("Full report\n\nTwo lines"));
+        // `append` without text, or not a boolean, is refused.
+        assert!(call(json!({ "note_id": n_id, "status": "resolved", "append": true })).is_err());
+        assert!(
+            call(json!({ "note_id": n_id, "resolution_comment": "x", "append": "yes" })).is_err()
         );
     }
 
@@ -2950,7 +3024,7 @@ Three tiers.", "x": 40, "y": 60, "width": 250, "height": 120 }
         let again = call(
             &conn,
             "update_note_status",
-            json!({ "note_id": last, "status": "resolved", "resolution_comment": "refait" }),
+            json!({ "note_id": last, "status": "resolved", "resolution_comment": "refait", "append": true }),
         );
         assert!(again.get("parent_ready").is_none());
     }

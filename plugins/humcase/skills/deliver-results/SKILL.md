@@ -50,9 +50,10 @@ When work pauses, a step lands or a blocker appears, leave a report and keep the
 `mcp__humcase__update_note_status` with `note_id` and `resolution_comment` but no `status`
 (an older Humcase requires `status`: pass the current one, or use `Humcase.exe report`). Read the current report first
 (`mcp__humcase__get_note`) and pass it as `expected_resolution_comment` (an empty string when
-there is none): a concurrent edit then refuses the write instead of being overwritten. Through
-`update_note_status` the new report replaces the previous one, so rewrite it whole: what is
-done, what is in progress, what blocks.
+there is none): a concurrent edit then refuses the write instead of being overwritten. The new
+report replaces the previous one, so rewrite it whole: what is done, what is in progress, what
+blocks. To only add a few lines, pass `"append": true` instead: they go after the stored report.
+Without either, Humcase refuses to replace an existing report.
 
 ## Resolve: verify first, then report
 
@@ -107,7 +108,8 @@ new work unless the user decides otherwise.
 4. **Address the reason**, all of it, and only what the reason and the case ask for.
 5. **Verify** as for any result.
 6. **Resolve again** with a report that opens with what changed since the previous result and
-   how it answers the reason ("Rework 2: ..."), then Done / Verified / Limits.
+   how it answers the reason ("Rework 2: ..."), then Done / Verified / Limits. Pass the previous
+   report as `expected_resolution_comment` to replace it, or `"append": true` to keep it above.
 
 ## Results waiting for a decision
 

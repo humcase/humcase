@@ -21,7 +21,7 @@ Filing: what belongs to one subject goes inside its case. Pass that case's id as
 
 Status: set in_progress when you start. Set resolved only after verifying the result, with a resolution_comment saying what was done, how it was verified and what remains. resolved declares a result: only the person accepts it or asks for a rework. When you resolve the last open sub-case, resolve its parent too if its goal is reached, or report what remains in it. Never report progress you did not observe, nor a status change that failed.
 
-Rework: the person asked for the work to be redone. Read their reason (get_note review.last_decision.comment; also in get_handoff and get_brief), fix it, then resolve again with a report of what changed.
+Rework: the person asked for the work to be redone. Read their reason (get_note review.last_decision.comment; also in get_handoff and get_brief), fix it, then resolve again with a report of what changed (append: true keeps the previous report above it).
 
 Editing: update_note and structure_note need the person's authorization in Humcase settings and expected_revision from get_note; raw_content is never editable. Otherwise add a report or a sub-case.";
 

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Agents: `update_note_status` no longer replaces an existing report blindly. Without `expected_resolution_comment` (the report read before), it writes only a first report or the same text and otherwise refuses, since adding two lines replaced a whole report; the new `append: true` adds the text after the stored report. The CLI `status` goes through the same handler (`--append` added).
+
 ## [0.9.98] - 2026-11-13
 
 The assistant (in the app and as Mini Humcase), Anthropic and Mistral as providers, the agent's report beside the review decision, To tidy and date fixes, and patched dependencies (zip 9).

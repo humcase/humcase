@@ -3,7 +3,7 @@
 use clap::{Parser, Subcommand};
 use humcase_lib::{
     db, mcp,
-    models::note::{CreateNoteInput, NoteStatus, NoteType, UpdateNoteInput},
+    models::note::{CreateNoteInput, NoteType, UpdateNoteInput},
     process_lease::ProcessLease,
 };
 
@@ -83,8 +83,8 @@ enum Commands {
         source_note_id: String,
         task_note_id: String,
     },
-    /// Change note status; resolving requires --resolution-comment. Pass
-    /// --expected-resolution-comment with the report read beforehand to refuse the write if it changed
+    /// Change note status; resolving requires --resolution-comment. An existing report is replaced
+    /// only with --expected-resolution-comment (the report read beforehand); --append adds to it
     Status {
         note_id: String,
         status: String,
@@ -93,6 +93,9 @@ enum Commands {
         /// Refuse the write if the stored report differs from this value
         #[arg(long)]
         expected_resolution_comment: Option<String>,
+        /// Add --resolution-comment after the stored report instead of replacing it
+        #[arg(long)]
+        append: bool,
     },
     /// Record a human or agent result in resolution_comment without changing status
     Report { note_id: String, text: String },
@@ -444,46 +447,23 @@ fn main() {
             status,
             resolution_comment,
             expected_resolution_comment,
+            append,
         }) => {
-            let status = match status.as_str() {
-                "open" => NoteStatus::Open,
-                "in_progress" => NoteStatus::InProgress,
-                "resolved" => NoteStatus::Resolved,
-                _ => fail(format!(
-                    "invalid status: {status} (expected open|in_progress|resolved)"
-                )),
-            };
-            if status == NoteStatus::Resolved
-                && resolution_comment
-                    .as_deref()
-                    .is_none_or(|s| s.trim().is_empty())
-            {
-                fail("--resolution-comment is required when status is resolved".to_string());
+            // Same handler as the MCP tool, so the same safeguards: the status is validated, a
+            // resolution needs a report, and an existing report is never replaced blindly.
+            let mut arguments = serde_json::json!({ "note_id": note_id, "status": status });
+            if let Some(comment) = resolution_comment {
+                arguments["resolution_comment"] = comment.into();
+            }
+            if let Some(expected) = expected_resolution_comment {
+                arguments["expected_resolution_comment"] = expected.into();
+            }
+            if append {
+                arguments["append"] = true.into();
             }
             let (_lease, conn) = get_db_conn();
-            let mut update = empty_update();
-            update.status = Some(status);
-            update.resolution_comment = resolution_comment;
-            if let Some(expected) = expected_resolution_comment {
-                // Same guarantee as `report`: refuse an overwrite if the database changed since the
-                // read. The comparison and the write share a single transaction.
-                match db::queries::update_note_if_report_unchanged(
-                    &conn,
-                    &note_id,
-                    update,
-                    Some(&expected),
-                ) {
-                    Ok(()) => {}
-                    // Tell errors apart: a nonexistent note_id must not be reported as a
-                    // concurrent conflict (the queries message is generic).
-                    Err(e) if e == humcase_lib::tr!("notes.notFound", id = note_id) => fail(e),
-                    Err(e) if e.contains("changed") => fail(
-                        "resolution_comment changed concurrently; read note and retry".to_string(),
-                    ),
-                    Err(e) => fail(e),
-                }
-            } else {
-                db::queries::update_note(&conn, &note_id, update).unwrap_or_else(|e| fail(e));
+            if let Err(e) = mcp::call_tool_text(&conn, "update_note_status", Some(arguments)) {
+                fail(e);
             }
             let note = db::queries::get_note_by_id(&conn, &note_id)
                 .unwrap_or_else(|e| fail(e.to_string()));
