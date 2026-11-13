@@ -9,6 +9,7 @@
 ## Checklist
 
 - [ ] I have signed the [Contributor License Agreement](https://github.com/humcase/humcase/blob/master/CLA.md) (the bot asks on your first pull request)
+- [ ] If part of this was produced with an AI tool, I say which part and which tool here, and I have reviewed it
 - [ ] Title follows Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`…)
 - [ ] `cargo test`, `cargo clippy --all-targets -- -D warnings` and `cargo fmt --check` pass (Rust changes)
 - [ ] `npm test`, `npm run lint -- --deny-warnings` and `npm run build` pass in `frontend/` (frontend changes)

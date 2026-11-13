@@ -37,6 +37,18 @@
 .case-review-band__when { color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
 .case-review-band__hint, .case-review-band__reason { margin: 0; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); line-height: 1.45; }
 .case-review-band__reason { color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); }
+.case-review-band__report {
+  max-height: 18rem;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  padding-left: var(--workspace-space-3);
+  border-left: 2px solid var(--workspace-line);
+  color: var(--workspace-text-secondary);
+  font-size: var(--workspace-text-ui);
+  line-height: 1.5;
+}
+.case-review-band__report > :first-child { margin-top: 0; }
+.case-review-band__report > :last-child { margin-bottom: 0; }
 
 /* Activity of a case (shares the history panel's frame). */
 .case-activity__text { color: var(--workspace-text-secondary); line-height: 1.45; }

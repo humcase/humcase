@@ -6,7 +6,6 @@
     "beta": "{{language}} · Beta"
   },
   "title": "Settings",
-  "closeAria": "Close settings",
   "back": "Back to the app",
   "navAria": "Settings sections",
   "sections": {
