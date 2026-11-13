@@ -3,5 +3,5 @@
   {"click": "New case", "ctype": "Button", "wait": 2},
   {"type": "Prepare the client kickoff{ENTER}Agenda, budget question, who attends.", "wait": 3, "snap": "typed"},
   {"click": "Settings", "ctype": "Button", "wait": 2},
-  {"click": "Close settings", "ctype": "Button", "wait": 2, "snap": "after-close-settings"}
+  {"click": "Back to the app", "ctype": "Button", "wait": 2, "snap": "after-close-settings"}
 ]
