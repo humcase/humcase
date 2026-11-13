@@ -450,8 +450,12 @@ decision, and a rework puts the note back to `open` with its reason in `get_note
   - `resolution_comment` (string): mandatory and non-empty when `status=resolved`; explains what was done and verified. Optional for other statuses.
   - `expected_resolution_comment` (string, optional): value of the report read before the call
     (empty string if there is no report). If it no longer matches the content in the database, the
-    transaction is refused without modifying either the status or the report. **Omitting this parameter
-    keeps the historical direct write**, without this concurrency check.
+    transaction is refused without modifying either the status or the report. **Without it, an
+    existing report is never replaced**: the call is refused unless the case has no report yet or
+    the text is the same (an agent could otherwise erase another agent's or the person's report).
+  - `append` (boolean, optional, default `false`): `resolution_comment` is added after the stored
+    report, separated by a blank line, instead of replacing it; the stored report is checked again
+    in the write's transaction (and against `expected_resolution_comment` when given).
 - **Return**: `{ id, status, resolution_comment, revision }`, also as `structuredContent`. When the
   call resolved the last open (non-archived) sub-case of a case that is not resolved, it also
   returns `parent_ready: { id, title, status, hint }`: resolve that case if its goal is reached, or
