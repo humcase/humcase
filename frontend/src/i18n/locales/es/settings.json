@@ -6,7 +6,6 @@
     "beta": "{{language}} · Beta"
   },
   "title": "Ajustes",
-  "closeAria": "Cerrar los ajustes",
   "back": "Volver a la aplicación",
   "navAria": "Secciones de los ajustes",
   "sections": {
