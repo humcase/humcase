@@ -125,6 +125,14 @@ describe('CaseReviewBand', () => {
     expect(mockApi.reviewCase).toHaveBeenCalledWith('n1', 'accepted', 7, undefined);
   });
 
+  it('shows the declared result next to the decision, and nothing extra without a report', () => {
+    const { rerender } = render(<CaseReviewBand note={note({ resolution_comment: 'Venue **B** fits: 40 seats.' })} journal={journal()} onReviewed={vi.fn()} />);
+    const report = screen.getByRole('group', { name: 'Compte rendu' });
+    expect(report.textContent).toBe('Venue B fits: 40 seats.');
+    rerender(<CaseReviewBand note={note({ resolution_comment: '  ' })} journal={journal()} onReviewed={vi.fn()} />);
+    expect(screen.queryByRole('group', { name: 'Compte rendu' })).toBeNull();
+  });
+
   it('refuses a rework without a reason, then sends it with the reason', async () => {
     const onReviewed = vi.fn();
     mockApi.reviewCase.mockResolvedValue(review({ revision: 7 }));

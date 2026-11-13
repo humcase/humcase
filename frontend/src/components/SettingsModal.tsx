@@ -144,7 +144,6 @@ export default function SettingsModal({ onClose, prepareBackup, spacePreferences
               disabled={data.isRestoring}
               variant="nav"
               className="settings-nav__button settings-nav__back"
-              aria-label={t('settings.closeAria')}
             >
               <ArrowLeft size={18} aria-hidden="true" /><span>{t('settings.back')}</span>
             </Button>
