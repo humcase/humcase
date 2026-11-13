@@ -40,6 +40,7 @@
 .case-review-band__report {
   max-height: 18rem;
   overflow-y: auto;
+  overflow-wrap: anywhere;
   padding-left: var(--workspace-space-3);
   border-left: 2px solid var(--workspace-line);
   color: var(--workspace-text-secondary);

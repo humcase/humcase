@@ -60,7 +60,7 @@ export function CaseReviewBand({ note, journal, onReviewed }: CaseReviewBandProp
       </div>
       {/* The decision is taken on the result: show it here, not only in the folded report below. */}
       {note.resolution_comment?.trim() && (
-        <div className="case-review-band__report prose max-w-none" role="group" aria-label={t('notes.followUp.report')}>
+        <div className="case-review-band__report prose max-w-none" role="group" aria-label={t('notes.followUp.report')} tabIndex={0}>
           <ReactMarkdown remarkPlugins={[remarkGfm]} urlTransform={transformerUrlMarkdown}>{note.resolution_comment}</ReactMarkdown>
         </div>
       )}
