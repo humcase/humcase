@@ -1,0 +1,8 @@
+[
+  {"snap": "home"},
+  {"click": "New case", "wait": 2, "snap": "new-case"},
+  {"type": "Prepare the client kickoff{ENTER}Agenda, budget question, who attends.", "wait": 3, "snap": "typed"},
+  {"click": "Home", "wait": 2, "snap": "back-home"},
+  {"click": "Connect an agent", "wait": 2, "snap": "connect-agent"},
+  {"click": "All cases", "wait": 2, "snap": "all-cases"}
+]

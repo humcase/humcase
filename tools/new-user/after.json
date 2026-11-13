@@ -1,0 +1,4 @@
+[
+  {"click": "Inbox", "wait": 3, "snap": "inbox-after-agent"},
+  {"click": "Home", "wait": 3, "snap": "home-after-agent"}
+]
