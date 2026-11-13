@@ -17,12 +17,13 @@ try {
   const tools = await rpc('tools/list', {});
   report.toolCount = tools.result?.tools?.length; report.tools = tools.result?.tools?.map((t) => t.name);
   report.handoffBefore = await call('get_handoff', {});
-  const inbox = await call('get_or_create_inbox', {});
+  const inbox = await call('get_or_create_inbox', { space: 'work' });
   report.inbox = inbox;
   const pid = inbox.data?.id ?? inbox.data?.project?.id;
-  report.added = await call('add_note', { project_id: pid, title: 'Prepare the client kickoff', content: 'Agenda, budget question, who attends.', note_type: 'todo' });
+  report.added = await call('add_note', { project_id: pid, title: 'Compare three venues for the kickoff', content: 'Capacity, price, access by train.', note_type: 'research' });
   const nid = report.added.data?.id;
   report.status = await call('update_note_status', { note_id: nid, status: 'in_progress' });
+  report.resolved = await call('update_note_status', { note_id: nid, status: 'resolved', resolution_comment: 'Venue B fits: 40 seats, 900 EUR, 5 min from the station. A is too small, C has no train access.' });
   report.handoffAfter = await call('get_handoff', { project_id: pid });
   report.forbiddenEdit = await call('update_note', { note_id: nid, expected_revision: 1, title: 'x' });
 } catch (e) { report.failure = e.message; }

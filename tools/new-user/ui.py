@@ -48,7 +48,8 @@ for s in steps:
     try:
         if 'click' in s:
             w = window()
-            matches = [e for e in w.descendants(title=s['click']) if e.is_visible()]
+            matches = [e for e in w.descendants(title=s['click']) if e.is_visible()
+                       and (not s.get('ctype') or e.element_info.control_type == s['ctype'])]
             if not matches:
                 matches = [e for e in w.descendants() if e.is_visible() and s['click'].lower() in e.window_text().lower()]
             if not matches:
