@@ -129,10 +129,15 @@ fn optional_str<'a>(args: &'a Value, name: &str) -> Result<Option<&'a str>, Stri
     }
 }
 
+/// Optional yes/no argument. `"true"` and `"false"` written as text are accepted too: a client
+/// that still holds an older list of tools (it read it before an update) sends a parameter it
+/// does not know as a string, and these two words cannot be misread. Anything else is refused.
 fn optional_bool(args: &Value, name: &str) -> Result<Option<bool>, String> {
     match args.get(name) {
         None | Some(Value::Null) => Ok(None),
         Some(Value::Bool(value)) => Ok(Some(*value)),
+        Some(Value::String(text)) if text == "true" => Ok(Some(true)),
+        Some(Value::String(text)) if text == "false" => Ok(Some(false)),
         Some(_) => Err(format!("{name} must be true or false")),
     }
 }
@@ -1244,10 +1249,7 @@ fn handle_tool_call_en(
                 .and_then(|v| v.as_str())
                 .map(|s| s.to_string());
             // `append`: the text is added after the stored report instead of replacing it.
-            let append = match args.get("append") {
-                None | Some(Value::Null) => false,
-                Some(value) => value.as_bool().ok_or("append must be a boolean")?,
-            };
+            let append = optional_bool(&args, "append")?.unwrap_or(false);
             let mut resolution_comment = resolution_comment;
             if matches!(status.as_ref(), Some(NoteStatus::Resolved))
                 && resolution_comment
@@ -2166,10 +2168,21 @@ mod tests {
         .unwrap_err();
         assert!(error.contains("changed"), "{error}");
         assert_eq!(report().as_deref(), Some("Full report\n\nTwo lines"));
-        // `append` without text, or not a boolean, is refused.
+        // `append` without text, or neither a boolean nor "true"/"false", is refused.
         assert!(call(json!({ "note_id": n_id, "status": "resolved", "append": true })).is_err());
         assert!(
             call(json!({ "note_id": n_id, "resolution_comment": "x", "append": "yes" })).is_err()
+        );
+        // A client holding an older list of tools sends `append` as text: understood.
+        call(json!({ "note_id": n_id, "resolution_comment": "Three", "append": "true" })).unwrap();
+        assert_eq!(
+            report().as_deref(),
+            Some("Full report\n\nTwo lines\n\nThree")
+        );
+        assert!(
+            call(json!({ "note_id": n_id, "resolution_comment": "x", "append": "false" }))
+                .unwrap_err()
+                .contains("already has a report")
         );
     }
 
