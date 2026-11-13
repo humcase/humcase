@@ -1,6 +1,8 @@
 [
   {"click": "Home", "ctype": "Button", "wait": 3, "snap": "home-after-agent"},
   {"scroll": 6, "wait": 1, "snap": "home-after-agent-more"},
+  {"click": "Inbox", "ctype": "Button", "wait": 3, "snap": "inbox"},
   {"click": "Compare three venues for the kickoff", "wait": 3, "snap": "agent-case"},
-  {"scroll": 8, "wait": 1, "snap": "agent-case-more"}
+  {"scroll": 8, "wait": 1, "snap": "agent-case-more"},
+  {"scroll": 8, "wait": 1, "snap": "agent-case-end"}
 ]
