@@ -1,0 +1,100 @@
+name: New user journey
+
+# Downloads the public installer from humcase.com on a clean Windows runner, installs it as a user would,
+# then drives the app over CDP and its MCP server like a first-time user. Screenshots and texts are artifacts.
+on:
+  push:
+    branches: [test/new-user-journey]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  journey:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Download from the website
+        shell: pwsh
+        run: |
+          $site = Invoke-WebRequest https://humcase.com -UseBasicParsing
+          $href = ($site.Links | Where-Object href -match 'Humcase-setup-x64\.exe' | Select-Object -First 1).href
+          if (-not $href) { throw "no Windows download link on humcase.com" }
+          "Download link on the site: $href"
+          Invoke-WebRequest $href -OutFile "$env:RUNNER_TEMP\Humcase-setup-x64.exe"
+          $sums = (Invoke-WebRequest https://github.com/humcase/humcase/releases/latest/download/SHA256SUMS.txt -UseBasicParsing).Content
+          $hash = (Get-FileHash "$env:RUNNER_TEMP\Humcase-setup-x64.exe" -Algorithm SHA256).Hash.ToLower()
+          if ($sums -notmatch $hash) { throw "checksum of the downloaded installer is not in SHA256SUMS.txt" }
+          "Checksum OK: $hash"
+
+      - name: Install with the defaults
+        shell: pwsh
+        run: |
+          $setup = Start-Process "$env:RUNNER_TEMP\Humcase-setup-x64.exe" -ArgumentList '/S' -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw "installer exit code $($setup.ExitCode)" }
+          $exe = Get-ChildItem $env:LOCALAPPDATA, $env:ProgramFiles -Recurse -Filter Humcase.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) { throw "Humcase.exe not found after install" }
+          "Installed at $($exe.FullName)"
+          "HUMCASE_EXE=$($exe.FullName)" >> $env:GITHUB_ENV
+          Get-ChildItem "$env:USERPROFILE\Desktop", "$env:APPDATA\Microsoft\Windows\Start Menu\Programs" -Filter *Humcase* -Recurse -ErrorAction SilentlyContinue | ForEach-Object { "Shortcut: $($_.FullName)" }
+
+      - name: Tools for the journey
+        working-directory: tools/new-user
+        run: npm install --no-save --no-package-lock playwright-core@1.49.1
+
+      - name: First launch and first look
+        shell: pwsh
+        working-directory: tools/new-user
+        run: |
+          $env:WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS = '--remote-debugging-port=9222'
+          $app = Start-Process $env:HUMCASE_EXE -PassThru
+          "APP_PID=$($app.Id)" >> $env:GITHUB_ENV
+          $deadline = (Get-Date).AddSeconds(60)
+          while ((Get-Date) -lt $deadline) { try { Invoke-WebRequest http://127.0.0.1:9222/json/version -UseBasicParsing | Out-Null; break } catch { Start-Sleep 1 } }
+          Start-Sleep -Seconds 5
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $shot = New-Object System.Drawing.Bitmap $screen.Width, $screen.Height
+          [System.Drawing.Graphics]::FromImage($shot).CopyFromScreen($screen.Location, [System.Drawing.Point]::Empty, $screen.Size)
+          New-Item -ItemType Directory -Force out | Out-Null
+          $shot.Save("$PWD\out\0-desktop-first-launch.png")
+          node ui.mjs out 1-first
+          if (Test-Path journey.json) { node ui.mjs out 2-journey journey.json }
+
+      - name: An agent connects through MCP
+        working-directory: tools/new-user
+        run: node mcp.mjs "$env:HUMCASE_EXE" out/3-mcp.json
+        shell: pwsh
+
+      - name: The user sees the agent's work
+        shell: pwsh
+        working-directory: tools/new-user
+        run: |
+          '[{"reload": true, "wait": 4000, "snap": "after-agent"}]' | Set-Content after.json
+          node ui.mjs out 4-after after.json
+          if (Test-Path journey-after.json) { node ui.mjs out 5-more journey-after.json }
+
+      - name: Where the data lives
+        if: always()
+        shell: pwsh
+        working-directory: tools/new-user
+        run: |
+          New-Item -ItemType Directory -Force out | Out-Null
+          & {
+            "~/.humcase:"; Get-ChildItem "$env:USERPROFILE\.humcase" -Recurse -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+            "AppData (should hold no Humcase data):"; Get-ChildItem $env:APPDATA, $env:LOCALAPPDATA -Directory -Filter '*humcase*' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+          } | Tee-Object out/6-data.txt
+          if ($env:APP_PID) { Stop-Process -Id $env:APP_PID -Force -ErrorAction SilentlyContinue }
+
+      - name: Journey artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: new-user-journey
+          path: tools/new-user/out
