@@ -1,9 +1,11 @@
 [
   {"snap": "home"},
-  {"click": "New case", "ctype": "Button", "wait": 2, "snap": "new-case"},
+  {"click": "New case", "ctype": "Button", "wait": 2},
   {"type": "Prepare the client kickoff{ENTER}Agenda, budget question, who attends.", "wait": 3, "snap": "typed"},
-  {"click": "Home", "wait": 2, "snap": "back-home"},
-  {"click": "Connect an agent", "ctype": "Button", "wait": 2, "snap": "connect-agent"},
-  {"keys": "{PGDN}", "wait": 1, "snap": "connect-agent-more"},
-  {"click": "Settings", "wait": 2, "snap": "settings"}
+  {"click": "Home", "ctype": "Button", "wait": 2},
+  {"scroll": 8, "wait": 1, "snap": "home-scrolled"},
+  {"click": "Settings", "ctype": "Button", "wait": 2, "snap": "settings-general"},
+  {"scroll": 10, "wait": 1, "snap": "settings-general-more"},
+  {"click": "Data", "ctype": "Button", "wait": 2, "snap": "settings-data"},
+  {"click": "Back to the app", "wait": 2}
 ]

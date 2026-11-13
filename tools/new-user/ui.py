@@ -2,7 +2,7 @@
 The release build has DevTools off, so CDP is not available: real clicks and keystrokes instead.
 Usage: python ui.py <outDir> <stepName> [script.json]"""
 import json, os, sys, time
-from pywinauto import Desktop, keyboard
+from pywinauto import Desktop, keyboard, mouse
 from PIL import ImageGrab
 
 out_dir, step_name = sys.argv[1], sys.argv[2]
@@ -57,6 +57,9 @@ for s in steps:
             matches[s.get('nth', 0)].click_input()
         if 'type' in s:
             keyboard.send_keys(s['type'], with_spaces=True, pause=0.02)
+        if 'scroll' in s:
+            r = window().rectangle()
+            mouse.scroll(coords=((r.left + r.right) // 2 + 100, (r.top + r.bottom) // 2), wheel_dist=-s['scroll'])
         if 'keys' in s:
             keyboard.send_keys(s['keys'])
         time.sleep(s.get('wait', 1.5))
