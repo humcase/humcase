@@ -1,0 +1,58 @@
+[package]
+name = "humcase"
+version = "0.9.97"
+description = "Humcase: local-first notes and task tracking for people and agents"
+authors = ["Humcase"]
+license = "AGPL-3.0-only"
+repository = "https://github.com/humcase/humcase"
+edition = "2021"
+rust-version = "1.89"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "humcase_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "2.11.6", features = ["protocol-asset", "tray-icon"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+uuid = { version = "1.20.0", features = ["v4", "serde"] }
+dirs = "7.0.0"
+tauri-plugin-global-shortcut = "2"
+clap = { version = "4.5.61", features = ["derive"] }
+tauri-plugin-window-state = "2.4.1"
+# Rust-side HTTP client: authenticated calls (Cerebras) must not leave from the webview.
+reqwest = { version = "0.13", features = ["json"] }
+# Deepgram WebSocket proxy: the transcription key must not reach the webview either.
+# `time`: safety delay after `CloseStream` (waiting for the last transcripts).
+# `rt`: `tokio::spawn` (session reader/writer), made explicit so it is no longer enabled only
+# transitively by Tauri. `macros`: `#[tokio::test]`.
+tokio = { version = "1", features = ["sync", "time", "rt", "macros"] }
+tokio-tungstenite = { version = "0.30", features = ["native-tls"] }
+futures-util = "0.3"
+zip = { version = "=0.6.6", default-features = false, features = ["deflate"] }
+sha2 = "0.11"
+regex = "1"
+percent-encoding = "2"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp"] }
+webp = "0.3"
+tempfile = "3"
+tauri-plugin-single-instance = "2"
+sys-locale = "0.3"
+tauri-plugin-opener = "2"
+
+# Unix: AI keys are sealed with XChaCha20-Poly1305 (see `ai_settings::keyfile`); Windows uses DPAPI.
+[target.'cfg(unix)'.dependencies]
+chacha20poly1305 = "0.10"
+
+# Build cache (target/debug): the debug information of dependencies (.pdb files on Windows)
+# makes up most of its size and is never used. It stays enabled for Humcase itself (readable
+# traces in our tests). The release is not affected.
+[profile.dev.package."*"]
+debug = false

@@ -1,0 +1,18 @@
+/* A decision's place in the history ("To tidy"): replaced, replaces, or asked when written. */
+.decision-history { display: flex; flex-direction: column; gap: var(--workspace-space-2, 8px); margin: var(--workspace-space-3) 0 var(--workspace-space-4, 16px); }
+.decision-history__band { display: flex; flex-wrap: wrap; align-items: center; gap: var(--workspace-space-3); padding: 10px 12px 10px 14px; border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-card); background: var(--workspace-surface); }
+.decision-history__band[data-kind='ask'] { border-color: color-mix(in srgb, var(--workspace-accent-ink) 45%, var(--workspace-card-border)); background: var(--workspace-accent-soft); }
+.decision-history__band[data-kind='past'] { background: var(--workspace-muted-surface); }
+.decision-history__band[data-kind='conflict'] { border-color: color-mix(in srgb, var(--workspace-warning-ink) 45%, var(--workspace-card-border)); background: color-mix(in srgb, var(--workspace-warning-ink) 10%, var(--workspace-surface)); }
+.decision-history__band[data-kind='conflict'] .decision-history__icon { color: var(--workspace-warning-ink); }
+.decision-history__icon { flex: none; color: var(--workspace-accent-ink); }
+.decision-history__band[data-kind='past'] .decision-history__icon { color: var(--workspace-text-muted); }
+.decision-history__text { flex: 1 1 260px; min-width: 0; }
+.decision-history__text strong { color: var(--workspace-ink); font-size: var(--workspace-text-ui); font-weight: 600; }
+.decision-history__text p { margin: 2px 0 0; color: var(--workspace-text-secondary); font-size: var(--workspace-text-caption); line-height: var(--workspace-leading-body); overflow-wrap: anywhere; }
+.decision-history__actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.decision-history__link { padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; text-decoration: underline; text-decoration-color: var(--workspace-line); text-underline-offset: 3px; cursor: pointer; }
+.decision-history__link:hover { color: var(--workspace-ink); text-decoration-color: currentColor; }
+.decision-history__line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); }
+.decision-history__line span { overflow-wrap: anywhere; }
+.decision-history__error { margin: 0; color: var(--workspace-danger); font-size: var(--workspace-text-caption); }

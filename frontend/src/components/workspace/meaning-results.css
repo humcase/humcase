@@ -1,0 +1,6 @@
+.workspace-meaning { margin: 0; padding: 0 var(--workspace-page-gutter) var(--workspace-space-4); }
+.workspace-meaning__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+.workspace-meaning__title { margin: 0; color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
+.workspace-meaning__reading { color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); }
+.workspace-meaning__closeness { color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); white-space: nowrap; }
+.workspace-meaning__no-words { margin: 0; padding: var(--workspace-space-2) var(--workspace-page-gutter) var(--workspace-space-6); color: var(--workspace-text-muted); font-size: var(--workspace-text-ui); }

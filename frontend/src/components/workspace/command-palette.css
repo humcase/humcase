@@ -1,0 +1,10 @@
+.workspace-command-dialog [cmdk-input] { min-height: 64px; font-size: var(--workspace-text-body); color: var(--workspace-ink); padding-inline: 8px; }
+.workspace-command-results { max-height: min(52vh, 520px); padding: 12px; }
+.workspace-command-dialog [cmdk-group] { padding: 8px; font-weight: 500; text-transform: none; letter-spacing: normal; }
+.workspace-command-dialog [cmdk-group-heading] { padding: 8px 12px 10px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-command-dialog [cmdk-item] { min-height: var(--workspace-control-height); gap: 12px; padding: 10px 12px; color: var(--workspace-ink); font-size: var(--workspace-text-ui); border-radius: var(--workspace-radius-control); }
+.workspace-command-dialog [cmdk-item][data-selected=true] { color: var(--workspace-accent-ink); background: var(--workspace-accent-soft); }
+.workspace-command-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; padding: 12px 20px; border-top: 1px solid var(--workspace-line); color: var(--workspace-text-muted); background: var(--workspace-raised); font-size: var(--workspace-text-caption); }
+.workspace-command-footer span { display: inline-flex; align-items: center; gap: 6px; }
+@media (max-width: 850px) { .workspace-command-footer { justify-content: flex-start; gap: 8px 14px; } }
+.workspace-command-dialog .workspace-command-group--separated { margin-top: 8px; border-top: 1px solid var(--workspace-line); }

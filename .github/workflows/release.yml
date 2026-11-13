@@ -1,0 +1,140 @@
+# Humcase release.
+#
+# Pull requests that change code are checked by ci.yml; this workflow only builds releases.
+# - Pushing a `v*` tag (e.g. v0.10.0): version check, tests, build, then a GitHub release
+#   marked latest: the website's download button points to
+#   releases/latest/download/Humcase-setup-x64.exe, and GitHub's "latest" skips pre-releases.
+# - Manual run (Actions > Release > Run workflow): same chain without publishing; binaries
+#   are available as run artifacts (dry run).
+name: Release
+# Run title: without it, GitHub shows the message of the tagged commit.
+run-name: ${{ startsWith(github.ref, 'refs/tags/') && format('Release {0}', github.ref_name) || format('Dry run ({0})', github.ref_name) }}
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Version check and notes
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          TAG: ${{ github.ref_name }}
+        run: node scripts/release-check.mjs "$env:TAG" release-notes.md
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Dependencies
+        run: |
+          npm ci
+          npm ci --prefix frontend
+
+      - name: Frontend tests
+        run: npm test --prefix frontend
+
+      - name: Rust tests
+        working-directory: src-tauri
+        run: cargo test --locked
+
+      - name: Meaning worker, runtime and model (meaning/)
+        run: node scripts/build-meaning.mjs
+
+      - name: Build (tauri build)
+        run: npx tauri build --config src-tauri/tauri.meaning.conf.json
+
+      # Installers only: Humcase.exe alone would lack meaning/ (search by meaning), and a person
+      # never downloads a second file to complete an install.
+      - name: Collect binaries
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item src-tauri/target/release/bundle/nsis/*.exe dist/
+          Copy-Item src-tauri/target/release/bundle/msi/*.msi dist/
+          # same installer under a name without the version, for the website's download link
+          Copy-Item src-tauri/target/release/bundle/nsis/*.exe dist/Humcase-setup-x64.exe
+          Get-FileHash dist/* -Algorithm SHA256 | ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } | Set-Content dist/SHA256SUMS.txt
+          Get-Content dist/SHA256SUMS.txt
+
+      # The installer a visitor downloads must install silently and start: install it in a
+      # temporary folder on this clean runner, run the installed Humcase.exe (CLI), check that
+      # search by meaning came along, open the window once (screenshot kept as an artifact), then
+      # uninstall.
+      - name: Install and start the installer
+        shell: pwsh
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'humcase-install'
+          $setup = Start-Process dist/Humcase-setup-x64.exe -ArgumentList '/S', "/D=$dir" -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw "installer exit code $($setup.ExitCode)" }
+          $exe = Join-Path $dir 'Humcase.exe'
+          if (-not (Test-Path $exe)) { throw "Humcase.exe missing after install" }
+          if (-not (Test-Path (Join-Path $dir 'meaning/humcase-sense.exe'))) { throw "meaning/ missing after install" }
+          # Humcase.exe is a windowed program: PowerShell would not wait for it, so wait explicitly.
+          $out = Join-Path $env:RUNNER_TEMP 'humcase-tools.txt'
+          $run = Start-Process $exe -ArgumentList 'tools' -RedirectStandardOutput $out -Wait -PassThru -NoNewWindow
+          if ($run.ExitCode -ne 0 -or -not (Select-String -Path $out -Pattern 'add_note' -Quiet)) { throw "installed Humcase.exe did not list its tools" }
+          "Installed Humcase.exe lists $((Get-Content $out).Count) tools"
+          # The window: first launch on a clean profile, still running 30 s later, then a screenshot.
+          $app = Start-Process $exe -PassThru
+          Start-Sleep -Seconds 30
+          $app.Refresh()
+          if ($app.HasExited) { throw "Humcase exited at first launch (code $($app.ExitCode))" }
+          if ($app.MainWindowHandle -eq 0) { throw "Humcase has no window after 30 s" }
+          "Window: $($app.MainWindowTitle)"
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $shot = New-Object System.Drawing.Bitmap $screen.Width, $screen.Height
+          [System.Drawing.Graphics]::FromImage($shot).CopyFromScreen($screen.Location, [System.Drawing.Point]::Empty, $screen.Size)
+          $shot.Save((Join-Path $env:RUNNER_TEMP 'first-launch.png'))
+          Stop-Process -Id $app.Id -Force
+          Start-Sleep -Seconds 3
+          $uninstall = Start-Process (Join-Path $dir 'uninstall.exe') -ArgumentList '/S' -Wait -PassThru
+          if ($uninstall.ExitCode -ne 0) { throw "uninstaller exit code $($uninstall.ExitCode)" }
+
+      - name: First-launch screenshot
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: first-launch-${{ github.sha }}
+          path: ${{ runner.temp }}/first-launch.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Artifacts (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v7
+        with:
+          name: humcase-${{ github.sha }}
+          path: dist/
+          retention-days: 7
+
+      - name: GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$env:TAG" dist/* --title "Humcase $env:TAG" --notes-file release-notes.md --latest --verify-tag

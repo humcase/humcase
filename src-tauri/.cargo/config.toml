@@ -1,0 +1,9 @@
+# Reproducible builds (Windows only).
+#
+# Without this option, the MSVC linker writes the current timestamp into the PE header: two
+# builds of the same code produce different binaries, which makes the "same revision -> same
+# fingerprint" check impossible. `/Brepro` replaces that timestamp with a deterministic hash.
+# It is an MSVC linker option: applied elsewhere (for example on the Linux of cloud sessions),
+# it makes linking fail (`cannot open /Brepro`).
+[target.'cfg(all(windows, target_env = "msvc"))']
+rustflags = ["-C", "link-arg=/Brepro"]

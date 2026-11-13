@@ -1,0 +1,43 @@
+/* Sub-cases panel: shares the look of the linked tasks panel (NoteRelations.css). */
+.note-sub-cases + .note-relations { margin-top: 0.75rem; }
+
+.note-sub-cases .note-relations-actions + .case-provenance,
+.note-sub-cases .note-relations-form + .case-provenance,
+.note-sub-cases .note-relations-muted { margin-top: 0.85rem; }
+
+.case-provenance li { align-items: flex-start; padding: 0.45rem 0; }
+.case-provenance li > div { min-width: 0; flex: 1; }
+.case-provenance p { margin: 0; overflow-wrap: anywhere; }
+.case-provenance-kind {
+  display: inline-block;
+  margin-right: 0.3rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--workspace-line);
+  border-radius: 0.25rem;
+  color: var(--workspace-text-muted);
+  font-size: var(--workspace-text-caption);
+}
+.case-provenance-url,
+.case-provenance-meta { color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.case-provenance blockquote {
+  margin: 0.3rem 0;
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--workspace-line);
+  color: var(--workspace-ink);
+  white-space: pre-wrap;
+}
+
+/* Path of the open case, above its title. */
+.case-path { margin: 0 0 0.35rem; font-size: var(--workspace-text-caption); }
+.case-path ol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.15rem; margin: 0; padding: 0; list-style: none; }
+.case-path li { display: inline-flex; align-items: center; gap: 0.15rem; min-width: 0; color: var(--workspace-text-muted); }
+.case-path button {
+  max-width: 16rem;
+  overflow: hidden;
+  padding: 0.1rem 0.25rem;
+  border-radius: 0.25rem;
+  color: var(--workspace-action);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.case-path button:hover { background: var(--workspace-state-hover); }

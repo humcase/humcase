@@ -1,0 +1,14 @@
+/* Humcase kit: single entry point of the components (buttons, segments, menus, tooltips, dialogs, badges, cards, lists, fields).
+   Imported by each window (App, quick capture) right after the theme tokens. */
+@import './button.css';
+@import './segmented.css';
+@import './menu.css';
+@import './hint.css';
+@import './dialog.css';
+@import './controls.css';
+@import './badge.css';
+@import './card.css';
+@import './toast.css';
+@import './empty.css';
+@import './metadata.css';
+@import './motion.css';

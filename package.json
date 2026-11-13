@@ -1,0 +1,19 @@
+{
+  "name": "humcase-root",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "scripts": {
+    "dev": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "tauri": "tauri",
+    "update-exe": "node scripts/update-exe.mjs",
+    "check-plugins": "node scripts/check-plugins.mjs",
+    "build-meaning": "node scripts/build-meaning.mjs",
+    "build-linux": "bash tools/linux/build.sh",
+    "site": "npm run dev --prefix site",
+    "build-site": "npm run build --prefix site"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.12.0"
+  }
+}

@@ -1,0 +1,15 @@
+/* Humcase kit — reduced motion (0.9.68). Global safety net: when the user asks for less
+   motion, animations and transitions become instant everywhere (windows, menus,
+   tooltips, portals included). Only loading indicators keep spinning:
+   they carry information (an operation is in progress), not decoration. */
+@media (prefers-reduced-motion: reduce) {
+  *:not(.animate-spin),
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}

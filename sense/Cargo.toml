@@ -1,0 +1,28 @@
+[package]
+name = "humcase-sense"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "AGPL-3.0-only"
+description = "Humcase's meaning worker: embeds texts with a local model, next to Humcase.exe."
+
+# Standalone: ONNX Runtime stays out of Humcase.exe (a missing runtime only disables meaning).
+[workspace]
+
+[[bin]]
+name = "humcase-sense"
+path = "src/main.rs"
+
+[dependencies]
+# `load-dynamic`: Microsoft's official onnxruntime.dll is loaded at run time from the worker's
+# folder (Windows 10 1809+ and Windows 11), not the prebuilt binaries of `ort`.
+ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "load-dynamic"] }
+tokenizers = { version = "0.23.2", default-features = false, features = ["fancy-regex"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.60", features = ["Win32_Foundation", "Win32_System_Threading"] }
+
+[profile.release]
+strip = true

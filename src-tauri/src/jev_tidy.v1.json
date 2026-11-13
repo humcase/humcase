@@ -1,0 +1,18 @@
+{
+  "version": "tidy.v1",
+  "model": "jev-1.13.0",
+  "same_subject": {
+    "instructions": "`older` and `newer` are two decisions from the same person's notes; `newer` was written after `older`. Are they about the same subject?",
+    "criteria": {
+      "true": "Both decide something about the same point: the same choice, product, plan, rule or option, even in other words or another language.",
+      "false": "They decide about different points, even if they share a project, a tool or some words."
+    }
+  },
+  "replaces": {
+    "instructions": "`older` and `newer` are two decisions from the same person's notes; `newer` was written after `older`. Does `newer` replace `older`, so that `older` no longer holds?",
+    "criteria": {
+      "true": "The newer decision changes, reverses or abandons what the older one decided on the same point: following the older one now would go against the newer one.",
+      "false": "The newer decision is about another point, adds to the older one, details it or confirms it: both still hold."
+    }
+  }
+}

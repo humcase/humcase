@@ -1,0 +1,279 @@
+/* Long pages of cards and rows: the ones off screen skip layout and painting until they come near. */
+.workspace-note-grid > .workspace-note-card { content-visibility: auto; contain-intrinsic-size: auto 260px; }
+.workspace-list > .ui-list-row { content-visibility: auto; contain-intrinsic-size: auto 132px; }
+
+/* Document cards: title, content, context. A single surface per note. */
+.workspace-page .workspace-note-card--refined {
+  min-height: 0;
+  padding: 20px 20px 0;
+  gap: 0;
+}
+
+.workspace-page .workspace-note-card--refined.workspace-note-card--compact {
+  min-height: 0;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__top {
+  min-height: 24px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__title {
+  margin: 0 0 10px;
+  font-size: var(--workspace-text-card);
+  line-height: 1.28;
+  font-weight: 600;
+  letter-spacing: -.025em;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__title button {
+  -webkit-line-clamp: 2;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  min-height: 0;
+  max-height: 6.2em;
+  margin: 0 0 12px;
+  color: var(--workspace-text-secondary);
+  font-size: var(--workspace-text-ui);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview > :first-child,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content > :first-child {
+  margin-top: 0;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview > :last-child,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content > :last-child {
+  margin-bottom: 0;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview p,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview ul,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview ol,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview blockquote {
+  margin: 0 0 6px;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview h1,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview h2,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview h3,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview h4,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview h5,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview h6 {
+  margin: 0 0 5px;
+  color: var(--workspace-ink);
+  font-size: var(--workspace-text-ui);
+  line-height: 1.4;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview ul,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview ol {
+  padding-left: 18px;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview ul { list-style: disc; }
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview ol { list-style: decimal; }
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview .contains-task-list { padding-left: 0; list-style: none; }
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview blockquote {
+  padding-left: 9px;
+  border-left: 2px solid var(--workspace-card-hover-border);
+  color: var(--workspace-text-muted);
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview pre,
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview code {
+  font-family: var(--workspace-font-mono);
+  font-size: .92em;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview pre {
+  overflow: hidden;
+  margin: 0 0 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: var(--workspace-raised);
+  white-space: pre-wrap;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview-link {
+  color: var(--workspace-accent-ink);
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report {
+  margin: 0 0 12px;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--workspace-line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report > span {
+  margin-bottom: 5px;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  max-height: 3.1em;
+  margin-top: 0;
+  color: var(--workspace-text-secondary);
+  font-size: var(--workspace-text-caption);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content p,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content ul,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content ol {
+  margin: 0 0 4px;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content h1,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content h2,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content h3,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content h4,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content h5,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content h6 {
+  margin: 0 0 4px;
+  color: var(--workspace-text-secondary);
+  font-size: inherit;
+  font-weight: 600;
+  line-height: inherit;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content ul,
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content ol {
+  padding-left: 16px;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content ul { list-style: disc; }
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content ol { list-style: decimal; }
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__context {
+  gap: 6px 8px;
+  margin: 0 0 16px;
+  font-size: var(--workspace-text-ui);
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 4px;
+  margin-inline: -20px;
+  padding: 12px 20px;
+  gap: 8px 12px;
+  border-top: 1px solid var(--workspace-line);
+  background: transparent;
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__project {
+  margin: 0 auto 0 0;
+  max-width: 48%;
+  color: var(--workspace-text-secondary);
+  font-size: var(--workspace-text-ui);
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__footer-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px 8px;
+  min-width: 0;
+  color: var(--workspace-text-muted);
+  font-size: var(--workspace-text-ui);
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__date { white-space: nowrap; }
+.workspace-note-card__sub-cases { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .workspace-page .workspace-note-card--refined {
+    min-height: 0;
+    padding-inline: 16px;
+  }
+
+  .workspace-page .workspace-note-card--refined.workspace-note-card--compact { min-height: 0; }
+  .workspace-page .workspace-note-card--refined .workspace-note-card__bottom { margin-inline: -16px; padding-inline: 16px; }
+  .workspace-page .workspace-note-card--refined .workspace-note-card__project { max-width: 40%; }
+  .workspace-page .workspace-note-card--refined .workspace-note-card__footer-meta { gap: 5px; font-size: var(--workspace-text-caption); }
+}
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__footer-meta { flex-wrap: wrap; font-size: var(--workspace-text-caption); }
+
+
+/* The height follows the document; short cards are not stretched by their neighbors. */
+.workspace-page .workspace-note-grid { align-items: start; }
+.workspace-page .workspace-note-card--refined .workspace-note-card__document {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 16px;
+}
+.workspace-page .workspace-note-card--refined .workspace-note-card__document .workspace-note-card__preview {
+  margin: 0;
+}
+.workspace-page .workspace-note-card--refined .workspace-note-card__document .workspace-note-card__report {
+  margin: 0;
+  padding-top: 12px;
+}
+.workspace-page .workspace-note-card--refined .workspace-note-card__empty {
+  color: var(--workspace-text-muted);
+  font-size: var(--workspace-text-ui);
+  line-height: 1.55;
+}
+.workspace-page .workspace-note-card--refined .workspace-note-card__top { margin-bottom: 16px; }
+.workspace-page .workspace-note-card--refined .workspace-note-card__title { overflow-wrap: anywhere; }
+.workspace-page .workspace-note-card--refined .workspace-note-card__project {
+  flex: 1 1 100px;
+  max-width: 100%;
+}
+.workspace-page .workspace-note-card--refined .workspace-note-card__footer-meta { margin-left: auto; }
+
+.workspace-page .workspace-note-card--refined .workspace-note-card__thumbnail {
+  margin: 0 0 16px;
+  padding: 8px;
+  border: 1px solid var(--workspace-line);
+  border-radius: var(--workspace-radius-control);
+  background: var(--workspace-canvas);
+  overflow: hidden;
+}
+.workspace-note-card__thumbnail img {
+  display: block;
+  width: 100%;
+  height: 144px;
+  object-fit: contain;
+}
+.workspace-note-card__image-unavailable {
+  margin-bottom: 16px;
+  color: var(--workspace-text-muted);
+  font-size: var(--workspace-text-caption);
+  overflow-wrap: anywhere;
+}
+
+/* Bounded previews: fade on the last visible line rather than a cut in the middle of a glyph.
+   The bounds are absolute: a preview shorter than the area is not faded. */
+.workspace-page .workspace-note-card--refined .workspace-note-card__preview {
+  -webkit-mask-image: linear-gradient(to bottom, #000 4.6em, transparent 6.2em);
+  mask-image: linear-gradient(to bottom, #000 4.6em, transparent 6.2em);
+}
+.workspace-page .workspace-note-card--refined .workspace-note-card__report-content {
+  -webkit-mask-image: linear-gradient(to bottom, #000 1.6em, transparent 3.1em);
+  mask-image: linear-gradient(to bottom, #000 1.6em, transparent 3.1em);
+}
+.workspace-page .workspace-note-card__location { margin: 0 0 6px; min-width: 0; }

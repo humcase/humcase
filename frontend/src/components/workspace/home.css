@@ -1,0 +1,75 @@
+/* Resume home: the day, the brief, then resume and browse. One column (projects are in the sidebar). */
+
+.workspace-home-activities { overflow-x: auto; overflow-y: hidden; margin-bottom: 28px; }
+.workspace-home-activities .ui-segmented { width: 100%; }
+
+.workspace-home .workspace-home__layout { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+/* What follows the cases (the activities invitation) keeps its distance. */
+.workspace-home .workspace-home__layout ~ * { margin-top: 40px; }
+.workspace-home .workspace-home__main { display: grid; gap: 40px; align-content: start; }
+.workspace-home .workspace-home__recent { margin-top: 0; }
+.workspace-home .workspace-section__heading { margin-bottom: 14px; align-items: center; }
+.workspace-home .workspace-section__heading h2 { font-size: .9375rem; font-weight: 600; letter-spacing: -.01em; color: var(--workspace-ink); }
+.workspace-section__hint { margin: 4px 0 0; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); line-height: 1.45; }
+.workspace-home .workspace-note-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.workspace-app .workspace-home__quiet { align-items: flex-start; padding: 12px 0; text-align: left; }
+
+/* Level 1 — resume: the last note on the left, what remains to pursue on the right. */
+/* Surface: kit Card. Here, only the grid. */
+.workspace-home-band { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr); overflow: hidden; }
+.workspace-resume { display: flex; flex-direction: column; min-width: 0; padding: 24px 28px; }
+.workspace-resume__eyebrow { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 8px; color: var(--workspace-text-muted); }
+.workspace-resume__eyebrow > span:nth-child(2) { color: var(--workspace-text-secondary); font-weight: 550; }
+.workspace-resume__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--workspace-text-muted); }
+.workspace-resume h2 { margin: 10px 0 8px; font-size: clamp(19px, 1.2vw, 22px); font-weight: 600; letter-spacing: -.02em; line-height: 1.3; }
+.workspace-resume h2 button { border: 0; padding: 0; background: none; color: inherit; text-align: left; overflow-wrap: anywhere; cursor: pointer; }
+.workspace-resume h2 button:hover { text-decoration: underline; text-decoration-color: var(--workspace-card-hover-border); text-underline-offset: 4px; }
+.workspace-resume > p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; max-width: 72ch; margin: 0; color: var(--workspace-text-secondary); font-size: .9375rem; line-height: 1.6; overflow-wrap: anywhere; }
+.workspace-resume__footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: auto; padding-top: 20px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-resume__meta { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+.workspace-home .workspace-followup { min-width: 0; padding: 22px 24px; border: 0; border-left: 1px solid var(--workspace-line); border-radius: 0; background: color-mix(in srgb, var(--workspace-muted-surface) 40%, var(--workspace-surface)); }
+.workspace-home .workspace-followup .workspace-section__heading { margin-bottom: 6px; }
+
+@media (min-width: 2240px) {
+  .workspace-home .workspace-note-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 1150px) {
+  .workspace-home .workspace-note-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .workspace-home-band { grid-template-columns: minmax(0, 1fr); }
+  .workspace-home .workspace-followup { border-left: 0; border-top: 1px solid var(--workspace-line); }
+}
+@media (max-width: 760px) {
+  .workspace-home .workspace-note-grid { grid-template-columns: minmax(0, 1fr); }
+  .workspace-resume { padding: 20px; }
+  .workspace-home .workspace-followup { padding: 16px 20px; }
+  .workspace-home .workspace-section__heading { flex-wrap: wrap; gap: 10px; }
+}
+.workspace-home__capture { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-home__capture .ui-kbd-group { margin-left: 0; }
+
+/* First steps (WelcomeGuide): two steps and quick capture, how work with an agent goes, the example. */
+.workspace-welcome { display: flex; flex-direction: column; gap: 28px; margin-bottom: 40px; }
+.workspace-welcome__steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1000px) { .workspace-welcome__steps { grid-template-columns: minmax(0, 1fr); } }
+.workspace-welcome__step { display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 10px; padding: 22px; }
+.workspace-welcome__kicker { display: flex; align-items: center; gap: 10px; color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); letter-spacing: .12em; text-transform: uppercase; }
+.workspace-welcome__badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border: 1px solid var(--workspace-card-hover-border); border-radius: 50%; background: var(--workspace-muted-surface); color: var(--workspace-ink); letter-spacing: 0; }
+.workspace-welcome__step[data-done] .workspace-welcome__badge { border-color: var(--workspace-success); background: var(--workspace-success); color: var(--workspace-surface); }
+.workspace-welcome__step h2 { margin: 0; color: var(--workspace-ink); font-size: var(--workspace-text-section); font-weight: 600; letter-spacing: -.01em; line-height: 1.25; text-wrap: balance; }
+.workspace-welcome__step p { flex: 1; margin: 0 0 6px; color: var(--workspace-text-secondary); font-size: .9375rem; line-height: 1.55; }
+.workspace-welcome__done { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; color: var(--workspace-success); font-size: var(--workspace-text-ui); font-weight: 600; }
+.workspace-welcome__keys { margin-left: 0; min-height: 36px; align-items: center; }
+.workspace-welcome__keys .ui-kbd { height: 26px; min-width: 30px; padding: 0 8px; }
+.workspace-welcome__progress { margin: -14px 0 0; color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); }
+.workspace-welcome__how { display: flex; flex-direction: column; gap: 16px; padding-top: 24px; border-top: 1px solid var(--workspace-line); }
+.workspace-welcome__how h2 { margin: 0; color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: var(--workspace-text-caption); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+.workspace-welcome__how-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+@media (max-width: 800px) { .workspace-welcome__how-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; } }
+.workspace-welcome__how-grid > div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.workspace-welcome__how-grid strong { color: var(--workspace-ink); font-size: .9375rem; font-weight: 600; }
+.workspace-welcome__how-grid span { color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); line-height: 1.5; }
+.workspace-welcome__example { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; color: var(--workspace-success); font-size: var(--workspace-text-ui); }
+.workspace-welcome__error { flex-basis: 100%; margin: 0; color: var(--workspace-danger); font-size: var(--workspace-text-caption); }

@@ -1,0 +1,20 @@
+[package]
+name = "embed-bench"
+version = "0.0.0"
+edition = "2021"
+publish = false
+license = "AGPL-3.0-only"
+description = "Bench of local embedding models for Humcase's search by meaning (not shipped)."
+
+# Standalone: not part of the application's build.
+[workspace]
+
+[dependencies]
+ort = { version = "=2.0.0-rc.13", default-features = false, features = ["std", "download-binaries", "tls-native"] }
+tokenizers = { version = "0.23.2", default-features = false, features = ["fancy-regex"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.60", features = ["Win32_Foundation", "Win32_System_ProcessStatus", "Win32_System_Threading"] }

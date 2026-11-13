@@ -1,0 +1,100 @@
+[
+  {
+    "id": "fr-offer",
+    "title": "Offre en ligne de Humcase",
+    "text": "Je voudrais proposer Humcase en ligne, en plus de l'application de bureau, pour les personnes qui travaillent sur plusieurs ordinateurs.\n\nIl faut choisir l'hébergement : Supabase ou Cloudflare, je n'ai pas encore tranché. Comparer les prix des deux pour 1 000 personnes actives par mois.\n\nLa synchronisation doit marcher hors ligne, sinon l'application de bureau perd son intérêt. Est-ce que les gens paieraient 8 € par mois pour ça ?\n\nCommencer par une page d'attente pour mesurer l'intérêt avant de coder quoi que ce soit. Les questions des premiers inscrits diront ce qu'il faut expliquer.",
+    "existing": [
+      {
+        "title": "Comparer les prix de Supabase et Cloudflare",
+        "text": "Tarifs pour une application avec synchronisation.",
+        "covers": true
+      },
+      {
+        "title": "Choisir une page d'accueil pour le site",
+        "text": "Couleurs et textes de la page d'accueil.",
+        "covers": false
+      }
+    ]
+  },
+  {
+    "id": "fr-dictation",
+    "title": "Fête des 40 ans de Claire",
+    "text": "Alors euh pour l'anniversaire de Claire, je pensais faire ça le samedi 14 ou le 21, faut que je demande à son frère lequel l'arrange. Il faudrait réserver une salle, peut-être celle de la mairie, ou alors chez nous si on est moins de trente. Je sais pas si on fait un traiteur ou si chacun apporte un plat, le traiteur c'est cher mais c'est moins de boulot. Et faut envoyer les invitations au moins trois semaines avant, donc fin du mois au plus tard. Ah et trouver un cadeau commun, genre le voyage à Lisbonne dont elle parle tout le temps."
+  },
+  {
+    "id": "fr-reference",
+    "title": "Recette de la pâte à crêpes",
+    "text": "250 g de farine, 4 œufs, un demi-litre de lait, une pincée de sel et 50 g de beurre fondu. Mélanger la farine et les œufs, ajouter le lait petit à petit, puis le beurre. Laisser reposer une heure."
+  },
+  {
+    "id": "en-app",
+    "title": "Habit tracker app",
+    "text": "I want to build a small habit tracker for my phone. Should it be native or a web app? I lean toward React Native because I already know React, but I haven't checked how widgets work there.\n\nUsers should see a streak for each habit. Look at how Streaks and Loop do their reminders. I need to decide whether data stays on the phone or syncs to a server; syncing means accounts, which I'd rather avoid at first.\n\nFirst step: sketch the three main screens on paper this weekend.",
+    "existing": [
+      {
+        "title": "How Streaks and Loop do reminders",
+        "text": "Notes on reminder settings in both apps.",
+        "covers": true
+      },
+      {
+        "title": "Streaks for the reading club",
+        "text": "Count the weeks each member read a book.",
+        "covers": false
+      }
+    ]
+  },
+  {
+    "id": "en-marketing",
+    "title": "Spring newsletter",
+    "text": "The spring newsletter goes out on April 2. We have to pick the three products to feature; Maria suggested the linen range. Open rates dropped to 18% last quarter, maybe the subject lines are too long? Someone should check what our competitors send in spring. Write the draft by March 20 so legal can review it."
+  },
+  {
+    "id": "es-renovation",
+    "title": "Reforma de la cocina",
+    "text": "Queremos reformar la cocina antes del verano. Hay que pedir al menos tres presupuestos a fontaneros y electricistas. No sé si cambiar también el suelo o solo los muebles. ¿Necesitamos un permiso del ayuntamiento para mover el fregadero? Mirar en internet cuánto cuesta una encimera de cuarzo frente a una de madera.",
+    "existing": [
+      {
+        "title": "Pedir presupuestos para pintar el salón",
+        "text": "Dos pintores del barrio.",
+        "covers": false
+      }
+    ]
+  },
+  {
+    "id": "de-team",
+    "title": "Onboarding neuer Kolleginnen",
+    "text": "Unser Onboarding dauert zu lange, neue Leute brauchen drei Wochen bis zum ersten Beitrag. Wir sollten eine Checkliste für den ersten Tag schreiben. Soll jede neue Person eine Patin bekommen? Ich möchte herausfinden, wie andere Teams das lösen, zum Beispiel bei GitLab. Bis Ende Mai müssen wir entscheiden, ob wir das Laptop-Setup automatisieren."
+  },
+  {
+    "id": "it-trip",
+    "title": "Viaggio in Giappone",
+    "text": "Ad ottobre vorremmo andare in Giappone per due settimane. Dobbiamo rinnovare il passaporto di Luca, scade a novembre. Tokyo e Kyoto sicuramente, forse anche Hokkaido ma non so se vale la pena in autunno. Conviene il Japan Rail Pass o costa troppo adesso? Prenotare i voli entro fine marzo."
+  },
+  {
+    "id": "pt-shop",
+    "title": "Loja online de cerâmica",
+    "text": "Quero abrir uma loja online para vender as minhas peças de cerâmica. Preciso escolher entre Shopify e Nuvemshop. Como calcular o frete para peças frágeis? Tirar fotos boas das peças com luz natural. Será que vale a pena vender também no Instagram?",
+    "existing": [
+      {
+        "title": "Comparar Shopify e Nuvemshop",
+        "text": "Taxas e temas das duas plataformas.",
+        "covers": true
+      }
+    ]
+  },
+  {
+    "id": "en-bug",
+    "title": "Export loses images",
+    "text": "When I export a case to Markdown, the images are missing in the file. It happens since version 0.9.90. Expected: the images are copied next to the .md file. Steps: open a case with an image, click Export, open the folder."
+  },
+  {
+    "id": "fr-structured",
+    "title": "Refonte du site de l'association",
+    "text": "### Contexte\nLe site actuel date de 2015 et ne s'affiche pas bien sur téléphone.\n\n### Pistes\n- Passer sur un modèle WordPress récent, ou un site statique avec Astro.\n- Demander à Julie si elle peut faire les illustrations.\n\n### Questions\n- Qui mettra à jour les actualités après la refonte ?\n- Quel budget le bureau peut-il voter en juin ?"
+  },
+  {
+    "id": "de-short",
+    "title": "Zahnarzt",
+    "text": "Termin beim Zahnarzt vereinbaren."
+  }
+]

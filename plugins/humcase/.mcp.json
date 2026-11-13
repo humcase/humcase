@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "humcase": {
+      "type": "stdio",
+      "command": "${user_config.exe_path}",
+      "args": ["mcp"]
+    }
+  }
+}

@@ -1,0 +1,3 @@
+# Formatting-only changes, ignored by git blame (git config blame.ignoreRevsFile .git-blame-ignore-revs).
+# chore: license, community files and CI (#40), which carries the cargo fmt pass over the whole crate
+4df4a949d03dc081d94043e04f86789ed4e1e653

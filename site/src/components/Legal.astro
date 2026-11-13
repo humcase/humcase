@@ -1,0 +1,158 @@
+---
+// The legal pages of humcase.com: one page per document and per language (English, French),
+// with the list of documents beside it, as on the legal pages of known software sites.
+// Other languages of the site link to the English pages.
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/dm-mono/400.css';
+import '@fontsource/dm-mono/500.css';
+
+type Lang = 'en' | 'fr';
+type Doc = 'index' | 'notice' | 'privacy' | 'terms' | 'license';
+interface Props { lang: Lang; doc: Doc; title: string; description: string; updated?: string }
+const { lang, doc, title, description, updated } = Astro.props;
+
+const LEGAL_DOCS: Exclude<Doc, 'index'>[] = ['notice', 'privacy', 'terms', 'license'];
+const NAMES: Record<Lang, Record<Doc, string>> = {
+  en: { index: 'Legal', notice: 'Legal notice', privacy: 'Privacy policy', terms: 'Terms of use', license: 'Open source license' },
+  fr: { index: 'Informations légales', notice: 'Mentions légales', privacy: 'Politique de confidentialité', terms: 'Conditions d’utilisation', license: 'Licence open source' },
+};
+const UI = {
+  en: { updated: 'Last updated', home: 'Home', documents: 'Legal documents', back: 'Back to humcase.com', other: 'Français', otherLang: 'fr' },
+  fr: { updated: 'Dernière mise à jour', home: 'Accueil', documents: 'Documents juridiques', back: 'Retour à humcase.com', other: 'English', otherLang: 'en' },
+}[lang];
+const base = (l: Lang) => (l === 'en' ? '/legal/' : '/fr/legal/');
+const href = (l: Lang, d: Doc) => (d === 'index' ? base(l) : `${base(l)}${d}/`);
+const home = lang === 'en' ? '/' : '/fr/';
+const other: Lang = lang === 'en' ? 'fr' : 'en';
+const names = NAMES[lang];
+/** The hub's entry in the list of documents. */
+const overview = lang === 'en' ? 'Overview' : 'Vue d’ensemble';
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title} · Humcase</title>
+<meta name="description" content={description}>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="canonical" href={`https://humcase.com${href(lang, doc)}`}>
+<link rel="alternate" hreflang="en" href={`https://humcase.com${href('en', doc)}`}>
+<link rel="alternate" hreflang="fr" href={`https://humcase.com${href('fr', doc)}`}>
+<style is:global>
+  :root {
+    color-scheme: dark;
+    --bg: #000; --ink: #f3efe8; --ink-2: rgba(243, 239, 232, .76); --ink-3: rgba(243, 239, 232, .56);
+    --line: rgba(243, 239, 232, .12); --panel: rgba(243, 239, 232, .04); --copper: #e78a53; --copper-ink: #f0a578;
+    --sans: "Inter", "Segoe UI", system-ui, sans-serif; --serif: "Instrument Serif", Georgia, serif;
+    --mono: "DM Mono", "Cascadia Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: 24px; }
+  body { margin: 0; background: var(--bg); color: var(--ink-2); font: 400 16px/1.7 var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: var(--copper-ink); text-underline-offset: 3px; }
+  a:hover { color: var(--ink); }
+  .top { max-width: 1120px; margin: 0 auto; padding: 28px 24px 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+  .brand img { width: 30px; height: 30px; }
+  .brand__name { font: 500 14px/1 var(--mono); letter-spacing: .16em; }
+  .brand__name b { font-weight: 500; color: var(--copper); }
+  .top nav { display: flex; align-items: center; gap: 20px; font: 400 13px/1 var(--mono); }
+  .top nav a { color: var(--ink-3); text-decoration: none; }
+  .top nav a:hover { color: var(--ink); }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 64px 24px 120px; display: grid; grid-template-columns: 240px minmax(0, 720px); gap: 72px; }
+  .side { position: sticky; top: 32px; align-self: start; }
+  .side p { margin: 0 0 14px; color: var(--ink-3); font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+  .side ul { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--line); }
+  .side a { display: block; margin-left: -1px; padding: 7px 0 7px 16px; border-left: 1px solid transparent; color: var(--ink-2); font-size: 14px; line-height: 1.45; text-decoration: none; }
+  .side a:hover { color: var(--ink); }
+  .side a[aria-current="page"] { border-left-color: var(--copper); color: var(--ink); font-weight: 500; }
+  .crumbs { margin: 0 0 18px; color: var(--ink-3); font: 400 13px/1.4 var(--mono); }
+  .crumbs a { color: var(--ink-3); text-decoration: none; }
+  .crumbs a:hover { color: var(--ink); }
+  h1 { margin: 0; color: var(--ink); font: 400 clamp(40px, 6vw, 56px)/1.08 var(--serif); }
+  .updated { margin: 16px 0 40px; color: var(--ink-3); font: 400 13px/1.4 var(--mono); }
+  article { counter-reset: part; }
+  article > p, article > .summary { margin: 0 0 16px; }
+  article section { counter-increment: part; padding: 28px 0 4px; border-top: 1px solid var(--line); margin-top: 28px; }
+  article h2 { margin: 0 0 12px; color: var(--ink); font: 600 18px/1.45 var(--sans); }
+  article section h2::before { content: counter(part) ". "; color: var(--copper); font-family: var(--mono); font-weight: 500; }
+  article h3 { margin: 20px 0 8px; color: var(--ink); font: 600 15px/1.5 var(--sans); }
+  article p, article li { margin: 0 0 12px; }
+  article ul { margin: 0 0 12px; padding-left: 20px; }
+  article li::marker { color: var(--copper); }
+  .summary { padding: 22px 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+  .summary h2 { margin-bottom: 10px; font-size: 16px; }
+  .summary ul { margin: 0; }
+  .summary li:last-child { margin-bottom: 0; }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 24px; margin: 4px 0 16px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 12px; }
+  dt { color: var(--ink-3); font: 400 13px/1.7 var(--mono); }
+  dd { margin: 0; color: var(--ink); }
+  .docs { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 12px; }
+  .docs li { margin: 0; }
+  .docs a { display: block; padding: 20px 22px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink-2); text-decoration: none; transition: border-color .15s, background .15s; }
+  .docs a:hover { border-color: rgba(231, 138, 83, .5); background: var(--panel); }
+  .docs strong { display: block; margin-bottom: 4px; color: var(--ink); font-weight: 600; }
+  .docs span { font-size: 15px; }
+  footer { max-width: 1120px; margin: 0 auto; padding: 28px 24px 48px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 24px; color: var(--ink-3); font: 400 13px/1.5 var(--mono); }
+  footer b { color: var(--copper); font-weight: 500; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; }
+  footer a { color: var(--ink-3); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; gap: 0; padding-top: 40px; }
+    .side { position: static; margin-bottom: 40px; }
+    .side ul { display: flex; flex-wrap: wrap; gap: 8px; border: 0; }
+    .side a { margin: 0; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13px; }
+    .side a[aria-current="page"] { border-color: var(--copper); }
+  }
+  @media (max-width: 560px) {
+    .top { padding: 20px 16px 0; }
+    .top nav .back { display: none; }
+    .wrap { padding: 32px 16px 80px; }
+    dl { grid-template-columns: 1fr; gap: 0; }
+    dd { margin-bottom: 10px; }
+    footer { padding: 24px 16px 40px; }
+  }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href={home} aria-label="Humcase">
+    <img src="/favicon.svg" alt="" width="30" height="30">
+    <span class="brand__name"><b>HUM</b>CASE</span>
+  </a>
+  <nav>
+    <a href={href(other, doc)} hreflang={other} lang={other}>{UI.other}</a>
+    <a class="back" href={home}>{UI.back}</a>
+  </nav>
+</header>
+
+<div class="wrap">
+  <aside class="side">
+    <p>{UI.documents}</p>
+    <ul>
+      {(['index', ...LEGAL_DOCS] as Doc[]).map(d => (
+        <li><a href={href(lang, d)} aria-current={d === doc ? 'page' : undefined}>{d === 'index' ? overview : names[d]}</a></li>
+      ))}
+    </ul>
+  </aside>
+  <main>
+    <p class="crumbs"><a href={home}>{UI.home}</a> / {doc === 'index' ? names.index : <><a href={base(lang)}>{names.index}</a> / {names[doc]}</>}</p>
+    <h1>{title}</h1>
+    {updated ? <p class="updated">{UI.updated}{lang === "fr" ? " : " : ": "}{updated}</p> : <div style="height:32px"></div>}
+    <article><slot /></article>
+  </main>
+</div>
+
+<footer>
+  <span><b>HUM</b>CASE · © 2026</span>
+  <nav>{LEGAL_DOCS.map(d => <a href={href(lang, d)}>{names[d]}</a>)}<a href="mailto:contact@humcase.com">contact@humcase.com</a></nav>
+</footer>
+</body>
+</html>

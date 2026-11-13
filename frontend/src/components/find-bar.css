@@ -1,0 +1,41 @@
+/* "Find in note" (0.9.83): bar stuck to the top of the scrolling area, to keep the
+   counter visible while stepping through the occurrences. */
+.find-bar {
+  position: sticky;
+  top: 8px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  margin: -12px 0 20px;
+  padding: 5px 6px;
+  border: 1px solid var(--workspace-line);
+  border-radius: 10px;
+  background: var(--workspace-surface);
+  box-shadow: 0 6px 18px #0000001f;
+  cursor: default;
+}
+.workspace-app .find-bar__field { width: 260px; max-width: 52vw; min-height: 34px; }
+.workspace-app .find-bar__field input { min-height: 32px; }
+.find-bar__count {
+  min-width: 92px;
+  padding-inline: 6px;
+  color: var(--workspace-text-muted);
+  font-size: var(--workspace-text-caption, 12px);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.workspace-mini .find-bar { margin: -8px 0 12px; }
+
+/* Occurrences: discreet background; the current one is solid and ringed to stay readable in both themes. */
+.tiptap-wrapper .find-match {
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--workspace-action) 22%, transparent);
+  color: inherit;
+}
+.tiptap-wrapper .find-match--current {
+  background: color-mix(in srgb, var(--workspace-action) 48%, transparent);
+  box-shadow: 0 0 0 1px var(--workspace-action);
+}

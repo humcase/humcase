@@ -1,0 +1,40 @@
+# Dependency updates, grouped so that each ecosystem opens at most one pull request a month:
+# the CI runs on a slow Windows runner, and every PR is reviewed before merge.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    groups:
+      frontend:
+        patterns: ["*"]
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 1
+    groups:
+      tooling:
+        patterns: ["*"]
+  - package-ecosystem: cargo
+    directory: /src-tauri
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 2
+    ignore:
+      # Pinned on purpose: zip 8 silently drops a duplicate entry when reading an archive, which
+      # hides it from the restore guard (test `duplicate_entry_is_rejected`). Upgrade by hand.
+      - dependency-name: zip
+    groups:
+      rust:
+        patterns: ["*"]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 1
+    groups:
+      actions:
+        patterns: ["*"]

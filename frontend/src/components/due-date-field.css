@@ -1,0 +1,13 @@
+
+.due-date-field { display: flex; min-width: 0; align-items: center; gap: 2px; }
+.workspace-app .note-editor-due .due-date-field input { flex: 1; min-width: 0; width: 100%; padding-right: 4px; }
+.due-calendar-popover { z-index: 85; width: fit-content; max-width: calc(100vw - 24px); padding: 16px; border: 1px solid var(--workspace-line); border-radius: 10px; background: var(--workspace-surface); color: var(--workspace-ink); box-shadow: var(--workspace-shadow-dialog); }
+.due-calendar-popover .rdp-root { --rdp-accent-color: var(--workspace-action); --rdp-accent-background-color: var(--workspace-accent-soft); --rdp-day-height: 38px; --rdp-day-width: 38px; --rdp-day_button-height: 34px; --rdp-day_button-width: 34px; --rdp-day_button-border-radius: 6px; font-size: 14px; }
+.due-calendar-popover .rdp-day_button:hover { background: var(--workspace-state-hover); }
+.due-calendar-popover .rdp-selected .rdp-day_button { background: var(--workspace-action); color: var(--workspace-on-accent); }
+.due-calendar-popover .rdp-month_caption { font-size: 14px; }
+.due-calendar-select { display: inline-flex; align-items: center; gap: 5px; padding: 6px 8px; min-height: 32px; border: 1px solid var(--workspace-line); border-radius: 6px; background: var(--workspace-canvas); color: var(--workspace-ink); }
+.due-calendar-options { z-index: 90; max-height: 240px; overflow: auto; padding: 4px; border: 1px solid var(--workspace-line); border-radius: 7px; background: var(--workspace-surface); color: var(--workspace-ink); box-shadow: var(--workspace-shadow-dialog); }
+.due-calendar-option { display: flex; justify-content: space-between; gap: 14px; padding: 6px 10px; min-height: 32px; border-radius: 4px; font-size: 14px; outline: none; cursor: pointer; }
+.due-calendar-option[data-highlighted] { background: var(--workspace-state-hover); }
+.due-calendar-footer { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--workspace-line); }

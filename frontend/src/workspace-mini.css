@@ -1,0 +1,22 @@
+/* Same visual language, compact density. The window keeps its persisted dimensions. */
+.workspace-mini .note-editor { overflow-y: auto; padding-bottom: var(--workspace-space-4); }
+.workspace-mini .note-editor-header { flex-wrap: wrap; flex: none; gap: var(--workspace-space-3); padding: var(--workspace-space-4); }
+.workspace-mini .note-editor-header > div:first-child { flex-basis: 100%; }
+.workspace-mini .note-editor-header textarea.note-editor-title { min-height: var(--workspace-control-compact); width: 100%; color: var(--workspace-ink); font-size: var(--workspace-text-lead); }
+.workspace-mini .note-editor-actions { flex-wrap: wrap; gap: var(--workspace-space-2); margin-right: 0; }
+.workspace-mini .note-editor-action { display: inline-flex; align-items: center; gap: var(--workspace-space-2); }
+.workspace-mini .note-editor select { text-transform: none; letter-spacing: normal; }
+.workspace-mini .note-editor-metadata { gap: var(--workspace-space-2); }
+.workspace-mini .note-editor :is(select:not(.ui-field), .note-editor-action) { min-height: var(--workspace-control-compact); padding: 6px 9px; border: 1px solid var(--workspace-input-border); border-radius: var(--workspace-radius-control); background: var(--workspace-surface); color: var(--workspace-ink); font-size: var(--workspace-text-caption); }
+.workspace-mini .note-editor-writing { order: 1; flex: none; min-height: 0; }
+.workspace-mini .note-editor-support { order: 2; display: flex; flex-direction: column; gap: var(--workspace-space-3); padding: 0 var(--workspace-space-4); }
+.workspace-mini .note-editor-support > * { margin: 0; }
+.workspace-mini .note-editor-toolbar { flex-wrap: wrap; gap: var(--workspace-space-2); padding: var(--workspace-space-3) var(--workspace-space-4); }
+.workspace-mini .note-editor-toolbar button:not(.ui-button) { min-height: var(--workspace-control-compact); font-size: var(--workspace-text-caption); }
+.workspace-mini .note-editor-body { flex: none; min-height: 260px; height: 45vh; padding: 0 var(--workspace-space-4) var(--workspace-space-4); }
+.workspace-mini .note-editor-body .tiptap-wrapper { border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-card); background: var(--workspace-surface); overflow-y: auto; }
+.workspace-mini .note-editor-body .tiptap { padding: var(--workspace-space-4); color: var(--workspace-ink); font-size: calc(var(--editor-font-scale, 1) * var(--workspace-text-body)); }
+
+.workspace-mini .note-editor-save-state { min-height: 18px; font-size: var(--workspace-text-caption); }
+.workspace-mini .note-editor-tags { margin-top: var(--workspace-space-2); }
+.workspace-mini .note-editor-toolbar .ml-auto { margin-left: 0; flex-wrap: wrap; }

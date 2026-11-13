@@ -1,0 +1,373 @@
+{
+  "ai": {
+    "reason": {
+      "readFailed": "read failed ({{error}})",
+      "notText": "non-text content",
+      "invalidJson": "invalid JSON (line {{line}}, column {{column}})"
+    },
+    "alert": {
+      "quarantineCopy": "{{reason}}; copy kept: {{path}}",
+      "leftIntact": "{{reason}}; file left untouched",
+      "quarantinedOriginal": "{{reason}}; original kept in quarantine",
+      "notMovable": "{{reason}}; original can't be moved: manual action required",
+      "writesBlocked": "{{reason}}; writes blocked while the file is inaccessible"
+    },
+    "settings": {
+      "corruptNotQuarantined": "The AI settings are corrupted and couldn't be quarantined ({{error}}). Saving is refused so the original isn't overwritten. Close any other program using this file or check its permissions, then try again.",
+      "unreadable": "The AI settings can't be accessed right now (read failed). Saving is refused because overwriting the file could lose keys. Make sure no other program is locking it, then try again.",
+      "writeFailed": "Couldn't write the AI settings: {{error}}",
+      "replaceFailed": "Couldn't replace the AI settings: {{error}}"
+    },
+    "lock": {
+      "heldByOther": "The AI settings are held by another process (PID {{pid}}). Try again in a few seconds.",
+      "locked": "The AI settings are locked or inaccessible (file \"{{path}}\"). Try again in a few seconds.",
+      "failed": "Couldn't lock the AI settings: {{error}}"
+    },
+    "keyfile": {
+      "randomFailed": "Couldn't read random bytes to protect the AI keys: {{error}}",
+      "invalid": "The AI key file \"{{path}}\" is damaged. Delete it and enter the keys again.",
+      "unreadable": "Couldn't read or create the AI key file: {{error}}",
+      "encryptFailed": "Couldn't protect the AI key",
+      "decryptFailed": "Couldn't read the stored AI key"
+    },
+    "dpapi": {
+      "encryptDenied": "DPAPI encryption refused",
+      "decryptDenied": "DPAPI decryption refused",
+      "unavailable": "DPAPI is unavailable outside Windows"
+    },
+    "integration": {
+      "empty": "Empty integration",
+      "lostTarget": "Integration rejected: link or image lost ({{target}})",
+      "shortened": "Integration rejected: note shortened ({{before}} → {{after}} words)"
+    },
+    "frame": {
+      "unknown": "Unknown frame: {{frame}}",
+      "reflectionSections": {
+        "direction": "Direction",
+        "decisions": "Decisions",
+        "rejected": "Rejected",
+        "evolution": "How the ideas evolved",
+        "ideas": "Ideas",
+        "questions": "Open questions",
+        "explore": "To explore",
+        "actions": "Next actions"
+      }
+    },
+    "http": {
+      "clientUnavailable": "HTTP client unavailable ({{error}})",
+      "requestFailed": "{{provider}}: request failed ({{error}})",
+      "unreachable": "Cannot reach {{url}}. Check that the server is running and that the address is right.",
+      "status": "{{provider}} HTTP {{status}}",
+      "unreadable": "Unreadable {{provider}} response ({{error}})"
+    },
+    "dictation": {
+      "empty": "Empty dictation"
+    },
+    "note": {
+      "empty": "The note is empty"
+    },
+    "provider": {
+      "unknown": "Unknown provider: {{provider}}",
+      "unknownCleaning": "Unknown cleanup provider: {{id}}",
+      "unknownTranscription": "Unknown transcription provider: {{id}}",
+      "missingUrl": "Missing URL for provider \"{{provider}}\" ({{source}}).",
+      "missingKey": "{{name}} is missing",
+      "missingModel": "Missing model for provider \"{{provider}}\".",
+      "emptyResponse": "Empty or unexpected provider response",
+      "custom": "Custom (OpenAI-compatible)",
+      "noUrl": "no URL",
+      "invalidUrl": "Invalid address: {{url}}. Enter an address starting with http:// or https://, e.g. http://localhost:11434.",
+      "urlNotEditable": "The address of provider \"{{provider}}\" cannot be changed."
+    },
+    "transcription": {
+      "inProgress": "A transcription is already in progress.",
+      "badRequest": "Deepgram: invalid request ({{error}})",
+      "badAuthHeader": "Deepgram: invalid authentication header",
+      "connectFailed": "Deepgram: connection failed ({{error}})",
+      "connectTimeout": "Deepgram: connection timed out (10 s)",
+      "notRunning": "No transcription in progress",
+      "interrupted": "Transcription interrupted"
+    },
+    "gate": {
+      "restoring": "A restore is already in progress: writing is suspended"
+    },
+    "structure": {
+      "empty": "Empty structuring",
+      "lostTarget": "Structuring rejected: link or image lost ({{target}})",
+      "shortened": "Structuring rejected: case shortened ({{before}} → {{after}} words)"
+    }
+  },
+  "notes": {
+    "notFound": "Note not found: {{id}}",
+    "noFieldToUpdate": "No field to update.",
+    "titleEmpty": "title must not be empty",
+    "resolutionChanged": "resolution_comment has changed (concurrent update), refused"
+  },
+  "projects": {
+    "duplicateName": "another project already has this name",
+    "notFound": "project not found: {{id}}",
+    "inboxLocked": "the inbox cannot be renamed, recoloured, archived or deleted",
+    "nameEmpty": "project name cannot be empty",
+    "nameTooLong": "project name is too long (120 characters max)",
+    "invalidColor": "invalid project color: {{color}} (expected #rrggbb)",
+    "needsSpaceToDelete": "assign the project to a space before deleting it"
+  },
+  "tray": {
+    "show": "Show Humcase",
+    "quickCapture": "Quick capture (Alt+Shift+N)",
+    "quit": "Quit"
+  },
+  "backup": {
+    "activityLinksInvalid": "Invalid activity links",
+    "activityLinksInvalidWithError": "Invalid activity links: {{error}}",
+    "activitySpacesInvalid": "Invalid activity spaces",
+    "activitySpacesInvalidWithError": "Invalid activity spaces: {{error}}",
+    "alreadyExists": "{{path}} already exists",
+    "alreadyExistsChooseName": "{{path}} already exists: choose another name",
+    "archiveMigrationFailed": "Cannot migrate the archive: {{error}}",
+    "archiveMigrationIncomplete": "Archive migration incomplete: version {{version}}, expected {{expected}}",
+    "archiveTooLarge": "Archive too large",
+    "archiveUnreadable": "Cannot access archive: {{error}}",
+    "blockedAfterRestore": "Writes are frozen after a restore: the state of your data may have changed.",
+    "commitAmbiguous": "Failure while publishing: the state of your data is uncertain ({{error}}).",
+    "dataFolderNotFound": "Data folder not found",
+    "databaseTooLarge": "SQLite database too large",
+    "decompressedTooLarge": "Decompressed archive too large",
+    "entryCountInvalid": "Invalid number of entries",
+    "entryTooLarge": "Entry too large",
+    "explorerOpenFailed": "Cannot open File Explorer: {{error}}",
+    "foreignKeysInvalid": "Invalid foreign keys",
+    "foreignKeysInvalidWithError": "Invalid foreign keys: {{error}}",
+    "hashInvalid": "Invalid checksum: {{name}}",
+    "imageInvalid": "Invalid image: {{name}}: {{reason}}",
+    "imageInvalidName": "invalid name",
+    "imageMissingFromFolder": "Internal image missing from the folder: {{name}}",
+    "imageMissingOrInvalid": "Internal image missing or invalid: {{name}}",
+    "imageOutsideFolder": "Internal image outside the current folder",
+    "imageTooLarge": "file too large ({{size}} bytes > {{max}})",
+    "imageUnreadable": "cannot read: {{error}}",
+    "imageUnsupportedEntry": "unsupported entry (folder or other)",
+    "imageUrlNotPortable": "Internal image URL is not portable",
+    "inboxesInvalid": "Invalid Inboxes",
+    "inboxesInvalidWithError": "Invalid Inboxes: {{error}}",
+    "inboxesMultiple": "Several Inboxes in the same space",
+    "invalidDatabase": "Invalid SQLite database: {{error}}",
+    "invalidDestination": "Invalid destination",
+    "lockPoisoned": "The session lock was poisoned by an earlier panic ({{error}})",
+    "lockStateInvalid": "Internal session lock state is invalid: {{error}}. No data was replaced.",
+    "lockUnavailable": "Close the other Humcase sessions (MCP, CLI or another window) before restoring: {{error}}",
+    "manifestEntryInvalid": "Invalid or duplicate manifest entry",
+    "manifestInvalid": "Invalid manifest: {{error}}",
+    "manifestOrDatabaseMissing": "Manifest or SQLite database missing",
+    "manifestTooLarge": "Manifest too large",
+    "manifestZipMismatch": "Manifest and ZIP do not match",
+    "noCandidateLocation": "no candidate location",
+    "noWritableFolder": "No accessible folder for the backup ({{error}})",
+    "noteLinksCycle": "Invalid cycle in note-task links",
+    "noteLinksInvalid": "Invalid note-task links",
+    "noteLinksInvalidWithError": "Invalid note-task links: {{error}}",
+    "noteLinksUnreadable": "Unreadable note-task links: {{error}}",
+    "notesTableInvalid": "Invalid notes table: {{error}}",
+    "projectSpacesInvalid": "Invalid project spaces",
+    "projectSpacesInvalidWithError": "Invalid project spaces: {{error}}",
+    "projectsTableInvalid": "Invalid projects table: {{error}}",
+    "quitAndRestart": "Quit Humcase from the notification area icon (Quit), then relaunch the app.",
+    "restoreAppliedLockFailed": "Restore applied — the restore was published, but the session lock could not be reacquired ({{error}}).",
+    "restoreFailed": "Restore failed: {{error}}",
+    "restoreInProgress": "A restore is already in progress",
+    "restoreNotAppliedLockFailed": "Restore not applied — your data is unchanged, but the session lock could not be reacquired ({{error}}).",
+    "restoreUncertainLockFailed": "Restore in an uncertain state — the failure happened while publishing: your data may have been replaced, and the session lock could not be reacquired ({{error}}).",
+    "safetyArchiveKept": "{{error}}. Safety archive kept: {{path}}",
+    "schemaIncompatible": "Incompatible SQLite schema: version {{version}}, expected {{expected}}",
+    "sizeExceeded": "Size exceeded",
+    "sizeInvalid": "Invalid size: {{name}}",
+    "tooManyImages": "Too many images",
+    "versionIncompatible": "Incompatible archive or database version",
+    "versionMismatch": "Database version does not match the manifest",
+    "zipEntryTooLarge": "ZIP entry too large: {{name}}",
+    "zipInvalid": "Invalid ZIP: {{error}}",
+    "zipPathInvalid": "Invalid or duplicate ZIP path: {{name}}",
+    "archiveChanged": "The archive has changed since the preview",
+    "countsInvalid": "Invalid counts after import",
+    "dictationFragmentsInvalid": "Inconsistent raw dictation (note {{id}}): its fragments do not match the raw text",
+    "dictationFragmentsUnreadable": "Unreadable dictation fragments: {{error}}",
+    "ftsInvalid": "Invalid search index after import: {{error}}",
+    "commitFailed": "Failed while publishing the restore (COMMIT): {{error}}",
+    "subCasesInvalidWithError": "Invalid sub-cases in the archive: {{error}}",
+    "subCasesInvalid": "The archive contains a sub-case whose parent case is missing or in another project, or an unknown content kind.",
+    "subCasesCycle": "The archive contains a case placed inside one of its own sub-cases.",
+    "imageFormatUnknown": "Invalid image: unrecognized format (PNG or JPEG expected)",
+    "fingerprintInvalid": "Invalid fingerprint: {{path}}",
+    "imageMissing": "Image missing from the archive: {{name}}"
+  },
+  "handoff": {
+    "title": "# Handoff: {{project}}",
+    "summary": "_Generated from Humcase on {{date}}: {{total}} total, {{toResume}} to pick up, {{resolved}} done, {{overdue}} overdue._",
+    "toResumeHeading": "To pick up",
+    "noneOpen": "No open or in-progress notes.",
+    "decisionsHeading": "Latest decisions (do not redo)",
+    "noneResolved": "No done notes.",
+    "resolvedNoComment": "done (no comment)",
+    "contextHeading": "Context",
+    "lastBranch": "Last git branch seen in the notes: `{{branch}}`",
+    "dueEntry": "due {{date}} ({{when}})",
+    "unknownProject": "Unknown project",
+    "allProjects": "All projects",
+    "status": {
+      "open": "to do",
+      "inProgress": "in progress",
+      "resolved": "done"
+    },
+    "type": {
+      "bug": "issue",
+      "todo": "task",
+      "idea": "idea",
+      "note": "thought",
+      "question": "question",
+      "research": "research",
+      "decision": "decision"
+    },
+    "due": {
+      "overdue": "overdue",
+      "today": "today",
+      "thisWeek": "this week",
+      "upcoming": "upcoming"
+    },
+    "reworkHeading": "Rework requested (do these first)",
+    "reworkEntry": "{{title}} [{{id}}], rework #{{number}}: {{reason}}",
+    "awaitingReview": "awaiting the person's decision",
+    "accepted": "accepted by the person",
+    "acceptedChanged": "accepted, changed since",
+    "replacedBy": "replaced by {{id}}, read that decision",
+    "inForceHeading": "Decisions in force (to respect)",
+    "inForceMore": "… {{count}} more: get_project_summary lists them",
+    "conflictEntry": "{{case}} [{{caseId}}] may go against the decision {{decision}} [{{decisionId}}]: check with the person",
+    "profileHeading": "How the person works (their profile, to respect)"
+  },
+  "data": {
+    "selfLink": "A note cannot be its own task",
+    "sourceNotFound": "Source note not found: {{id}}",
+    "taskNotFound": "Task not found: {{id}}",
+    "trashedCannotLink": "A note in the trash cannot be linked",
+    "linkedSameProject": "Linked notes must belong to the same project",
+    "targetMustBeTask": "The target note must be a task",
+    "taskTitleEmpty": "The task title is empty",
+    "trashedCannotReceiveTask": "A note in the trash cannot receive a task",
+    "trashedCannotFile": "A note in the trash cannot be filed.",
+    "onlyInboxCanBeFiled": "Only a note in the Inbox can be filed into a project.",
+    "destinationNotFound": "Destination project not found.",
+    "destinationMustBeRegular": "The destination must be a regular project in the same space as the Inbox.",
+    "linkedOtherProject": "This note is linked to a note in another project. Unlink them before filing it.",
+    "structureEmpty": "The original text and the proposal must not be empty",
+    "contentChanged": "The note content has changed; refresh the proposal",
+    "parentCaseNotFound": "Parent case not found: {{id}}",
+    "trashedCannotReceiveSubCase": "A case in the trash cannot receive a sub-case.",
+    "subCaseSameProject": "A sub-case must belong to the same project as its parent case.",
+    "caseCycle": "A case cannot go inside itself or one of its sub-cases.",
+    "trashedCannotMove": "A case in the trash cannot be moved.",
+    "trashedCannotAnnotate": "A case in the trash cannot receive a provenance.",
+    "restoreParentFirst": "The parent case of this sub-case is in the trash. Restore the parent case first.",
+    "subCaseFollowsParent": "A sub-case follows its parent case. File the top-level case instead.",
+    "sketchInvalid": "A drawing only keeps Excalidraw content: this content is not one.",
+    "sketchTooLarge": "This drawing is over 5 MB. Remove the images pasted in it: an image goes in an image case.",
+    "sketchNotStructured": "A drawing cannot be structured.",
+    "linkNotWeb": "Only web addresses (http or https) open from a link case.",
+    "imageTooLarge": "Image too large ({{size}} bytes, maximum 20 MB)",
+    "dbBusy": "The database is in use by another program. Try again in a moment.",
+    "dbReadOnly": "The database can only be read: check the permissions of the data folder.",
+    "dbFull": "The disk is full: free some space so Humcase can save.",
+    "dbIo": "The database file could not be read or written ({{error}}).",
+    "dbCorrupt": "The database file is damaged ({{error}}). Restore a backup from Settings → Data."
+  },
+  "app": {
+    "dataMigrationFailed": "Humcase could not carry over your data.\n\n{{error}}\n\nYour notes were not modified. Close all Humcase windows and agent sessions, then try again.",
+    "sessionUnavailable": "Humcase session unavailable ({{path}}): {{error}}",
+    "databaseUnavailable": "Database unavailable ({{path}}): {{error}}",
+    "startFailed": "Humcase could not start.\n\n{{error}}\n\nIf Humcase is already open, reopen it from its icon in the notification area.",
+    "leaseNotHeld": "the shared session lock is not held",
+    "cli": {
+      "projectNotFound": "project not found: {{id}}",
+      "noSpace": "no space",
+      "noteCreated": "✅ Note '{{title}}' created in “{{project}}” (space: {{space}}). ID: {{id}}"
+    }
+  },
+  "dataFolder": {
+    "homeUnavailable": "Can't locate your user folder to keep Humcase's data",
+    "movedButMissing": "Your data was moved to {{path}}, but this file is missing. The previous data is still in {{legacy}}.",
+    "openAppFirst": "Humcase now keeps its data in {{path}}. Open the Humcase application once to move your data there from {{legacy}}, then start this agent again.",
+    "legacyInUse": "Another Humcase session is using {{path}}, so your data could not be moved: {{error}}. Close every Humcase window and agent session, then start again.",
+    "webviewCopyFailed": "Humcase could not copy the interface's saved state (drafts, preferences) to its new folder: {{error}}"
+  },
+  "review": {
+    "reasonRequired": "Tell the agent what is missing to ask for a rework.",
+    "notFound": "This case no longer exists.",
+    "inTrash": "This case is in the trash.",
+    "changed": "The case changed since you reviewed it: read it again before deciding.",
+    "notResolved": "Only a finished result can be accepted or sent back for rework."
+  },
+  "activities": {
+    "nameLength": "activity name must contain 1 to 80 characters",
+    "notFound": "activity not found: {{id}}",
+    "inboxHasNone": "inbox cannot belong to activities",
+    "changedExternally": "project activities changed externally; refresh and retry",
+    "needsSpace": "assign the project to a space before linking activities",
+    "otherSpace": "activity belongs to a different space: {{id}}"
+  },
+  "canvas": {
+    "tooLarge": "canvas too large (at most 20 MB)",
+    "unreadable": "not a JSON Canvas document: {{error}}",
+    "notObject": "not a JSON Canvas document: an object with nodes is expected",
+    "nodesNotArray": "nodes must be an array",
+    "tooManyNodes": "too many nodes ({{found}}, at most {{max}})",
+    "nodeNotObject": "node {{index}} is not an object",
+    "nodeNotNumber": "node {{index}}: {{field}} must be a number",
+    "nodeIdMissing": "node {{index}}: id is required",
+    "nodeDuplicateId": "node {{index}}: duplicate id {{id}}",
+    "nodeTypeMissing": "node {{index}}: type is required"
+  },
+  "germinate": {
+    "notText": "Only a text case can sprout.",
+    "tooShort": "Write a few words in the case first: Humcase proposes its next steps from what it says.",
+    "noAi": "No AI key: add one in Settings → AI services.",
+    "answered": "This proposal was already answered: reload the case.",
+    "cannotPlace": "This case is inside another case or project: it stays where it is.",
+    "noProposals": "The AI answered without proposals.",
+    "unreadable": "Unreadable answer from the AI: {{error}}"
+  },
+  "profile": {
+    "title": "How you work",
+    "section": {
+      "rules": "Rules",
+      "work": "Lines of work",
+      "refused": "Often refused"
+    },
+    "from": {
+      "decision": "decision of {{date}}",
+      "count": "counted on your cases, without AI",
+      "sprout": "your answers in Sprout",
+      "agent": "proposed by {{agent}}"
+    },
+    "work": {
+      "dev": "Software development",
+      "marketing": "Marketing",
+      "research": "Research",
+      "reflection": "Thinking and writing",
+      "personal": "Personal life"
+    },
+    "workDetail": "{{count}} of your {{total}} cases",
+    "refusedLine": "{{natures}} proposed by Sprout: often refused",
+    "refusedDetail": "{{refused}} refused out of {{total}}",
+    "natures": {
+      "todo": "Actions",
+      "question": "Questions",
+      "research": "Research steps",
+      "decision": "Decisions",
+      "idea": "Ideas"
+    }
+  },
+  "tidy": {
+    "alreadyAnswered": "This proposal is gone or was already answered.",
+    "otherGone": "The other case is gone.",
+    "weeks": "Duration not offered: {{weeks}} weeks."
+  }
+}

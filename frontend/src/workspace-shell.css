@@ -1,0 +1,86 @@
+.workspace-app { display: grid; grid-template-columns: var(--workspace-sidebar-width) minmax(0, 1fr); height: 100dvh; min-height: 0; background: var(--workspace-canvas); color: var(--workspace-ink); overflow: hidden; }
+.workspace-project-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.workspace-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.workspace-topbar { flex: none; height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 0 30px; border-bottom: 1px solid var(--workspace-line); background: var(--workspace-canvas); }
+.workspace-topbar-left, .workspace-topbar-actions { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.workspace-topbar-left { flex: 1; overflow: hidden; color: var(--workspace-text-muted); font-size: var(--workspace-text-ui); }
+.workspace-topbar-left strong { color: var(--workspace-ink); font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.workspace-topbar-actions { flex-shrink: 0; }
+/* Breadcrumb, top bar commands: kit Button; here, layout only. */
+.workspace-app .workspace-topbar-crumb.ui-button { flex: none; margin-left: -8px; padding-inline: 8px; white-space: nowrap; }
+.workspace-topbar-trail { display: flex; align-items: center; gap: 12px; min-width: 0; overflow: hidden; }
+.workspace-topbar-parents:empty { display: none; }
+.workspace-topbar-parents .case-path { margin: 0; font-size: inherit; min-width: 0; }
+.workspace-topbar-parents .case-path ol { flex-wrap: nowrap; gap: 12px; }
+.workspace-topbar-parents .case-path li { gap: 12px; white-space: nowrap; }
+.workspace-topbar-parents .case-path button { max-width: 14rem; padding: 0.25rem 0.5rem; overflow: hidden; color: var(--workspace-ink); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-topbar-parents .case-path li { color: var(--workspace-text-muted); }
+.workspace-icon-action { flex: none; }
+.workspace-mobile-menu { display: none !important; }
+.workspace-scroll { flex: 1; min-width: 0; min-height: 0; overflow-y: auto; }
+.workspace-loading { padding: 48px; color: var(--workspace-text-secondary); }
+.workspace-editor-page { flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+.workspace-editor-back { flex: none; display: inline-flex; align-items: center; gap: 8px; width: fit-content; margin: 14px 0 0 calc(max(var(--workspace-page-gutter), calc((100% - var(--workspace-canvas-width)) / 2 + var(--workspace-page-gutter))) - 10px); padding-inline: 10px; }
+.workspace-editor-slot { flex: 1; min-height: 0; display: flex; overflow: hidden; }
+.workspace-cases-page > .workspace-page__header { margin: 0; padding: var(--workspace-page-top) var(--workspace-page-gutter) var(--workspace-space-2); }
+.workspace-cases-page > .workspace-page__header .workspace-page__action { flex: 0 1 auto; max-width: 100%; flex-wrap: wrap; justify-content: flex-end; gap: var(--workspace-space-3); }
+/* The view, the sort and the archives sit in the page header, left of "New case". */
+.workspace-viewbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--workspace-space-2); }
+/* The filters line up with the page below them: same gutter, steps of the spacing scale. */
+.case-filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--workspace-space-2); padding: var(--workspace-space-3) var(--workspace-page-gutter) var(--workspace-space-4); }
+.case-filter-bar__search { flex: 1 1 220px; max-width: 360px; }
+.case-filter-bar__status { flex-wrap: wrap; }
+.case-filter-bar__natures { flex-basis: 100%; }
+.case-filter-bar__check { display: inline-flex; align-items: center; gap: var(--workspace-space-2); min-height: 40px; padding-inline: var(--workspace-space-2); color: var(--workspace-ink); font-size: var(--workspace-text-ui); cursor: pointer; }
+.case-filter-bar__check input { width: 16px; height: 16px; margin: 0; accent-color: var(--workspace-ink); cursor: pointer; }
+.case-filter-bar__check input:focus-visible { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+.workspace-cases-page .workspace-page { padding-top: var(--workspace-space-4); }
+/* The list and the board start on the page gutter, under the filters, without a frame of their own. */
+/* The list and the board scroll inside the room left under the bars: no second scroll of the page. */
+.workspace-cases-page:has(> .workspace-legacy-view) { display: flex; flex-direction: column; overflow: hidden; }
+.workspace-cases-page:has(> .workspace-legacy-view) > * { flex: none; }
+.workspace-cases-page > .workspace-legacy-view { flex: 1; height: auto; }
+.workspace-cases-page .workspace-note-list { border-right: 0; }
+.workspace-cases-page .workspace-note-list > .workspace-list-items { padding: 0 var(--workspace-page-gutter) var(--workspace-space-6); }
+.workspace-cases-page .workspace-list { width: 100%; max-width: none; margin: 0; }
+.workspace-cases-page .workspace-kanban__columns { padding: 0 var(--workspace-page-gutter) var(--workspace-space-6); }
+/* The list and the board scroll inside the page: their scrollbar sits in their right margin, always
+   reserved, so their content lines up with the header, the filters and "Close in meaning". */
+.workspace-cases-page .workspace-note-list > .workspace-list-items,
+.workspace-cases-page .workspace-kanban__columns { scrollbar-gutter: stable; padding-right: calc(var(--workspace-page-gutter) - var(--scrollbar-size)); }
+.workspace-legacy-view { display: flex; min-height: 0; height: calc(100% - 48px); overflow: hidden; }
+.workspace-legacy-view > * { flex: 1; min-width: 0; }
+.workspace-mini { grid-template-columns: minmax(0, 1fr); }
+.workspace-mini-list { flex: 1; min-height: 0; display: flex; overflow: hidden; }
+.workspace-mini-list > * { flex: 1; min-width: 0; }
+.workspace-nav-backdrop { display: none; }
+@media (max-width: 850px) { .workspace-app { grid-template-columns: minmax(0, 1fr); } .workspace-nav-backdrop { display: block; position: fixed; z-index: 71; inset: 0; border: 0; background: var(--workspace-overlay); } .workspace-mobile-menu { display: grid !important; } .workspace-topbar { padding-inline: 16px; } }
+@media (max-width: 760px) {
+  .workspace-cases-page { --workspace-page-gutter: 20px; --workspace-page-top: 24px; }
+  /* Narrow window: the natures scroll on one line instead of piling up under the filters. */
+  .workspace-app .ui-chips.case-filter-bar__natures { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .workspace-app .case-filter-bar__natures .ui-chip { flex: none; }
+  .case-filter-bar { padding-top: var(--workspace-space-2); padding-bottom: var(--workspace-space-3); }
+  .workspace-cases-page > .workspace-page__header .workspace-page__action { justify-content: flex-start; }
+}
+@media (max-width: 520px) { .workspace-topbar-actions { gap: 2px; } .case-filter-bar__search { flex-basis: 100%; max-width: none; } }
+@media (min-width: 2240px) {
+  .workspace-topbar-left { font-size: var(--workspace-text-ui); }
+}
+
+/* Frame and panel: the sidebar rests on the frame tone, the page is a raised
+   panel with rounded corners. Gives the application's first level of depth. */
+.workspace-app:not(.workspace-mini):not(.quick-capture) { background: var(--workspace-frame); }
+.workspace-app:not(.workspace-mini):not(.quick-capture) > .workspace-main {
+  margin: 8px 8px 8px 0;
+  border-radius: 12px;
+  background: var(--workspace-canvas);
+  box-shadow: var(--workspace-shadow-panel);
+  overflow: hidden;
+}
+.workspace-app:not(.workspace-mini):not(.quick-capture) .workspace-topbar { height: 56px; padding-inline: 24px; background: transparent; }
+@media (max-width: 850px) {
+  .workspace-app:not(.workspace-mini):not(.quick-capture) > .workspace-main { margin: 0; border-radius: 0; box-shadow: none; }
+}
+/* Number of notes to pursue in a project: mono digits, readable gray (≥ 4.5:1 in both themes). */
+.app-sidebar .workspace-nav-count { color: var(--workspace-sidebar-muted); font-size: var(--workspace-text-caption); font-variant-numeric: tabular-nums; }

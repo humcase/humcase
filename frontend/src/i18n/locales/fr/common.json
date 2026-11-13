@@ -1,0 +1,21 @@
+{
+  "cancel": "Annuler",
+  "untitled": "Sans titre",
+  "space": {
+    "work": "Pro",
+    "private": "Privé"
+  },
+  "inboxOf": "Réception · {{space}}",
+  "close": "Fermer",
+  "save": "Enregistrer",
+  "delete": "Supprimer",
+  "retry": "Réessayer",
+  "copy": "Copier",
+  "dueTitle": "Échéance : {{date}}",
+  "keys": {
+    "control": "Ctrl",
+    "shift": "Maj",
+    "alt": "Alt",
+    "meta": "Win"
+  }
+}

@@ -1,0 +1,254 @@
+/* "Game object" universe (0.9.57): the app as a beautiful object: screen-printed labels in
+   DM Mono, physical keys that sink, the day displayed on the object's screen.
+   Loaded last: touches neither the layout nor the data. Palette: workspace-theme.css. */
+
+.workspace-app {
+  --workspace-font-mono: "DM Mono", "Cascadia Mono", ui-monospace, monospace;
+  /* Key edge (the face stays the button's color). */
+  --key-edge: #050504;
+  --key-action-edge: #a0501f;
+  --key-shade: 0 4px 10px -3px #000000b3;
+  /* Screen: recessed dark glass, dot pattern. */
+  --screen-bg: #121211;
+  --screen-dot: #ffffff12;
+  --screen-rail: #ffffff08;
+  --screen-inset: inset 0 1px 3px #000000b3, inset 0 0 0 1px #ffffff0a, 0 1px 0 #ffffff0d;
+  --screen-fg: #ededea;
+  --screen-muted: #8f8c86;
+  /* Smooth glass with a slight reflection at the top (no more dot pattern, 0.9.61). */
+  --screen-texture: linear-gradient(180deg, #ffffff0a 0, #ffffff00 45%);
+  --screen-texture-size: 100% 100%;
+  --screen-texture-pos: 0 0;
+  --cartouche-bg: var(--screen-bg);
+}
+.workspace-app[data-theme="light"] {
+  --key-edge: #a8a79f;
+  --key-action-edge: #7a2806;
+  --key-shade: 0 1px 2px #1a1a181f, 0 5px 12px -4px #1a1a184d;
+  /* "Light LCD" screen (founder's choice, 0.9.61): recessed gray display, dark text;
+     black on a light page made too harsh a contrast. The dark theme keeps the black screen. */
+  --screen-bg: #e5e4e1;
+  --screen-dot: #21201c1f;
+  --screen-rail: #21201c0a;
+  --screen-inset: inset 0 2px 4px #21201c2e, inset 0 0 0 1px #21201c1c, 0 1px 0 #ffffff;
+  --screen-fg: #21201c;
+  --screen-muted: #63635e;
+  --screen-texture: none;
+  --screen-texture-size: auto;
+  --screen-texture-pos: 0 0;
+  --cartouche-bg: #f4f3f1;
+}
+
+/* ── Screen-printed labels: small mono capitals, spaced. Reserved for the object's landmarks
+   (date, screen, cartridge, counters); the home's section titles stay in DM Sans. ── */
+.workspace-app .objet-label,
+.workspace-app .workspace-page__eyebrow,
+.workspace-app .workspace-resume__eyebrow,
+.workspace-app:not(.workspace-mini) .note-editor-section-label,
+.workspace-app .workspace-kanban__heading,
+.app-sidebar [data-sidebar="group-label"] {
+  font-family: var(--workspace-font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.workspace-app:not(.workspace-mini) .note-editor-section-label { color: var(--workspace-text-secondary); }
+.workspace-app .workspace-resume__eyebrow > span:nth-child(2) { font-weight: 500; }
+.app-sidebar [data-sidebar="group-label"] { color: var(--workspace-sidebar-muted); }
+
+/* ── Counters and numeric metadata: mono digits. ── */
+.workspace-app .workspace-kanban__heading { color: var(--workspace-text-secondary); }
+.workspace-app .workspace-kanban__card time { font-family: var(--workspace-font-mono); font-variant-numeric: tabular-nums; }
+.workspace-app:not(.workspace-mini) .note-editor-created { font-family: var(--workspace-font-mono); font-size: 12px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.workspace-app .workspace-note-card__date,
+.app-sidebar :is([data-sidebar="menu-badge"], .tabular-nums) {
+  font-family: var(--workspace-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+/* Segmented keys and commands: design and states in the kit (components/ui/button.css,
+   segmented.css), single source since 0.9.65. */
+
+/* ── Brand: the app's badge is a key, the name is screen-printed. ── */
+/* The key keeps the brand's orange in both themes (HumcaseKey.tsx); its light's color is reused by
+   active formatting keys (editor-toolbar.css). */
+.workspace-app { --brand-key-led: #ff6a2a; }
+.workspace-app[data-theme="light"] { --brand-key-led: #c4410c; }
+.humcase-key { flex: none; display: block; }
+.app-sidebar .objet-brand-name { font-family: var(--workspace-font-mono); font-size: 15px; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; }
+.app-sidebar .objet-brand-name b { font-weight: 500; color: var(--workspace-action); }
+
+/* ── Resume: the current note carries a label band, like a cartridge. ── */
+.workspace-app .workspace-resume .workspace-resume__eyebrow {
+  margin: -24px -28px 18px; padding: 11px 28px;
+  border-bottom: 1px solid var(--workspace-line);
+  background: var(--cartouche-bg);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--workspace-ink) 4%, transparent);
+}
+/* A single line: the label shortens before the project name, never a line break. */
+.workspace-app .workspace-resume .workspace-resume__eyebrow { flex-wrap: nowrap; min-width: 0; }
+.workspace-app .workspace-resume__eyebrow > span:nth-child(2) { flex: none; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-app .workspace-resume__eyebrow > span:nth-child(3) { flex: none; }
+.workspace-app .workspace-resume__eyebrow > span:nth-child(4) { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-app .workspace-resume h2 { margin-top: 0; }
+@media (max-width: 760px) { .workspace-app .workspace-resume .workspace-resume__eyebrow { margin: -20px -20px 16px; padding-inline: 20px; } }
+
+/* ── The object's screen: the day. ── */
+.day-timeline__screen {
+  --foreground: var(--screen-fg);
+  --muted-foreground: var(--screen-muted);
+  --border: var(--screen-dot);
+  color: var(--screen-fg);
+  border-radius: 8px;
+  background-color: var(--screen-bg);
+  background-image: var(--screen-texture);
+  background-size: var(--screen-texture-size);
+  background-position: var(--screen-texture-pos);
+  box-shadow: var(--screen-inset);
+}
+.day-timeline__ruler { border-bottom: 1px solid color-mix(in srgb, var(--screen-fg) 12%, transparent); }
+.day-timeline__rail { background: var(--screen-rail); }
+/* Single line: legend badges (gray: notes, orange: agents); discreet detail button. */
+.day-timeline__legend { gap: 3px; }
+.day-timeline__legend i { display: block; width: 4px; height: 12px; border-radius: 1.5px; background: color-mix(in srgb, var(--workspace-ink) 45%, transparent); }
+.day-timeline__legend i[data-agent] { background: var(--workspace-action); }
+.workspace-app .day-timeline__detail { margin: -4px -6px -4px auto; }
+/* Display segments: the bar reads as a row of cells. */
+.day-timeline__bar { background-image: repeating-linear-gradient(90deg, transparent 0 4px, #0000002e 4px 5px); box-shadow: inset 0 1px 0 #ffffff40; }
+
+/* Counters: digit display, screen-printed label above. */
+.objet-counters { display: flex; align-items: stretch; gap: 0; margin-block: 0; }
+.objet-counters > div { display: grid; gap: 2px; padding: 0 16px; border-left: 1px solid var(--workspace-line); }
+.objet-counters > div:first-child { border-left: 0; }
+.objet-counters > div:last-child { padding-right: 4px; }
+.objet-counters dt { color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 10.5px; font-weight: 500; letter-spacing: .09em; line-height: 1.2; text-transform: uppercase; white-space: nowrap; }
+.objet-counters dd { margin: 0; color: var(--workspace-ink); font-family: var(--workspace-font-mono); font-size: 22px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: -.02em; line-height: 1.1; }
+.objet-counters [data-accent] dd { color: var(--workspace-action); }
+@container day (max-width: 640px) { .objet-counters { margin-left: 0; width: 100%; } .objet-counters > div:first-child { padding-left: 0; } }
+
+/* Indicator light: fixed landmark of the object (no simulated activity). */
+.objet-led {
+  width: 7px; height: 7px; flex: none; border-radius: 50%;
+  background: var(--workspace-action);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--workspace-action) 18%, transparent), 0 0 8px color-mix(in srgb, var(--workspace-action) 55%, transparent);
+}
+
+
+/* ── Consistency (0.9.60): a single language across all screens. ── */
+
+/* Settings: same shell as the app (gray frame, rounded panel); sections as kit Cards. */
+.workspace-app .settings-dialog { background: var(--workspace-sidebar-bg); }
+.workspace-app .settings-header { padding-block: 12px; border-bottom: 0; background: transparent; }
+.workspace-app .settings-nav { padding-top: 12px; border-right: 0; background: transparent; }
+.workspace-app .settings-content { margin: 0 8px 8px 0; border-radius: 12px; background: var(--workspace-canvas); box-shadow: var(--workspace-shadow-panel); }
+.workspace-app .settings-section-heading h3 { font-size: var(--workspace-text-display); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
+
+/* Chosen option: neutral and crisp; only the radio button's indicator stays orange. */
+.workspace-app :is(.settings-theme-options label:has(input:checked), .settings-dialog .workspace-space-settings fieldset label:has(input:checked)) {
+  border-color: var(--workspace-ink);
+  background: var(--workspace-raised);
+  color: var(--workspace-ink);
+  box-shadow: 0 0 0 1px var(--workspace-ink);
+}
+
+/* Linked tasks counter: same display as the other counters. */
+/* List view: tags and due date in the same design as the cards. */
+
+/* ── Floating surfaces (0.9.61): palette, windows and quick capture speak the same language. ── */
+
+/* Field labels and group headers: screen-printed. */
+.workspace-app :is(.workspace-command-dialog [cmdk-group-heading]),
+.workspace-app.quick-capture .quick-capture__heading > span:first-child {
+  color: var(--workspace-text-secondary);
+  font-family: var(--workspace-font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+
+/* Command palette: the search is written on the object's screen. */
+.workspace-app .workspace-command-dialog [cmdk-root] > div:has(> [cmdk-input]) {
+  margin: 12px 12px 4px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--screen-bg);
+  background-image: var(--screen-texture);
+  background-size: var(--screen-texture-size);
+  background-position: var(--screen-texture-pos);
+  box-shadow: var(--screen-inset);
+}
+.workspace-app .workspace-command-dialog [cmdk-root] > div:has(> [cmdk-input]) svg { color: var(--screen-muted); }
+.workspace-app .workspace-command-dialog [cmdk-input] { min-height: 54px; color: var(--screen-fg); caret-color: var(--workspace-action); }
+.workspace-app .workspace-command-dialog [cmdk-input]::placeholder { color: var(--screen-muted); }
+/* The focus surrounds the whole screen (rounded corners) rather than the bare field inside. */
+.workspace-app .workspace-command-dialog [cmdk-input]:focus,
+.workspace-app .workspace-command-dialog [cmdk-input]:focus-visible { outline: none; }
+.workspace-app .workspace-command-dialog [cmdk-root] > div:has(> [cmdk-input]:focus-visible) { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+.workspace-app .workspace-command-dialog [cmdk-group-heading] { padding: 8px 12px 8px; }
+/* Chosen item: a raised, neutral key; the orange indicator marks the selection. */
+.workspace-app .workspace-command-dialog [cmdk-item] { position: relative; }
+.workspace-app .workspace-command-dialog [cmdk-item][data-selected=true] {
+  color: var(--workspace-ink);
+  background: var(--workspace-raised);
+  box-shadow: 0 0 0 1px var(--workspace-card-border), 0 1px 0 var(--key-edge);
+}
+.workspace-app .workspace-command-dialog [cmdk-item][data-selected=true]::after {
+  content: ""; position: absolute; right: 14px; top: 50%;
+  width: 7px; height: 7px; margin-top: -3.5px; border-radius: 50%;
+  background: var(--workspace-action);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--workspace-action) 18%, transparent), 0 0 8px color-mix(in srgb, var(--workspace-action) 55%, transparent);
+}
+/* Footer shortcuts: kit keys (ui/Hint, Kbd). */
+.workspace-app .workspace-command-footer { background: var(--workspace-surface); }
+
+/* Quick capture: a small device. Indicator light, label, and the input on the screen. */
+.workspace-app.quick-capture .quick-capture__panel { border-color: var(--workspace-card-border); box-shadow: var(--workspace-shadow-card), 0 3px 0 var(--key-edge); }
+.workspace-app.quick-capture .quick-capture__heading { align-items: center; }
+.workspace-app.quick-capture .quick-capture__heading > span:first-child { display: inline-flex; align-items: center; gap: 9px; }
+.workspace-app.quick-capture .quick-capture__heading > span:first-child::before {
+  content: ""; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--workspace-action);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--workspace-action) 18%, transparent), 0 0 8px color-mix(in srgb, var(--workspace-action) 55%, transparent);
+}
+.workspace-app.quick-capture .quick-capture__hint { font-family: var(--workspace-font-mono); font-size: 11px; letter-spacing: .04em; }
+.workspace-app.quick-capture .quick-capture__input {
+  min-height: 52px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--screen-bg);
+  background-image: var(--screen-texture);
+  background-size: var(--screen-texture-size);
+  background-position: var(--screen-texture-pos);
+  box-shadow: var(--screen-inset);
+  color: var(--screen-fg);
+  caret-color: var(--workspace-action);
+}
+.workspace-app.quick-capture .quick-capture__input::placeholder { color: var(--screen-muted); }
+
+/* Brief and standup: the generated text is displayed on the screen, readable in both themes. */
+.workspace-app .workspace-text-modal textarea {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  padding: 14px;
+  resize: none;
+  border: 0;
+  border-radius: 8px;
+  background: var(--screen-bg);
+  color: var(--screen-fg);
+  font-family: var(--workspace-font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  box-shadow: var(--screen-inset);
+}
+
+/* Dropdown menus of the windows and the capture: same chevron as the note page. */
+/* Selects of the windows and the capture: kit chevron (ui-field). */

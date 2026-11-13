@@ -1,0 +1,79 @@
+.note-relations {
+  flex: none;
+  margin: 0 1.5rem;
+  border: 1px solid var(--workspace-line);
+  border-radius: var(--workspace-radius-card);
+  background: var(--workspace-surface);
+  color: var(--workspace-ink);
+  font-size: var(--workspace-text-ui);
+}
+
+.note-relations-heading {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.58rem 0.8rem;
+  text-align: left;
+  color: var(--workspace-ink);
+}
+
+.note-relations-heading:hover,
+.note-relations-link:hover:not(:disabled) {
+  background: var(--workspace-state-hover);
+}
+
+.note-relations-heading-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.note-relations-heading-title svg { color: var(--workspace-action); }
+
+.note-relations-heading-meta {
+  margin-left: auto;
+  color: var(--workspace-text-muted);
+  font-size: var(--workspace-text-caption);
+  text-align: right;
+}
+
+.note-relations-chevron { flex: none; color: var(--workspace-text-muted); transition: transform 150ms ease; }
+.note-relations-chevron.is-open { transform: rotate(180deg); }
+
+.note-relations-body {
+  max-height: min(32rem, 60vh);
+  overflow-y: auto;
+  border-top: 1px solid var(--workspace-line);
+  padding: 0.65rem 0.8rem 0.8rem;
+}
+
+.note-relations-group + .note-relations-group { margin-top: 0.65rem; }
+.note-relations-group h3 { margin: 0 0 0.35rem; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); font-weight: 700; text-transform: uppercase; letter-spacing: 0.055em; }
+.note-relations-group ul { margin: 0; padding: 0; list-style: none; }
+.note-relations-group li { display: flex; align-items: center; min-height: 2.5rem; gap: 0.35rem; border-top: 1px solid var(--workspace-line); }
+.note-relations-group li:first-child { border-top: 0; }
+.note-relations-link { min-width: 0; flex: 1; padding: 0.35rem 0.2rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; color: var(--workspace-action); border-radius: 0.25rem; }
+.note-relations-status { flex: none; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.note-relations-muted { display: flex; align-items: center; gap: 0.35rem; margin: 0.25rem 0; color: var(--workspace-text-muted); }
+.note-relations-error { margin: 0 0 0.6rem; padding: 0.45rem 0.55rem; border: 1px solid var(--workspace-danger-border); border-radius: 0.35rem; background: var(--workspace-danger-soft); color: var(--workspace-danger); }
+
+.note-relations-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.55rem; }
+.note-relations-link:disabled { opacity: 0.5; cursor: default; }
+
+.note-relations-form { display: grid; gap: 0.5rem; margin-top: 0.55rem; }
+.note-relations-form label { display: grid; gap: 0.2rem; color: var(--workspace-text-muted); }
+.note-relations-form textarea { width: 100%; border: 1px solid var(--workspace-input-border); border-radius: var(--workspace-radius-control); padding: 0.4rem 0.5rem; background: var(--workspace-surface); color: var(--workspace-ink); resize: vertical; }
+.note-relations-form .ui-field { width: 100%; }
+.note-relations-form :is(input, textarea, select):focus-visible,
+.note-relations :is(button):focus-visible { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+
+@media (max-width: 620px) {
+  .note-relations { margin: 0 0.75rem; }
+  .note-relations-heading-meta { display: none; }
+  .note-relations-chevron { margin-left: auto; }
+  .note-relations-body { max-height: min(28rem, 58vh); }
+}
+.workspace-app .note-relations-empty { align-items: flex-start; padding: 4px 0; text-align: left; }

@@ -1,0 +1,20 @@
+{
+  "heading": "Quick capture",
+  "windowTitle": "Humcase · Quick capture",
+  "closeHint": "Esc to close",
+  "textLabel": "Capture text",
+  "saving": "Saving…",
+  "placeholder": "I need to…",
+  "storageUnavailable": "Local storage is unavailable: this draft will not be kept (on close or restart).",
+  "destinationLabel": "Case destination",
+  "openNoteOption": "Open case · {{title}}",
+  "typeLabel": "Nature of the case",
+  "typeLockedTitle": "The text is added to the open case, whose nature does not change",
+  "loadError": "Could not read the projects: database unavailable.",
+  "chooseDestination": "Choose a destination for this case.",
+  "noOpenNote": "No case is open in Humcase.",
+  "appendFailed": "Could not add: {{message}} The text is kept.",
+  "createFailed": "Could not create: {{error}}",
+  "noteNoAnswer": "The open case did not respond.",
+  "appendRefused": "The open case refused the addition."
+}

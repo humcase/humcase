@@ -1,0 +1,20 @@
+{
+  "heading": "Capture rapide",
+  "windowTitle": "Humcase · Capture rapide",
+  "closeHint": "Échap pour fermer",
+  "textLabel": "Texte de la capture",
+  "saving": "Enregistrement…",
+  "placeholder": "J’ai besoin de…",
+  "storageUnavailable": "Stockage local indisponible : ce brouillon ne sera pas conservé (fermeture ou redémarrage).",
+  "destinationLabel": "Destination de la case",
+  "openNoteOption": "Case ouverte · {{title}}",
+  "typeLabel": "Nature de la case",
+  "typeLockedTitle": "Le texte rejoint la case ouverte, dont la nature ne change pas",
+  "loadError": "Impossible de lire les projets : base de données indisponible.",
+  "chooseDestination": "Choisissez une destination pour cette case.",
+  "noOpenNote": "Aucune case n’est ouverte dans Humcase.",
+  "appendFailed": "Ajout impossible : {{message}} Le texte est conservé.",
+  "createFailed": "Création impossible : {{error}}",
+  "noteNoAnswer": "La case ouverte n’a pas répondu.",
+  "appendRefused": "Ajout refusé par la case ouverte."
+}

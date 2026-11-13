@@ -1,0 +1,21 @@
+{
+  "cancel": "Cancel",
+  "untitled": "Untitled",
+  "space": {
+    "work": "Work",
+    "private": "Personal"
+  },
+  "inboxOf": "Inbox · {{space}}",
+  "close": "Close",
+  "save": "Save",
+  "delete": "Delete",
+  "retry": "Retry",
+  "copy": "Copy",
+  "dueTitle": "Due date: {{date}}",
+  "keys": {
+    "control": "Ctrl",
+    "shift": "Shift",
+    "alt": "Alt",
+    "meta": "Win"
+  }
+}

@@ -1,0 +1,52 @@
+/* Humcase kit — empty state (0.9.67). */
+
+.workspace-app .ui-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  text-align: center;
+}
+.workspace-app .ui-empty[data-size='md'] {
+  min-height: 240px;
+  padding: 32px 24px;
+  border: 1px dashed var(--workspace-card-border);
+  border-radius: var(--workspace-radius-card);
+}
+.workspace-app .ui-empty[data-size='sm'] { padding: 28px 12px; }
+
+/* Fan of keys: the two back keys spread apart on hover of the area. */
+.workspace-app .ui-empty__keys { position: relative; display: grid; place-items: center; width: 104px; height: 56px; margin-bottom: 16px; }
+.workspace-app .ui-empty__key {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: 10px;
+  background: var(--workspace-raised);
+  color: var(--workspace-text-secondary);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 3px 0 var(--key-edge);
+  transition: transform 260ms var(--workspace-ease-out);
+}
+.workspace-app[data-theme='light'] .ui-empty__key { box-shadow: inset 0 1px 0 #ffffffcc, 0 3px 0 var(--key-edge); }
+.workspace-app .ui-empty__key[data-side] { background: var(--workspace-muted-surface); }
+.workspace-app .ui-empty__key[data-side='left'] { transform: translate(-26px, 4px) rotate(-12deg); }
+.workspace-app .ui-empty__key[data-side='right'] { transform: translate(26px, 4px) rotate(12deg); }
+.workspace-app .ui-empty__key svg { width: 22px; height: 22px; }
+@media (hover: hover) and (pointer: fine) {
+  .workspace-app .ui-empty:hover .ui-empty__key[data-side='left'] { transform: translate(-32px, 2px) rotate(-16deg); }
+  .workspace-app .ui-empty:hover .ui-empty__key[data-side='right'] { transform: translate(32px, 2px) rotate(16deg); }
+}
+
+.workspace-app .ui-empty__title { margin: 0 0 6px; color: var(--workspace-ink); font-size: var(--workspace-text-card); font-weight: 500; line-height: 1.35; }
+.workspace-app .ui-empty__description { max-width: 46ch; margin: 0; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); line-height: 1.5; }
+.workspace-app .ui-empty[data-size='sm'] .ui-empty__title { font-size: var(--workspace-text-ui); }
+.workspace-app .ui-empty[data-size='sm'] .ui-empty__description { color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-app .ui-empty__action { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 20px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app .ui-empty__key { transition: none; }
+}

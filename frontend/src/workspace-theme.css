@@ -1,0 +1,408 @@
+@font-face {
+  font-family: 'DM Sans';
+  src: url('/fonts/DMSans-Variable.ttf') format('truetype');
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Foundations shared by the main window, mini mode and the capture. */
+.workspace-app {
+  /* Shared contract: docs/DESIGN_SYSTEM.md; adapted Darkmatter palette. */
+  --workspace-canvas: #161615;
+  --workspace-surface: #1d1d1b;
+  --workspace-raised: #252523;
+  --workspace-muted-surface: #262624;
+  --workspace-ink: #ededea;
+  --workspace-text-secondary: #b3b0aa;
+  --workspace-text-muted: #8f8c86;
+  --workspace-line: #2b2a28;
+  --workspace-card-border: #363531;
+  --workspace-card-hover-border: #45433f;
+  --workspace-input-border: #4a4844;
+  --workspace-action: #e78a53;
+  --workspace-action-hover: #f09b69;
+  --workspace-on-accent: #121113;
+  --workspace-accent-soft: #2e211a;
+  --workspace-accent-hover: #3a291f;
+  --workspace-accent-ink: #f0a578;
+  --workspace-success: #abcdb6;
+  --workspace-success-soft: #293e34;
+  --workspace-success-border: #4e6b5a;
+  --workspace-success-fill: #567960;
+  --workspace-danger: #f0a8a8;
+  --workspace-danger-soft: #482c31;
+  --workspace-danger-border: #5b4144;
+  --workspace-warning-ink: #f0c48d;
+
+  --workspace-paper: #332e23;
+  --workspace-paper-border: #554a32;
+  --workspace-paper-ink: #e5d7b3;
+  --workspace-paper-muted: #c8b58c;
+  --workspace-paper-mark: #51452e;
+  --workspace-lavender: #302937;
+  --workspace-lavender-border: #51425f;
+  --workspace-lavender-ink: #ddcdea;
+  --workspace-lavender-muted: #c2aed3;
+  --workspace-lavender-mark: #9e85b3;
+  --workspace-decision-bg: #222f48;
+  --workspace-decision-border: #425779;
+  --workspace-decision-ink: #d5e2fb;
+  --workspace-decision-muted: #a9bddc;
+  --workspace-decision-option: #2d3d58;
+  --workspace-decision-option-selected: #364c70;
+  --workspace-decision-option-border: #607898;
+  --workspace-decision-selected-border: #a4baff;
+  --workspace-disabled-bg: #262624;
+  --workspace-disabled-ink: #8f8c86;
+
+  /* Single state scale (0.9.64): every hover, press or selection rule reads these
+     tokens, including the shadcn components via --accent and --sidebar-accent. Radix recipe:
+     control background, hover, press/selection on three distinct steps. */
+  --workspace-state-hover: #31302d;
+  --workspace-state-pressed: #3a3936;
+  --workspace-state-selected: #363532;
+  --workspace-control: #252523;
+  --workspace-control-hover: #2e2e2b;
+  --workspace-control-pressed: #363531;
+  --workspace-control-border: #3d3c38;
+
+  --workspace-sidebar-bg: #0f0f0e;
+  --workspace-sidebar-active: #1f1f1d;
+  --workspace-sidebar-hover: #1d1d1b;
+  --workspace-sidebar-line: #222220;
+  --workspace-sidebar-control-bg: #161615;
+  --workspace-sidebar-control-selected: #262624;
+  --workspace-sidebar-ink: #ededea;
+  --workspace-sidebar-link: #b3b0aa;
+  --workspace-sidebar-project: #ededea;
+  --workspace-sidebar-search: #8f8c86;
+  --workspace-sidebar-secondary: #b3b0aa;
+  --workspace-sidebar-muted: #8f8c86;
+  --workspace-sidebar-brand-bg: #e78a53;
+  --workspace-sidebar-brand-ink: #121113;
+
+  --workspace-blue: var(--workspace-action);
+  --workspace-action-fill: var(--workspace-action);
+  --workspace-action-ink: var(--workspace-on-accent);
+
+  /* shadcn/ui bridge: shadcn's semantic variables read the --workspace-* tokens.
+     Declared on .workspace-app, they follow the light/dark theme of that element; a
+     Radix component rendered in a portal must therefore receive a container located in .workspace-app. */
+  --background: var(--workspace-canvas);
+  --foreground: var(--workspace-ink);
+  --card: var(--workspace-surface);
+  --card-foreground: var(--workspace-ink);
+  --popover: var(--workspace-raised);
+  --popover-foreground: var(--workspace-ink);
+  --primary: var(--workspace-action);
+  --primary-foreground: var(--workspace-on-accent);
+  --secondary: var(--workspace-muted-surface);
+  --secondary-foreground: var(--workspace-ink);
+  --muted: var(--workspace-muted-surface);
+  --muted-foreground: var(--workspace-text-muted);
+  --accent: var(--workspace-state-hover);
+  --accent-foreground: var(--workspace-ink);
+  --destructive: var(--workspace-danger);
+  --border: var(--workspace-line);
+  --input: var(--workspace-input-border);
+  --ring: var(--workspace-action);
+  --radius: var(--workspace-radius-control);
+  --sidebar: var(--workspace-sidebar-bg);
+  --sidebar-foreground: var(--workspace-sidebar-ink);
+  --sidebar-primary: var(--workspace-action);
+  --sidebar-primary-foreground: var(--workspace-on-accent);
+  --sidebar-accent: var(--workspace-sidebar-hover);
+  --sidebar-accent-foreground: var(--workspace-sidebar-ink);
+  --sidebar-border: var(--workspace-sidebar-line);
+  --sidebar-ring: var(--workspace-action);
+
+  --workspace-space-1: 4px;
+  --workspace-space-2: 8px;
+  --workspace-space-3: 12px;
+  --workspace-space-4: 16px;
+  --workspace-space-5: 20px;
+  --workspace-space-6: 24px;
+  --workspace-space-8: 32px;
+  --workspace-control-compact: 2rem;
+  --workspace-target-small: 2rem;
+  --workspace-radius-small: 6px;
+  --workspace-radius-dialog: 12px;
+  --workspace-overlay: #0a0a09b3;
+  --workspace-shadow-dialog: 0 0 0 1px #ffffff0f, 0 24px 64px -12px #000000b3;
+  --workspace-text-editor-title: clamp(1.5rem, 1.6vw, 2.25rem);
+  --workspace-font-ui: "DM Sans", Arial, sans-serif;
+  --workspace-font-display: "DM Sans", Arial, sans-serif;
+  --workspace-text-caption: 0.78125rem;
+  --workspace-text-ui: 0.875rem;
+  --workspace-text-body: 1rem;
+  --workspace-text-lead: 1.125rem;
+  --workspace-text-card: 1rem;
+  --workspace-text-section: 1.25rem;
+  --workspace-text-display: 1.875rem;
+  --workspace-icon-sm: 1rem;
+  --workspace-icon-md: 1.25rem;
+  --workspace-icon-lg: 1.5rem;
+  --workspace-sidebar-width: 244px;
+  --workspace-canvas-width: 1840px;
+  --workspace-page-gutter: 36px;
+  /* Page frame, the same for every page: full width between the gutters, no page of its own width. */
+  --workspace-page-top: 40px;
+  --workspace-page-bottom: 64px;
+  --workspace-padding: 22px;
+  --workspace-card-height: 320px;
+  --workspace-card-media-height: 112px;
+  --workspace-grid-gap: 20px;
+  --workspace-detail-width: 500px;
+  --workspace-capture-width: 520px;
+  --workspace-leading-body: 1.65;
+  --workspace-leading-title: 1.2;
+  --workspace-control-height: 2.5rem;
+  --workspace-ease-out: cubic-bezier(.23, 1, .32, 1);
+  --workspace-radius-control: 6px;
+  --workspace-radius-group: 12px;
+  --workspace-radius-card: 12px;
+  --workspace-shadow-card: inset 0 1px 0 #ffffff08, 0 1px 2px #0000004d, 0 4px 14px -6px #00000066;
+  /* Depth: frame (sidebar) < page < card < raised element (menus, popovers). */
+  --workspace-frame: var(--workspace-sidebar-bg);
+  --workspace-shadow-card-hover: inset 0 1px 0 #ffffff0a, 0 2px 4px #00000059, 0 12px 28px -10px #00000080;
+  --workspace-shadow-raised: 0 0 0 1px #ffffff0f, 0 8px 24px -6px #00000099, 0 2px 6px #0000004d;
+  --workspace-shadow-panel: 0 0 0 1px #ffffff0d, 0 1px 3px #00000066;
+
+  color-scheme: dark;
+  min-width: 0;
+  min-height: 0;
+  background: var(--workspace-canvas);
+  color: var(--workspace-ink);
+  font-family: var(--workspace-font-ui);
+  font-size: var(--workspace-text-body);
+  line-height: var(--workspace-leading-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.workspace-app[data-theme="light"] {
+  /* "Radix Sand" recipe (0.9.63): almost white page, cards a notch lighter with a crisp line,
+     gray reserved for the frame, hovers and the display. The old medium gray + bright white looked like "sheets on a table".
+     02/10/2026: page and cards were nearly the same white and the shadows barely visible, so everything
+     melted together on a bright screen. The page stays light; cards are true white with a firmer line
+     and a shadow that reads. */
+  --workspace-overlay: #21201c47;
+  --workspace-canvas: #f7f6f4;
+  --workspace-surface: #ffffff;
+  --workspace-raised: #ffffff;
+  --workspace-muted-surface: #f1f0ef;
+  --workspace-ink: #21201c;
+  --workspace-text-secondary: #3b3a36;
+  --workspace-text-muted: #63635e;
+  --workspace-line: #dcdbd6;
+  --workspace-card-border: #bab9b2;
+  --workspace-card-hover-border: #84837c;
+  --workspace-input-border: #c4c3bd;
+  --workspace-action: #c4410c;
+  --workspace-action-hover: #a9380a;
+  --workspace-on-accent: #ffffff;
+  --workspace-accent-soft: #f8e1d4;
+  --workspace-accent-hover: #f2d0bd;
+  --workspace-accent-ink: #a9380a;
+  --workspace-success: #44664f;
+  --workspace-success-soft: #e3ebdf;
+  --workspace-success-border: #abc9b5;
+  --workspace-success-fill: #526f5b;
+  --workspace-danger: #a43939;
+  --workspace-danger-soft: #f5e3df;
+  --workspace-danger-border: #e0b5b3;
+  --workspace-warning-ink: #8f5514;
+
+  --workspace-paper: #f6ead0;
+  --workspace-paper-border: #e3d5ac;
+  --workspace-paper-ink: #625430;
+  --workspace-paper-muted: #78633b;
+  --workspace-paper-mark: #ead9a8;
+  --workspace-lavender: #eee6f7;
+  --workspace-lavender-border: #d8cce5;
+  --workspace-lavender-ink: #5b486e;
+  --workspace-lavender-muted: #745e86;
+  --workspace-lavender-mark: #9b87b0;
+  --workspace-decision-bg: #e2eafa;
+  --workspace-decision-border: #becde9;
+  --workspace-decision-ink: #314b7d;
+  --workspace-decision-muted: #50658a;
+  --workspace-decision-option: #f8faff;
+  --workspace-decision-option-selected: #ffffff;
+  --workspace-decision-option-border: #aabddd;
+  --workspace-decision-selected-border: #5272c9;
+  --workspace-disabled-bg: #e9e8e6;
+  --workspace-disabled-ink: #63635e;
+
+  --workspace-state-hover: #ebeae7;
+  --workspace-state-pressed: #e2e1de;
+  --workspace-state-selected: #e5e4e0;
+  --workspace-control: #f1f0ef;
+  --workspace-control-hover: #e8e7e4;
+  --workspace-control-pressed: #dfdeda;
+  --workspace-control-border: #c8c7c2;
+
+  --workspace-sidebar-bg: #f1f0ef;
+  --workspace-sidebar-active: #fdfdfc;
+  --workspace-sidebar-hover: #e4e3df;
+  --workspace-sidebar-line: #e2e1de;
+  --workspace-sidebar-control-bg: #f9f9f8;
+  --workspace-sidebar-control-selected: #e9e8e6;
+  --workspace-sidebar-ink: #21201c;
+  --workspace-sidebar-link: #3b3a36;
+  --workspace-sidebar-project: #21201c;
+  --workspace-sidebar-search: #63635e;
+  --workspace-sidebar-secondary: #3b3a36;
+  --workspace-sidebar-muted: #63635e;
+  --workspace-sidebar-brand-bg: #c4410c;
+  --workspace-sidebar-brand-ink: #ffffff;
+
+  --workspace-blue: var(--workspace-action);
+  --workspace-action-fill: var(--workspace-action);
+  --workspace-action-ink: var(--workspace-on-accent);
+
+  --workspace-shadow-card: 0 0 0 0.5px #21201c14, 0 1px 2px #21201c1f, 0 6px 14px -6px #21201c2e;
+  --workspace-shadow-card-hover: 0 0 0 0.5px #21201c29, 0 3px 6px #21201c2e, 0 16px 32px -12px #21201c5c;
+  --workspace-shadow-raised: inset 0 1px 0 #ffffff, 0 0 0 1px #21201c1a, 0 12px 32px -8px #21201c29, 0 2px 6px #21201c12;
+  --workspace-shadow-panel: 0 0 0 1px #21201c1f, 0 1px 3px #21201c1f;
+  --workspace-shadow-dialog: 0 0 0 1px #21201c1a, 0 28px 70px -14px #21201c40;
+
+  color-scheme: light;
+}
+
+.workspace-app[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* Tiptap uses `prose-invert` for both themes; remap its inversion palette in light mode. */
+.workspace-app[data-theme="light"] .note-editor .prose-invert {
+  --tw-prose-body: var(--workspace-ink);
+  --tw-prose-headings: var(--workspace-ink);
+  --tw-prose-lead: var(--workspace-text-secondary);
+  --tw-prose-links: var(--workspace-accent-ink);
+  --tw-prose-bold: var(--workspace-ink);
+  --tw-prose-counters: var(--workspace-text-muted);
+  --tw-prose-bullets: var(--workspace-text-muted);
+  --tw-prose-hr: var(--workspace-line);
+  --tw-prose-quotes: var(--workspace-ink);
+  --tw-prose-quote-borders: var(--workspace-line);
+  --tw-prose-captions: var(--workspace-text-secondary);
+  --tw-prose-code: var(--workspace-ink);
+  --tw-prose-pre-code: var(--workspace-ink);
+  --tw-prose-pre-bg: var(--workspace-raised);
+  --tw-prose-th-borders: var(--workspace-line);
+  --tw-prose-td-borders: var(--workspace-line);
+  --tw-prose-invert-body: var(--workspace-ink);
+  --tw-prose-invert-headings: var(--workspace-ink);
+  --tw-prose-invert-lead: var(--workspace-text-secondary);
+  --tw-prose-invert-links: var(--workspace-accent-ink);
+  --tw-prose-invert-bold: var(--workspace-ink);
+  --tw-prose-invert-counters: var(--workspace-text-muted);
+  --tw-prose-invert-bullets: var(--workspace-text-muted);
+  --tw-prose-invert-hr: var(--workspace-line);
+  --tw-prose-invert-quotes: var(--workspace-ink);
+  --tw-prose-invert-quote-borders: var(--workspace-line);
+  --tw-prose-invert-captions: var(--workspace-text-secondary);
+  --tw-prose-invert-code: var(--workspace-ink);
+  --tw-prose-invert-pre-code: var(--workspace-ink);
+  --tw-prose-invert-pre-bg: var(--workspace-raised);
+  --tw-prose-invert-th-borders: var(--workspace-line);
+  --tw-prose-invert-td-borders: var(--workspace-line);
+}
+
+/* Full HD and 1920 px workspace scale from the approved prototype. */
+@media (min-width: 1600px) {
+  .workspace-app {
+
+    --workspace-sidebar-width: 264px;
+    --workspace-page-gutter: 56px;
+    --workspace-padding: 24px;
+    --workspace-card-height: 328px;
+    --workspace-card-media-height: 120px;
+    --workspace-detail-width: 560px;
+    --workspace-capture-width: 560px;
+  }
+}
+
+@media (min-width: 2240px) {
+  .workspace-app {
+
+    --workspace-sidebar-width: 288px;
+    --workspace-canvas-width: 2080px;
+    --workspace-page-gutter: 72px;
+    --workspace-padding: 28px;
+    --workspace-card-height: 352px;
+    --workspace-card-media-height: 136px;
+    --workspace-grid-gap: 24px;
+    --workspace-detail-width: 640px;
+    --workspace-capture-width: 600px;
+
+  }
+}
+
+@media (max-width: 680px) {
+  .workspace-app {
+
+    --workspace-page-gutter: 20px;
+    --workspace-padding: 20px;
+    --workspace-card-height: 320px;
+    --workspace-detail-width: 100%;
+    --workspace-capture-width: calc(100vw - 32px);
+  }
+}
+
+.workspace-app :where(button, input:not([type="checkbox"]):not([type="radio"]), select) {
+  font-family: inherit;
+}
+
+.workspace-app :where(input:not([type="checkbox"]):not([type="radio"]), select) {
+  min-height: var(--workspace-control-height);
+}
+
+.workspace-app :where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--workspace-action);
+  outline-offset: 2px;
+}
+
+.workspace-app ::selection {
+  color: var(--workspace-ink);
+  background: var(--workspace-accent-soft);
+}
+
+/* Common optical sizes, including for SVGs with a size attribute. */
+.workspace-app :is(.workspace-note-card__branch, .workspace-note-card__report, .note-editor-action, .note-editor-toolbar, .note-status-field, .note-relations, .note-history) svg { width: var(--workspace-icon-sm); height: var(--workspace-icon-sm); flex-shrink: 0; }
+.workspace-app :is(.workspace-icon-action, .workspace-nav, .workspace-editor-back, .note-report summary) svg { width: var(--workspace-icon-md); height: var(--workspace-icon-md); flex-shrink: 0; }
+.workspace-app :where(button, select, summary) { -webkit-tap-highlight-color: transparent; }
+.workspace-app :where(textarea) { font-family: inherit; }
+
+/* Touch increases targets, without depending on the window width. */
+@media (pointer: coarse) {
+  .workspace-app { --workspace-control-height: 2.75rem; --workspace-control-compact: 2.75rem; --workspace-target-small: 2.75rem; }
+}
+
+/* Colors of the natures of a case: a small mark, never a background. */
+.workspace-app {
+  --case-nature-note: #a8a39a;
+  --case-nature-idea: #f0c48d;
+  --case-nature-todo: #9fd3b1;
+  --case-nature-question: #b9b2f0;
+  --case-nature-research: #8fc1ec;
+  --case-nature-decision: #f0a578;
+  --case-nature-bug: #f0a8a8;
+}
+.workspace-app[data-theme="light"] {
+  --case-nature-note: #6b665e;
+  --case-nature-idea: #8f5514;
+  --case-nature-todo: #2f6b45;
+  --case-nature-question: #5146b0;
+  --case-nature-research: #1f5f99;
+  --case-nature-decision: #a9380a;
+  --case-nature-bug: #a43939;
+}
+.workspace-app [data-type="note"] { --case-nature: var(--case-nature-note); }
+.workspace-app [data-type="idea"] { --case-nature: var(--case-nature-idea); }
+.workspace-app [data-type="todo"] { --case-nature: var(--case-nature-todo); }
+.workspace-app [data-type="question"] { --case-nature: var(--case-nature-question); }
+.workspace-app [data-type="research"] { --case-nature: var(--case-nature-research); }
+.workspace-app [data-type="decision"] { --case-nature: var(--case-nature-decision); }
+.workspace-app [data-type="bug"] { --case-nature: var(--case-nature-bug); }

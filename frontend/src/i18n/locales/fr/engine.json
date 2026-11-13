@@ -1,0 +1,373 @@
+{
+  "ai": {
+    "reason": {
+      "readFailed": "lecture impossible ({{error}})",
+      "notText": "contenu non textuel",
+      "invalidJson": "JSON invalide (ligne {{line}}, colonne {{column}})"
+    },
+    "alert": {
+      "quarantineCopy": "{{reason}} ; copie conservée : {{path}}",
+      "leftIntact": "{{reason}} ; fichier laissé intact",
+      "quarantinedOriginal": "{{reason}} ; original conservé en quarantaine",
+      "notMovable": "{{reason}} ; original non déplaçable : intervention manuelle requise",
+      "writesBlocked": "{{reason}} ; écritures bloquées tant que le fichier est inaccessible"
+    },
+    "settings": {
+      "corruptNotQuarantined": "Les réglages IA sont corrompus et n’ont pas pu être mis en quarantaine ({{error}}) ; l’enregistrement est refusé pour ne pas écraser l’original. Fermez les autres programmes qui utilisent ce fichier ou vérifiez ses droits, puis réessayez.",
+      "unreadable": "Les réglages IA ne sont pas accessibles pour le moment (lecture impossible) ; l’enregistrement est refusé, car écraser le fichier pourrait perdre des clés. Vérifiez qu’aucun autre programme ne le verrouille, puis réessayez.",
+      "writeFailed": "Écriture des réglages IA impossible : {{error}}",
+      "replaceFailed": "Remplacement des réglages IA impossible : {{error}}"
+    },
+    "lock": {
+      "heldByOther": "Les réglages IA sont détenus par un autre processus (PID {{pid}}) ; réessayez dans quelques secondes.",
+      "locked": "Les réglages IA sont verrouillés ou inaccessibles (fichier « {{path}} ») ; réessayez dans quelques secondes.",
+      "failed": "Verrou des réglages IA impossible : {{error}}"
+    },
+    "keyfile": {
+      "randomFailed": "Impossible de lire des octets aléatoires pour protéger les clés IA : {{error}}",
+      "invalid": "Le fichier de clé IA « {{path}} » est abîmé. Supprimez-le et saisissez de nouveau les clés.",
+      "unreadable": "Impossible de lire ou créer le fichier de clé IA : {{error}}",
+      "encryptFailed": "Impossible de protéger la clé IA",
+      "decryptFailed": "Impossible de lire la clé IA enregistrée"
+    },
+    "dpapi": {
+      "encryptDenied": "Chiffrement DPAPI refusé",
+      "decryptDenied": "Déchiffrement DPAPI refusé",
+      "unavailable": "DPAPI indisponible hors Windows"
+    },
+    "integration": {
+      "empty": "Intégration vide",
+      "lostTarget": "Intégration refusée : lien ou image perdu ({{target}})",
+      "shortened": "Intégration refusée : case raccourcie ({{before}} → {{after}} mots)"
+    },
+    "frame": {
+      "unknown": "Trame inconnue : {{frame}}",
+      "reflectionSections": {
+        "direction": "Direction",
+        "decisions": "Décisions",
+        "rejected": "Rejeté",
+        "evolution": "Évolution des idées",
+        "ideas": "Idées",
+        "questions": "Questions ouvertes",
+        "explore": "À explorer",
+        "actions": "Prochaines actions"
+      }
+    },
+    "http": {
+      "clientUnavailable": "Client HTTP indisponible ({{error}})",
+      "requestFailed": "{{provider}} : requête échouée ({{error}})",
+      "unreachable": "Impossible de joindre {{url}}. Vérifiez que le serveur est lancé et que l’adresse est correcte.",
+      "status": "{{provider}} HTTP {{status}}",
+      "unreadable": "Réponse {{provider}} illisible ({{error}})"
+    },
+    "dictation": {
+      "empty": "Dictée vide"
+    },
+    "note": {
+      "empty": "La case est vide"
+    },
+    "provider": {
+      "unknown": "Fournisseur inconnu : {{provider}}",
+      "unknownCleaning": "Fournisseur de nettoyage inconnu : {{id}}",
+      "unknownTranscription": "Fournisseur de transcription inconnu : {{id}}",
+      "missingUrl": "URL manquante pour le fournisseur « {{provider}} » ({{source}}).",
+      "missingKey": "{{name}} manquante",
+      "missingModel": "Modèle manquant pour le fournisseur « {{provider}} ».",
+      "emptyResponse": "Réponse du fournisseur vide ou inattendue",
+      "custom": "Personnalisé (OpenAI-compatible)",
+      "noUrl": "aucune URL",
+      "invalidUrl": "Adresse invalide : {{url}}. Saisissez une adresse commençant par http:// ou https://, par exemple http://localhost:11434.",
+      "urlNotEditable": "L’adresse du fournisseur « {{provider}} » ne peut pas être modifiée."
+    },
+    "transcription": {
+      "inProgress": "Une transcription est déjà en cours.",
+      "badRequest": "Deepgram : requête invalide ({{error}})",
+      "badAuthHeader": "Deepgram : en-tête d’authentification invalide",
+      "connectFailed": "Deepgram : connexion échouée ({{error}})",
+      "connectTimeout": "Deepgram : connexion expirée (10 s)",
+      "notRunning": "Aucune transcription en cours",
+      "interrupted": "Transcription interrompue"
+    },
+    "gate": {
+      "restoring": "Une restauration est déjà en cours : l’écriture est suspendue"
+    },
+    "structure": {
+      "empty": "Structuration vide",
+      "lostTarget": "Structuration refusée : lien ou image perdu ({{target}})",
+      "shortened": "Structuration refusée : case raccourcie ({{before}} → {{after}} mots)"
+    }
+  },
+  "notes": {
+    "notFound": "Case introuvable : {{id}}",
+    "noFieldToUpdate": "Aucun champ à modifier.",
+    "titleEmpty": "le titre ne doit pas être vide",
+    "resolutionChanged": "le compte rendu a changé entre-temps (modification concurrente) : refusé"
+  },
+  "projects": {
+    "duplicateName": "un autre projet porte déjà ce nom",
+    "notFound": "projet introuvable : {{id}}",
+    "inboxLocked": "la Réception ne peut être ni renommée, ni recolorée, ni archivée, ni supprimée",
+    "nameEmpty": "le nom du projet ne peut pas être vide",
+    "nameTooLong": "le nom du projet est trop long (120 caractères au plus)",
+    "invalidColor": "couleur de projet invalide : {{color}} (format attendu #rrggbb)",
+    "needsSpaceToDelete": "rangez le projet dans un espace avant de le supprimer"
+  },
+  "tray": {
+    "show": "Afficher Humcase",
+    "quickCapture": "Capture rapide (Alt+Maj+N)",
+    "quit": "Quitter"
+  },
+  "backup": {
+    "activityLinksInvalid": "Liens d’activité invalides",
+    "activityLinksInvalidWithError": "Liens d’activité invalides : {{error}}",
+    "activitySpacesInvalid": "Espaces d’activité invalides",
+    "activitySpacesInvalidWithError": "Espaces d’activité invalides : {{error}}",
+    "alreadyExists": "{{path}} existe déjà",
+    "alreadyExistsChooseName": "{{path}} existe déjà : choisissez un autre nom",
+    "archiveMigrationFailed": "Migration de l’archive impossible : {{error}}",
+    "archiveMigrationIncomplete": "Migration de l’archive incomplète : version {{version}}, attendue {{expected}}",
+    "archiveTooLarge": "Archive trop volumineuse",
+    "archiveUnreadable": "Archive inaccessible : {{error}}",
+    "blockedAfterRestore": "Écritures gelées après une restauration : l’état des données peut avoir changé.",
+    "commitAmbiguous": "Échec pendant la publication : l’état des données est incertain ({{error}}).",
+    "dataFolderNotFound": "Dossier de données introuvable",
+    "databaseTooLarge": "Base SQLite trop volumineuse",
+    "decompressedTooLarge": "Archive décompressée trop volumineuse",
+    "entryCountInvalid": "Nombre d’entrées invalide",
+    "entryTooLarge": "Entrée trop volumineuse",
+    "explorerOpenFailed": "Impossible d’ouvrir l’Explorateur : {{error}}",
+    "foreignKeysInvalid": "Clés étrangères invalides",
+    "foreignKeysInvalidWithError": "Clés étrangères invalides : {{error}}",
+    "hashInvalid": "Empreinte invalide : {{name}}",
+    "imageInvalid": "Image invalide : {{name}} : {{reason}}",
+    "imageInvalidName": "nom invalide",
+    "imageMissingFromFolder": "Image interne absente du dossier : {{name}}",
+    "imageMissingOrInvalid": "Image interne absente ou invalide : {{name}}",
+    "imageOutsideFolder": "Image interne hors du dossier courant",
+    "imageTooLarge": "fichier trop volumineux ({{size}} octets > {{max}})",
+    "imageUnreadable": "lecture impossible : {{error}}",
+    "imageUnsupportedEntry": "entrée non prise en charge (répertoire ou autre)",
+    "imageUrlNotPortable": "URL d’image interne non portable",
+    "inboxesInvalid": "Réceptions invalides",
+    "inboxesInvalidWithError": "Réceptions invalides : {{error}}",
+    "inboxesMultiple": "Réceptions multiples dans un même espace",
+    "invalidDatabase": "Base SQLite invalide : {{error}}",
+    "invalidDestination": "Destination invalide",
+    "lockPoisoned": "Le verrou de session a été empoisonné par une panique antérieure ({{error}})",
+    "lockStateInvalid": "État interne du verrou de session invalide : {{error}}. Aucune donnée n’a été remplacée.",
+    "lockUnavailable": "Fermez les autres sessions Humcase (MCP, CLI ou autre fenêtre) avant de restaurer : {{error}}",
+    "manifestEntryInvalid": "Entrée de manifeste invalide ou dupliquée",
+    "manifestInvalid": "Manifeste invalide : {{error}}",
+    "manifestOrDatabaseMissing": "Manifeste ou base SQLite absente",
+    "manifestTooLarge": "Manifeste trop volumineux",
+    "manifestZipMismatch": "Manifeste et ZIP incohérents",
+    "noCandidateLocation": "aucun emplacement candidat",
+    "noWritableFolder": "Aucun dossier accessible pour la sauvegarde ({{error}})",
+    "noteLinksCycle": "Cycle de liens pensée-tâche invalide",
+    "noteLinksInvalid": "Liens pensée-tâche invalides",
+    "noteLinksInvalidWithError": "Liens pensée-tâche invalides : {{error}}",
+    "noteLinksUnreadable": "Liens pensée-tâche illisibles : {{error}}",
+    "notesTableInvalid": "Table notes invalide : {{error}}",
+    "projectSpacesInvalid": "Espaces de projet invalides",
+    "projectSpacesInvalidWithError": "Espaces de projet invalides : {{error}}",
+    "projectsTableInvalid": "Table projects invalide : {{error}}",
+    "quitAndRestart": "Quittez Humcase depuis l’icône de la zone de notification (Quitter), puis relancez l’application.",
+    "restoreAppliedLockFailed": "Restauration appliquée, mais le verrou de session n’a pas pu être repris ({{error}}).",
+    "restoreFailed": "Échec de la restauration : {{error}}",
+    "restoreInProgress": "Une restauration est déjà en cours",
+    "restoreNotAppliedLockFailed": "Restauration non appliquée : les données sont inchangées, mais le verrou de session n’a pas pu être repris ({{error}}).",
+    "restoreUncertainLockFailed": "Restauration en état incertain : l’échec est survenu pendant la publication, les données ont pu être remplacées, et le verrou de session n’a pas pu être repris ({{error}}).",
+    "safetyArchiveKept": "{{error}}. Archive de sécurité conservée : {{path}}",
+    "schemaIncompatible": "Schéma SQLite incompatible : version {{version}}, attendue {{expected}}",
+    "sizeExceeded": "Taille dépassée",
+    "sizeInvalid": "Taille invalide : {{name}}",
+    "tooManyImages": "Trop d’images",
+    "versionIncompatible": "Version d’archive ou de base incompatible",
+    "versionMismatch": "Version de base incohérente avec le manifeste",
+    "zipEntryTooLarge": "Entrée ZIP trop volumineuse : {{name}}",
+    "zipInvalid": "ZIP invalide : {{error}}",
+    "zipPathInvalid": "Chemin ZIP invalide ou dupliqué : {{name}}",
+    "archiveChanged": "L’archive a changé depuis la prévisualisation",
+    "countsInvalid": "Comptages invalides après import",
+    "dictationFragmentsInvalid": "Dictée brute incohérente (case {{id}}) : ses fragments ne correspondent pas au texte brut",
+    "dictationFragmentsUnreadable": "Fragments de dictée illisibles : {{error}}",
+    "ftsInvalid": "Index FTS invalide après import : {{error}}",
+    "commitFailed": "Échec pendant la publication de la restauration (COMMIT) : {{error}}",
+    "subCasesInvalidWithError": "Sous-cases invalides dans l’archive : {{error}}",
+    "subCasesInvalid": "L’archive contient une sous-case dont la case parente manque ou appartient à un autre projet, ou un type de contenu inconnu.",
+    "subCasesCycle": "L’archive contient une case placée dans une de ses propres sous-cases.",
+    "imageFormatUnknown": "Image invalide : format non reconnu (PNG ou JPEG attendu)",
+    "fingerprintInvalid": "Empreinte invalide : {{path}}",
+    "imageMissing": "Image absente de l’archive : {{name}}"
+  },
+  "handoff": {
+    "title": "# Brief de session : {{project}}",
+    "summary": "_Généré depuis Humcase le {{date}} : {{total}} case(s) dont {{toResume}} à reprendre, {{resolved}} résolue(s), {{overdue}} échéance(s) en retard._",
+    "toResumeHeading": "À poursuivre",
+    "noneOpen": "Aucune case ouverte ou en cours.",
+    "decisionsHeading": "Dernières décisions (ne pas refaire)",
+    "noneResolved": "Aucune case résolue.",
+    "resolvedNoComment": "résolue (aucun commentaire)",
+    "contextHeading": "Contexte",
+    "lastBranch": "Dernière branche git vue dans les cases : `{{branch}}`",
+    "dueEntry": "échéance {{date}} ({{when}})",
+    "unknownProject": "Projet inconnu",
+    "allProjects": "Tous les projets",
+    "status": {
+      "open": "ouvert",
+      "inProgress": "en cours",
+      "resolved": "résolu"
+    },
+    "type": {
+      "bug": "incident",
+      "todo": "tâche",
+      "idea": "idée",
+      "note": "pensée",
+      "question": "question",
+      "research": "recherche",
+      "decision": "décision"
+    },
+    "due": {
+      "overdue": "en retard",
+      "today": "aujourd’hui",
+      "thisWeek": "cette semaine",
+      "upcoming": "à venir"
+    },
+    "reworkHeading": "Reprises demandées (à traiter d’abord)",
+    "reworkEntry": "{{title}} [{{id}}], reprise n°{{number}} : {{reason}}",
+    "awaitingReview": "en attente de la décision humaine",
+    "accepted": "accepté par l’humain",
+    "acceptedChanged": "accepté, puis modifié depuis",
+    "replacedBy": "remplacée par {{id}}, lire cette décision",
+    "inForceHeading": "Décisions en vigueur (à respecter)",
+    "inForceMore": "… {{count}} autres : get_project_summary les liste",
+    "conflictEntry": "{{case}} [{{caseId}}] va peut-être contre la décision {{decision}} [{{decisionId}}] : à voir avec la personne",
+    "profileHeading": "Comment la personne travaille (son profil, à respecter)"
+  },
+  "data": {
+    "selfLink": "Une case ne peut pas être sa propre tâche",
+    "sourceNotFound": "Case source introuvable : {{id}}",
+    "taskNotFound": "Tâche introuvable : {{id}}",
+    "trashedCannotLink": "Une case de la corbeille ne peut pas être liée",
+    "linkedSameProject": "Les cases liées doivent appartenir au même projet",
+    "targetMustBeTask": "La case cible doit être une tâche",
+    "taskTitleEmpty": "Le titre de la tâche est vide",
+    "trashedCannotReceiveTask": "Une case de la corbeille ne peut pas recevoir de tâche",
+    "trashedCannotFile": "Une case de la corbeille ne peut pas être rangée.",
+    "onlyInboxCanBeFiled": "Seule une case de la Réception peut être rangée dans un projet.",
+    "destinationNotFound": "Projet de destination introuvable.",
+    "destinationMustBeRegular": "Le projet de destination doit être un projet ordinaire du même espace que la Réception.",
+    "linkedOtherProject": "Cette case est liée à une case d’un autre projet. Déliez-les avant de la ranger.",
+    "structureEmpty": "Le texte original et la proposition doivent être non vides",
+    "contentChanged": "Le contenu de la case a changé ; actualisez la proposition",
+    "parentCaseNotFound": "Case parente introuvable : {{id}}",
+    "trashedCannotReceiveSubCase": "Une case dans la corbeille ne peut pas recevoir de sous-case.",
+    "subCaseSameProject": "Une sous-case doit appartenir au même projet que sa case parente.",
+    "caseCycle": "Une case ne peut pas aller dans elle-même ni dans une de ses sous-cases.",
+    "trashedCannotMove": "Une case dans la corbeille ne peut pas être déplacée.",
+    "trashedCannotAnnotate": "Une case dans la corbeille ne peut pas recevoir de provenance.",
+    "restoreParentFirst": "La case parente de cette sous-case est dans la corbeille. Restaurez d’abord la case parente.",
+    "subCaseFollowsParent": "Une sous-case suit sa case parente. Classez plutôt la case de premier niveau.",
+    "sketchInvalid": "Un dessin ne garde qu’un contenu Excalidraw : celui-ci n’en est pas un.",
+    "sketchTooLarge": "Ce dessin dépasse 5 Mo. Retirez les images collées dedans : une image va dans une case image.",
+    "sketchNotStructured": "Un dessin ne se structure pas.",
+    "linkNotWeb": "Seules les adresses web (http ou https) s’ouvrent depuis une case lien.",
+    "imageTooLarge": "Image trop lourde ({{size}} octets, 20 Mo au plus)",
+    "dbBusy": "La base de données est utilisée par un autre programme. Réessayez dans un instant.",
+    "dbReadOnly": "La base de données est en lecture seule : vérifiez les droits du dossier de données.",
+    "dbFull": "Le disque est plein : libérez de la place pour que Humcase puisse enregistrer.",
+    "dbIo": "Le fichier de la base de données n’a pas pu être lu ou écrit ({{error}}).",
+    "dbCorrupt": "Le fichier de la base de données est abîmé ({{error}}). Restaurez une sauvegarde depuis Paramètres → Données."
+  },
+  "app": {
+    "dataMigrationFailed": "Humcase n’a pas pu reprendre vos données.\n\n{{error}}\n\nVos cases n’ont pas été modifiées. Fermez toutes les fenêtres Humcase et les sessions d’agents, puis relancez.",
+    "sessionUnavailable": "Session Humcase inaccessible ({{path}}): {{error}}",
+    "databaseUnavailable": "Base de données inaccessible ({{path}}): {{error}}",
+    "startFailed": "Humcase n’a pas pu démarrer.\n\n{{error}}\n\nSi Humcase est déjà ouvert, rouvrez-le depuis son icône dans la zone de notification.",
+    "leaseNotHeld": "le verrou de session partagé n’est pas détenu",
+    "cli": {
+      "projectNotFound": "projet introuvable : {{id}}",
+      "noSpace": "sans espace",
+      "noteCreated": "✅ Case ’{{title}}’ créée dans « {{project}} » (espace : {{space}}). ID : {{id}}"
+    }
+  },
+  "dataFolder": {
+    "homeUnavailable": "Impossible de trouver votre dossier utilisateur pour y ranger les données de Humcase",
+    "movedButMissing": "Vos données ont été déplacées vers {{path}}, mais ce fichier est introuvable. Les données précédentes sont toujours dans {{legacy}}.",
+    "openAppFirst": "Humcase range désormais ses données dans {{path}}. Ouvrez une fois l’application Humcase pour y déplacer vos données depuis {{legacy}}, puis relancez cet agent.",
+    "legacyInUse": "Une autre session Humcase utilise {{path}} : vos données n’ont pas pu être déplacées ({{error}}). Fermez toutes les fenêtres Humcase et les sessions d’agents, puis relancez.",
+    "webviewCopyFailed": "Humcase n’a pas pu copier l’état enregistré de l’interface (brouillons, préférences) vers son nouveau dossier : {{error}}"
+  },
+  "review": {
+    "reasonRequired": "Indiquez à l’agent ce qui manque pour demander une reprise.",
+    "notFound": "Cette case n’existe plus.",
+    "inTrash": "Cette case est dans la corbeille.",
+    "changed": "La case a changé depuis que vous l’avez examinée : relisez-la avant de décider.",
+    "notResolved": "Seul un résultat terminé peut être accepté ou repris."
+  },
+  "activities": {
+    "nameLength": "le nom d’une activité doit compter de 1 à 80 caractères",
+    "notFound": "activité introuvable : {{id}}",
+    "inboxHasNone": "la Réception ne peut pas appartenir à des activités",
+    "changedExternally": "les activités du projet ont changé ailleurs ; actualisez puis réessayez",
+    "needsSpace": "rangez le projet dans un espace avant de lui associer des activités",
+    "otherSpace": "cette activité appartient à un autre espace : {{id}}"
+  },
+  "canvas": {
+    "tooLarge": "plan trop lourd (20 Mo au plus)",
+    "unreadable": "ce fichier n’est pas un document JSON Canvas : {{error}}",
+    "notObject": "ce fichier n’est pas un document JSON Canvas : un objet avec des nœuds est attendu",
+    "nodesNotArray": "les nœuds doivent former une liste",
+    "tooManyNodes": "trop de nœuds ({{found}}, {{max}} au plus)",
+    "nodeNotObject": "le nœud {{index}} n’est pas un objet",
+    "nodeNotNumber": "nœud {{index}} : {{field}} doit être un nombre",
+    "nodeIdMissing": "nœud {{index}} : id est obligatoire",
+    "nodeDuplicateId": "nœud {{index}} : id {{id}} en double",
+    "nodeTypeMissing": "nœud {{index}} : type est obligatoire"
+  },
+  "germinate": {
+    "notText": "Seule une case de texte peut germer.",
+    "tooShort": "Écrivez d’abord quelques mots dans la case : Humcase propose la suite à partir de ce qu’elle dit.",
+    "noAi": "Aucune clé IA : ajoutez-en une dans Paramètres → Services IA.",
+    "answered": "Cette proposition a déjà reçu une réponse : rechargez la case.",
+    "cannotPlace": "Cette case est dans une autre case ou un autre projet : elle reste où elle est.",
+    "noProposals": "L’IA a répondu sans propositions.",
+    "unreadable": "Réponse de l’IA illisible : {{error}}"
+  },
+  "profile": {
+    "title": "Votre façon de travailler",
+    "section": {
+      "rules": "Règles",
+      "work": "Métiers",
+      "refused": "Refusé souvent"
+    },
+    "from": {
+      "decision": "décision du {{date}}",
+      "count": "compté sur vos cases, sans IA",
+      "sprout": "vos réponses dans Faire germer",
+      "agent": "proposé par {{agent}}"
+    },
+    "work": {
+      "dev": "Développement logiciel",
+      "marketing": "Marketing",
+      "research": "Recherche",
+      "reflection": "Réflexion et écriture",
+      "personal": "Vie personnelle"
+    },
+    "workDetail": "{{count}} de vos {{total}} cases",
+    "refusedLine": "{{natures}} proposées par Faire germer : souvent refusées",
+    "refusedDetail": "{{refused}} refusées sur {{total}}",
+    "natures": {
+      "todo": "Les actions",
+      "question": "Les questions",
+      "research": "Les recherches",
+      "decision": "Les décisions",
+      "idea": "Les idées"
+    }
+  },
+  "tidy": {
+    "alreadyAnswered": "Cette proposition n’existe plus ou a déjà reçu une réponse.",
+    "otherGone": "L’autre case n’existe plus.",
+    "weeks": "Durée non proposée : {{weeks}} semaines."
+  }
+}

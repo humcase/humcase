@@ -1,0 +1,70 @@
+/* Humcase kit — badges (0.9.67). One base, four designs, five tones; color reinforces
+   a label or an icon, it never carries the meaning alone. */
+
+.workspace-app .ui-badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--workspace-text-secondary);
+  font-size: var(--workspace-text-caption);
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.workspace-app .ui-badge > svg { flex: none; }
+.workspace-app .ui-badge__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* Dessins */
+.workspace-app .ui-badge[data-variant='soft'] { padding: 2px 8px; background: var(--workspace-muted-surface); }
+.workspace-app .ui-badge[data-variant='soft']:has(> svg) { padding-left: 6px; }
+.workspace-app .ui-badge[data-variant='soft'][data-size='md'] { padding: 3px 10px 3px 8px; font-size: var(--workspace-text-ui); }
+.workspace-app .ui-badge[data-variant='outline'] { padding: 1px 7px; border-color: var(--workspace-line); border-radius: 5px; background: transparent; }
+.workspace-app .ui-badge[data-variant='plain'] { padding: 0; background: none; }
+.workspace-app .ui-badge[data-variant='plain'][data-size='md'] { font-size: var(--workspace-text-ui); }
+.workspace-app .ui-badge[data-variant='screen'] {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: var(--screen-bg);
+  color: var(--screen-fg);
+  font-family: var(--workspace-font-mono);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  box-shadow: var(--screen-inset);
+}
+
+/* Tones (text and soft background; in "plain", only the text changes). */
+.workspace-app .ui-badge[data-tone='danger'] { color: var(--workspace-danger); }
+.workspace-app .ui-badge[data-tone='warning'] { color: var(--workspace-warning-ink); }
+.workspace-app .ui-badge[data-tone='success'] { color: var(--workspace-success); }
+.workspace-app .ui-badge[data-tone='accent'] { color: var(--workspace-accent-ink); }
+.workspace-app .ui-badge[data-variant='soft'][data-tone='danger'] { background: var(--workspace-danger-soft); }
+.workspace-app .ui-badge[data-variant='soft'][data-tone='warning'] { background: var(--workspace-paper); }
+.workspace-app .ui-badge[data-variant='soft'][data-tone='success'] { background: var(--workspace-success-soft); }
+.workspace-app .ui-badge[data-variant='soft'][data-tone='accent'] { background: var(--workspace-accent-soft); }
+
+/* Status: neutral badge, only the icon takes the state color. */
+.workspace-app .ui-status[data-status='open'] > svg { color: var(--workspace-text-muted); }
+.workspace-app .ui-status[data-status='in_progress'] > svg { color: var(--workspace-action); }
+.workspace-app .ui-status[data-status='resolved'] > svg { color: var(--workspace-success); }
+
+/* Priority: short square label, tight digits. */
+.workspace-app .ui-priority.ui-badge { min-height: 20px; padding: 1px 6px; border-radius: 5px; font-weight: 600; font-size: 11.5px; letter-spacing: .01em; font-family: var(--workspace-font-mono); }
+.workspace-app .ui-priority[data-resolved] { color: var(--workspace-text-muted); }
+
+/* Clickable tag: bordered button, visible hover. */
+.workspace-app button.ui-tag.ui-badge { cursor: pointer; }
+.workspace-app button.ui-tag.ui-badge:hover { border-color: var(--workspace-card-hover-border); color: var(--workspace-ink); }
+.workspace-app button.ui-tag.ui-badge:focus-visible { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+/* Nature of a case: its own color (tokens in workspace-theme.css). */
+.workspace-app .ui-type[data-type] { color: var(--case-nature, inherit); }

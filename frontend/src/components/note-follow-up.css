@@ -1,0 +1,29 @@
+.note-status-control { position: relative; color: var(--workspace-ink); }
+.note-status-field span { min-width: 70px; text-align: left; }
+.workspace-app .note-status-field:disabled { cursor: wait; }
+.note-status-control[data-status="resolved"] .note-status-field > svg:first-child { color: var(--workspace-success); }
+.note-status-control[data-status="in_progress"] .note-status-field > svg:first-child { color: var(--workspace-accent-ink); }
+.note-status-feedback { display: block; max-width: 190px; margin-top: 4px; font-size: var(--workspace-text-caption); }
+.note-status-feedback[role="alert"] { color: var(--workspace-danger); }
+.note-report { margin: 20px 24px 0; border: 1px solid var(--workspace-line); border-radius: var(--workspace-radius-card); background: var(--workspace-surface); color: var(--workspace-ink); }
+.note-report summary { display: flex; align-items: center; gap: 12px; padding: 16px 20px; cursor: pointer; list-style: none; }
+.note-report summary::-webkit-details-marker { display: none; }
+.note-report summary > svg:first-child { color: var(--workspace-accent-ink); flex-shrink: 0; }
+.note-report summary span { flex: 1; }
+.note-report summary strong { display: block; font-size: var(--workspace-text-ui); font-weight: 600; }
+.note-report summary small { display: block; margin-top: 3px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.note-report[open] .note-report-chevron { transform: rotate(180deg); }
+.note-report summary:focus-visible { outline: 2px solid var(--workspace-accent-ink); outline-offset: 3px; }
+.note-report .note-report-body { padding: 20px; border-top: 1px solid var(--workspace-line); max-height: 50vh; overflow: auto; overflow-wrap: anywhere; font-size: var(--workspace-text-body); line-height: 1.65; color: var(--workspace-ink); }
+.note-report-body > :first-child { margin-top: 0; }
+.note-report-body > :last-child { margin-bottom: 0; }
+.note-report-body :is(h1,h2,h3) { font-size: var(--workspace-text-lead); color: inherit; }
+.note-report-body strong { color: var(--workspace-ink); }
+.note-report-body a { color: var(--workspace-accent-ink); text-underline-offset: 3px; }
+.note-report-body code { color: var(--workspace-ink); }
+.note-report-body pre { background: var(--workspace-canvas); }
+.note-report-body pre { overflow-x: auto; }
+.note-report-body > :is(p,ul,ol,blockquote) { max-width: 90ch; }
+.workspace-app .note-report-add { margin: 12px 24px 0; }
+.workspace-app .note-report-edit { margin-top: 16px; }
+@media (max-width: 720px) { .note-report { margin-inline: 16px; } .note-report summary, .note-report .note-report-body { padding: 14px; } }

@@ -1,0 +1,20 @@
+{
+  "heading": "Schnellerfassung",
+  "windowTitle": "Humcase · Schnellerfassung",
+  "closeHint": "Esc zum Schließen",
+  "textLabel": "Erfassungstext",
+  "saving": "Speichern…",
+  "placeholder": "Ich muss…",
+  "storageUnavailable": "Lokaler Speicher nicht verfügbar: Dieser Entwurf wird beim Schließen oder Neustart nicht behalten.",
+  "destinationLabel": "Ziel des Falls",
+  "openNoteOption": "Offenen Fall ergänzen · {{title}}",
+  "typeLabel": "Art des Falls",
+  "typeLockedTitle": "Der Text wird dem offenen Fall hinzugefügt, seine Art bleibt unverändert",
+  "loadError": "Projekte konnten nicht gelesen werden: Datenbank nicht verfügbar.",
+  "chooseDestination": "Wähle ein Ziel für diesen Fall.",
+  "noOpenNote": "In Humcase ist kein Fall geöffnet.",
+  "appendFailed": "Hinzufügen fehlgeschlagen: {{message}} Der Text bleibt erhalten.",
+  "createFailed": "Erstellen fehlgeschlagen: {{error}}",
+  "noteNoAnswer": "Der offene Fall hat nicht geantwortet.",
+  "appendRefused": "Der offene Fall hat das Hinzufügen abgelehnt."
+}

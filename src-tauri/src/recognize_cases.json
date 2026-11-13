@@ -1,0 +1,4283 @@
+[
+{
+"id": "en-01",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "bump node to 22 in the CI image and rerun the flaky e2e suite before Friday. also delete the old staging db",
+"due": "2026-10-09",
+"actions": [
+"bump node to 22 in the CI image",
+"rerun the flaky e2e suite",
+"delete the old staging db"
+]
+},
+{
+"id": "en-02",
+"lang": "en",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "dictated",
+"text": "so uh I need to write the migration for the invoices table, well add the currency column first, and then update the API docs, I'll do that tomorrow morning",
+"due": "2026-10-06",
+"actions": [
+"write the migration for the invoices table",
+"add the currency column",
+"update the API docs"
+]
+},
+{
+"id": "en-03",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "TODO: rotate the S3 access keys, check Sentry quota, close stale PRs on the infra repo",
+"due": null,
+"actions": [
+"rotate the S3 access keys",
+"check Sentry quota",
+"close stale PRs on the infra repo"
+]
+},
+{
+"id": "en-04",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "typed",
+"text": "what if we cache the pricing endpoint at the edge w/ a 60s TTL, would cut db reads a lot. not sure about invalidation tho",
+"due": null,
+"actions": []
+},
+{
+"id": "en-05",
+"lang": "en",
+"split": "test",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "so I was thinking, maybe we should split the billing module out into its own service, um, not now obviously, but it keeps getting tangled up with auth and every release is a headache",
+"due": null,
+"actions": []
+},
+{
+"id": "en-06",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "question",
+"style": "typed",
+"text": "do we really need Redis for sessions or is Postgres fine at our scale? ~2k daily users",
+"due": null,
+"actions": []
+},
+{
+"id": "en-07",
+"lang": "en",
+"split": "test",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "uh does anyone know why the build takes like eleven minutes on the runner but only three on my laptop, is it the docker layer cache or what",
+"due": null,
+"actions": []
+},
+{
+"id": "en-08",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "typed",
+"text": "Decision: going with Vitest over Jest for the new package. faster, native ESM. existing Jest tests stay as they are",
+"due": null,
+"actions": []
+},
+{
+"id": "en-09",
+"lang": "en",
+"split": "test",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "okay so we talked it over and we're keeping Postgres, no Mongo, the data's relational anyway, and Priya is going to write up the ADR so it's on record",
+"due": null,
+"actions": [
+"write up the ADR"
+]
+},
+{
+"id": "en-10",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "bug",
+"style": "typed",
+"text": "login 500s when the email has a + in it, url encoder is eating the plus. repro: user+test@gmail.com. has to be fixed before the Monday release",
+"due": "2026-10-12",
+"actions": [
+"fix the login 500 on emails with a +"
+]
+},
+{
+"id": "en-11",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "research",
+"style": "typed",
+"text": "SQLite WAL vs rollback journal for the desktop app: WAL about 3x faster on writes in my bench (12k inserts, 410ms vs 1.3s) but adds a -wal file to the backup story. Litestream docs cover the replication side",
+"due": null,
+"actions": []
+},
+{
+"id": "en-12",
+"lang": "en",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "note",
+"style": "dictated",
+"text": "so just a note, the staging deploy key lives in the shared vault under infra slash staging and the rotation is every ninety days, last one was in August",
+"due": null,
+"actions": []
+},
+{
+"id": "en-13",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "send the Q4 webinar invite to the partner list by Thursday, need Dana to approve the subject line first",
+"due": "2026-10-08",
+"actions": [
+"send the Q4 webinar invite to the partner list",
+"get Dana to approve the subject line"
+]
+},
+{
+"id": "en-14",
+"lang": "en",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "dictated",
+"text": "right so I have to update the landing page hero copy, um, swap the old pricing for the new tiers, and then ping Marcus to check the UTM links, all of it before the launch on the 14th",
+"due": "2026-10-14",
+"actions": [
+"update the landing page hero copy",
+"swap the old pricing for the new tiers",
+"ping Marcus to check the UTM links"
+]
+},
+{
+"id": "en-15",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "book a photographer for the Lisbon pop-up, get quotes from 3 studios before the 19th",
+"due": "2026-10-19",
+"actions": [
+"book a photographer for the Lisbon pop-up",
+"get quotes from 3 studios"
+]
+},
+{
+"id": "en-16",
+"lang": "en",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "typed",
+"text": "Idea: customer story series on LinkedIn, one short video a month, start with the bakery client",
+"due": null,
+"actions": []
+},
+{
+"id": "en-17",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "dictated",
+"text": "what if we did a referral thing, like, give a free month to both sides, I don't know, it might eat into the margin but it's probably worth a look",
+"due": null,
+"actions": []
+},
+{
+"id": "en-18",
+"lang": "en",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "typed",
+"text": "should the newsletter go out Tuesday or Thursday? open rates were better on Thu last quarter i think",
+"due": null,
+"actions": []
+},
+{
+"id": "en-19",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "dictated",
+"text": "um who owns the brand guidelines doc now that Sophie's left, because the logo files in there are the old ones and nobody seems to know",
+"due": null,
+"actions": []
+},
+{
+"id": "en-20",
+"lang": "en",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "typed",
+"text": "Going with the agency for the trade show booth, in-house quote was 40% higher. budget locked at 18k",
+"due": null,
+"actions": []
+},
+{
+"id": "en-21",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "so we decided, well Hannah and I decided, to drop the Instagram ads this quarter and put all of that spend into search instead, we're not doing both",
+"due": null,
+"actions": []
+},
+{
+"id": "en-22",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "bug",
+"style": "typed",
+"text": "newsletter bounced for ~300 contacts, looks like the SPF record broke after the domain change. went out 9:40am",
+"due": null,
+"actions": []
+},
+{
+"id": "en-23",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "research",
+"style": "typed",
+"text": "competitor scan: Acme charges $29/mo, Brightly $35, both bury the annual discount below the fold. only Brightly offers a free trial w/o a card. screenshots are in the shared folder",
+"due": null,
+"actions": []
+},
+{
+"id": "en-24",
+"lang": "en",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "note",
+"style": "dictated",
+"text": "just for the record the press kit lives on the shared drive under marketing slash press, and the boilerplate paragraph was last updated in the spring",
+"due": null,
+"actions": []
+},
+{
+"id": "en-25",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "code the remaining 14 interview transcripts, then send the codebook to Elena for the inter-rater check by end of the month",
+"due": "2026-10-31",
+"actions": [
+"code the remaining 14 interview transcripts",
+"send the codebook to Elena for the inter-rater check"
+]
+},
+{
+"id": "en-26",
+"lang": "en",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "dictated",
+"text": "so I need to re-run the regression with clustered standard errors, uh, and also add the robustness table to the appendix, that's for the reviewer response which is due on the 16th",
+"due": "2026-10-16",
+"actions": [
+"re-run the regression with clustered standard errors",
+"add the robustness table to the appendix"
+]
+},
+{
+"id": "en-27",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "request ethics amendment for the extra survey wave. form EA-3, needs PI signature",
+"due": null,
+"actions": [
+"request ethics amendment for the extra survey wave",
+"get PI signature on form EA-3"
+]
+},
+{
+"id": "en-28",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "idea",
+"style": "typed",
+"text": "maybe run a small diary study alongside the survey? would catch what people forget to report. 10 participants, 2 weeks",
+"due": null,
+"actions": []
+},
+{
+"id": "en-29",
+"lang": "en",
+"split": "test",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "um one thing we could try is to oversample the over sixty-fives in the next wave because the confidence intervals are huge there, though I'm not sure the budget allows it",
+"due": null,
+"actions": []
+},
+{
+"id": "en-30",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "question",
+"style": "typed",
+"text": "is n=212 enough for a medium effect at 80% power with 4 predictors? never sure about this one",
+"due": null,
+"actions": []
+},
+{
+"id": "en-31",
+"lang": "en",
+"split": "test",
+"line_of_work": "research",
+"nature": "question",
+"style": "dictated",
+"text": "so uh why did the response rate drop from thirty-one to nineteen percent between wave one and wave two, was it the incentive or the longer form",
+"due": null,
+"actions": []
+},
+{
+"id": "en-32",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "decision",
+"style": "typed",
+"text": "Using Cronbach's alpha cutoff of .70, dropping items 7 and 11 from the scale. final scale = 9 items",
+"due": null,
+"actions": []
+},
+{
+"id": "en-33",
+"lang": "en",
+"split": "test",
+"line_of_work": "research",
+"nature": "decision",
+"style": "dictated",
+"text": "okay we're going with the mixed methods design, survey first and then follow up interviews, Professor Okafor signed off on it last Friday so that's settled",
+"due": null,
+"actions": []
+},
+{
+"id": "en-34",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "bug",
+"style": "typed",
+"text": "survey link in the reminder email is dead, 404. 40 people already clicked it. did the Qualtrics distribution get deleted??",
+"due": null,
+"actions": []
+},
+{
+"id": "en-35",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "research",
+"style": "typed",
+"text": "read Hargreaves 2023 and the Ofcom report: both find the drop in trust is mostly among under-30s, but they measure trust differently (5-point vs 10-point scale), so can't compare the numbers directly",
+"due": null,
+"actions": []
+},
+{
+"id": "en-36",
+"lang": "en",
+"split": "tune",
+"line_of_work": "research",
+"nature": "note",
+"style": "dictated",
+"text": "so the transcripts are in the research drive, folder is called wave two, and the anonymised ones are in the sub folder with the underscore, just so I remember",
+"due": null,
+"actions": []
+},
+{
+"id": "en-37",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "write down the three things I actually want from the next job, then compare with the two offers. by Sunday",
+"due": "2026-10-11",
+"actions": [
+"write down the three things I actually want from the next job",
+"compare with the two offers"
+]
+},
+{
+"id": "en-38",
+"lang": "en",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "dictated",
+"text": "I really should block out an hour on Wednesday to think about whether to go part-time, no phone, just the notebook, and then talk to Sam about it",
+"due": "2026-10-07",
+"actions": [
+"block out an hour on Wednesday to think about whether to go part-time",
+"talk to Sam about it"
+]
+},
+{
+"id": "en-39",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "reread the notes from the January retreat before the planning session on Thursday",
+"due": "2026-10-08",
+"actions": [
+"reread the notes from the January retreat"
+]
+},
+{
+"id": "en-40",
+"lang": "en",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "typed",
+"text": "maybe try a 4-day week for the side project, Fridays only for deep work. not sure it's realistic yet",
+"due": null,
+"actions": []
+},
+{
+"id": "en-41",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "dictated",
+"text": "I wonder if instead of choosing between the move and staying, I could, you know, rent a place there for three months first and see how it feels",
+"due": null,
+"actions": []
+},
+{
+"id": "en-42",
+"lang": "en",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "typed",
+"text": "am I avoiding the promotion because I don't want it or because I'm scared of managing a team of 12?",
+"due": null,
+"actions": []
+},
+{
+"id": "en-43",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "dictated",
+"text": "so what would I do if money wasn't the issue, like honestly, would I still be doing this job, I keep coming back to that and I don't have an answer",
+"due": null,
+"actions": []
+},
+{
+"id": "en-44",
+"lang": "en",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "typed",
+"text": "Decided: not taking the consulting gig. Too much travel, and the pay doesn't cover the lost weekends.",
+"due": null,
+"actions": []
+},
+{
+"id": "en-45",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "okay so I've made up my mind, I'm staying in the city for another year, the lease renewal is fine, and I'm done going back and forth on it",
+"due": null,
+"actions": []
+},
+{
+"id": "en-46",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "bug",
+"style": "typed",
+"text": "my morning routine keeps falling apart by Wednesday, i skip the walk and end up on my phone for an hour. something's off with how I plan the week",
+"due": null,
+"actions": []
+},
+{
+"id": "en-47",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "research",
+"style": "typed",
+"text": "reread Newport's chapter on deep work: his cap is about 4 hrs a day. Ericsson says roughly the same for deliberate practice. both treat rest as part of the work, not a reward after it",
+"due": null,
+"actions": []
+},
+{
+"id": "en-48",
+"lang": "en",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "note",
+"style": "dictated",
+"text": "just a reminder to myself that the last time I felt this stuck was around when I changed teams two years ago and it passed in about six weeks",
+"due": null,
+"actions": []
+},
+{
+"id": "en-49",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "renew passport - take the photos and the form to the post office by the 20th",
+"due": "2026-10-20",
+"actions": [
+"renew passport",
+"take the photos and the form to the post office"
+]
+},
+{
+"id": "en-50",
+"lang": "en",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "so I need to call the dentist to rebook, uh, and pick up Mum's prescription from the chemist, I'll do both tomorrow",
+"due": "2026-10-06",
+"actions": [
+"call the dentist to rebook",
+"pick up Mum's prescription from the chemist"
+]
+},
+{
+"id": "en-51",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "shopping: milk, eggs, oats, bin bags, birthday card for Tom. need it all before Saturday",
+"due": "2026-10-10",
+"actions": [
+"buy milk",
+"buy eggs",
+"buy oats",
+"buy bin bags",
+"buy birthday card for Tom"
+]
+},
+{
+"id": "en-52",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "typed",
+"text": "weekend in Edinburgh in November? train is ~4.5h from London, could do the castle and a whisky tour",
+"due": null,
+"actions": []
+},
+{
+"id": "en-53",
+"lang": "en",
+"split": "test",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "um maybe we could set up a monthly standing order to the savings account, like fifty pounds, just to start, I haven't really looked at the rates though",
+"due": null,
+"actions": []
+},
+{
+"id": "en-54",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "question",
+"style": "typed",
+"text": "does our home insurance actually cover the loft conversion or only the main house?",
+"due": null,
+"actions": []
+},
+{
+"id": "en-55",
+"lang": "en",
+"split": "test",
+"line_of_work": "personal",
+"nature": "question",
+"style": "dictated",
+"text": "so when does the car MOT run out, is it November or December, I can never remember and the reminder letter never comes",
+"due": null,
+"actions": []
+},
+{
+"id": "en-56",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "typed",
+"text": "going with the 12-month broadband deal, £28/mo, not the 24 month one. told the other provider no",
+"due": null,
+"actions": []
+},
+{
+"id": "en-57",
+"lang": "en",
+"split": "test",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "ok so we've decided, we're going with the flat on Mill Road, not the one by the park, shorter commute and the service charge is lower, fourteen fifty a year",
+"due": null,
+"actions": []
+},
+{
+"id": "en-58",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "bug",
+"style": "typed",
+"text": "boiler is leaking again under the sink, small puddle every morning. pressure drops to 0.8 bar overnight",
+"due": null,
+"actions": []
+},
+{
+"id": "en-59",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "research",
+"style": "typed",
+"text": "ISA vs workplace pension: employer matches up to 5%, so max that first. ISA allowance is 20k this tax year. compared 3 providers, Vanguard fees lowest at ~0.15%. just my notes, not advice",
+"due": null,
+"actions": []
+},
+{
+"id": "en-60",
+"lang": "en",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "note",
+"style": "dictated",
+"text": "just noting that Dad's birthday dinner was last Tuesday and he loved it, it was the Italian place on Baker Street, table for six",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-01",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "TODO migrer la table users vers la v3 avant vendredi, ajouter l'index sur email, relancer les tests d'integration",
+"due": "2026-10-09",
+"actions": [
+"migrer la table users vers la v3",
+"ajouter l'index sur email",
+"relancer les tests d'integration"
+]
+},
+{
+"id": "fr-02",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "dictated",
+"text": "bon alors faut que je pense à mettre à jour les dépendances du front avant mercredi, euh enfin surtout React Router, et ensuite écrire le test pour le formulaire d'inscription",
+"due": "2026-10-07",
+"actions": [
+"mettre à jour les dépendances du front",
+"écrire le test pour le formulaire d'inscription"
+]
+},
+{
+"id": "fr-03",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "relire la PR de Camille demain matin, elle touche au module de paiement",
+"due": "2026-10-06",
+"actions": [
+"relire la PR de Camille"
+]
+},
+{
+"id": "fr-04",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "euh peut-être qu'on pourrait passer le cache sur Redis, comme ça on scale sur deux instances, enfin c'est pas décidé, faudrait en parler avec Thomas",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-05",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "euh j'ai pensé qu'on pourrait générer les types TypeScript directement depuis le schéma OpenAPI, ça éviterait de les recopier à la main, enfin je sais pas si ça marche avec notre version",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-06",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "question",
+"style": "typed",
+"text": "Pourquoi le job de nuit met 40 min depuis la mise à jour ? quelqu'un a touché à l'index ?",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-07",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "alors est-ce qu'on garde Jest ou est-ce qu'on bascule sur Vitest, parce que là la config devient pénible, je sais pas trop quoi faire",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-08",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "typed",
+"text": "Décision : on reste sur Postgres, pas de MongoDB. Trop de jointures dans le modèle.",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-09",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "bon on a tranché avec l'équipe, on garde l'auth par cookie de session et on abandonne les JWT, c'est plus simple pour la révocation, et la migration doit être finie pour la fin du mois",
+"due": "2026-10-31",
+"actions": [
+"finir la migration"
+]
+},
+{
+"id": "fr-10",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "bug",
+"style": "typed",
+"text": "bug: l'export CSV plante qd le nom contient une virgule ou un guillemet, stacktrace dans Sentry #4521",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-11",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "research",
+"style": "typed",
+"text": "Comparatif ORM: Prisma ok mais lourd au démarrage (~300 ms de cold start), Drizzle plus léger, TypeORM migrations bancales. Sources: benchmarks de Theo + doc Drizzle",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-12",
+"lang": "fr",
+"split": "test",
+"line_of_work": "dev",
+"nature": "note",
+"style": "dictated",
+"text": "pour mémoire le serveur de préprod tourne sur le port 8443 et le certificat expire en janvier, c'est Julien qui a les accès",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-13",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "envoyer le brief au graphiste pour les visuels de la campagne Black Friday avant jeudi + valider le budget Meta Ads (1500€)",
+"due": "2026-10-08",
+"actions": [
+"envoyer le brief au graphiste",
+"valider le budget Meta Ads"
+]
+},
+{
+"id": "fr-14",
+"lang": "fr",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "dictated",
+"text": "alors faut que je rédige les trois posts LinkedIn pour le lancement, euh que je les fasse relire par Sophie, et que je programme tout dans Buffer pour jeudi",
+"due": "2026-10-08",
+"actions": [
+"rédiger les trois posts LinkedIn",
+"les faire relire par Sophie",
+"programmer tout dans Buffer"
+]
+},
+{
+"id": "fr-15",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "appeler l'imprimeur pour les flyers du salon, ils doivent etre livres le 14. devis a relancer aussi",
+"due": "2026-10-14",
+"actions": [
+"appeler l'imprimeur",
+"relancer le devis"
+]
+},
+{
+"id": "fr-16",
+"lang": "fr",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "typed",
+"text": "Idée : un concours Instagram réservé aux clients fidèles, lot = 1 an d'abonnement",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-17",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "dictated",
+"text": "on pourrait peut-être faire une série de petites vidéos où les clients racontent comment ils utilisent le produit, enfin euh pas forcément pro, plutôt façon témoignage",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-18",
+"lang": "fr",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "typed",
+"text": "quel est le vrai taux d'ouverture de la newsletter depuis qu'on a changé l'objet ? Apple Mail fausse tout",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-19",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "dictated",
+"text": "alors je me demande si ça vaut le coup d'aller au salon de Lyon cette année, avec le stand à 4000 euros, est-ce qu'on a vraiment eu des leads l'an dernier",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-20",
+"lang": "fr",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "bon ben on part sur le tutoiement pour toute la com sur les réseaux, j'en ai parlé avec Marc ce matin et c'est validé",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-21",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "donc on a décidé de couper le budget Twitter, euh X, on le met sur LinkedIn parce que le retour est meilleur, voilà",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-22",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "bug",
+"style": "typed",
+"text": "la newsletter d'hier a rebondi pour 300 adresses, le lien de désinscription renvoie une 404",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-23",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "research",
+"style": "typed",
+"text": "Veille concurrents: Ledgerly et Compta+ communiquent surtout par témoignages clients, 3 posts/sem, engagement ~2,5% sur LinkedIn d'après Similarweb. Rien sur TikTok.",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-24",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "note",
+"style": "dictated",
+"text": "le code promo de la rentrée c'est RENTREE15, valable un mois, euh et il est cumulable avec la livraison offerte",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-25",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "relire le chapitre 3 de Marie, ajouter les refs manquantes, envoyer à Pr. Lefèvre pour le 20 octobre",
+"due": "2026-10-20",
+"actions": [
+"relire le chapitre 3 de Marie",
+"ajouter les refs manquantes",
+"envoyer à Pr. Lefèvre"
+]
+},
+{
+"id": "fr-26",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "dictated",
+"text": "euh alors pour l'enquête il faut que je recode les réponses ouvertes de la question 12, que je relance les non-répondants, et que je nettoie la base avant d'attaquer les stats, d'ici la fin du mois",
+"due": "2026-10-31",
+"actions": [
+"recoder les réponses ouvertes de la question 12",
+"relancer les non-répondants",
+"nettoyer la base"
+]
+},
+{
+"id": "fr-27",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "demander l'acces a Cairn via la BU, commander l'article de Bourdieu en PEB",
+"due": null,
+"actions": [
+"demander l'accès à Cairn via la BU",
+"commander l'article de Bourdieu en PEB"
+]
+},
+{
+"id": "fr-28",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "une piste ce serait de croiser les données de l'INSEE avec notre enquête, pour voir si l'effet tient aussi en zone rurale, enfin c'est une possibilité",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-29",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "on pourrait ajouter une phase qualitative, genre une dizaine d'entretiens semi-directifs, pour comprendre pourquoi les gens abandonnent, mais bon faut voir si on a le temps",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-30",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "question",
+"style": "typed",
+"text": "L'échantillon de 212 répondants est-il suffisant pour un effet moyen ? pas sûr du calcul de puissance",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-31",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "research",
+"nature": "question",
+"style": "dictated",
+"text": "alors je me demande si on peut vraiment comparer les deux vagues de l'enquête puisque la formulation de la question sur le revenu a changé entre les deux",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-32",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "decision",
+"style": "typed",
+"text": "Retenu : on exclut les répondants qui ont mis moins de 2 min au questionnaire (n=17)",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-33",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "research",
+"nature": "decision",
+"style": "dictated",
+"text": "après discussion avec la directrice de thèse on garde Zotero et on abandonne Mendeley, euh c'est plus fiable pour les citations",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-34",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "bug",
+"style": "typed",
+"text": "le lien du sondage envoyé hier est mort, erreur 403 pour les externes, 40 mails déjà partis",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-35",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "research",
+"style": "typed",
+"text": "Lecture Kahneman 2011 ch. 5: la facilité cognitive augmente la confiance; Gilovich 2002 contredit en partie. Méta-analyse de Chen (2019): d=0,31. Pertinent pour la partie 2.1.",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-36",
+"lang": "fr",
+"split": "test",
+"line_of_work": "research",
+"nature": "note",
+"style": "dictated",
+"text": "la réunion du labo c'est le mardi à dix heures en salle B12, euh et le séminaire est annulé la semaine du vingt-six",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-37",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "faire le point sur mes priorités du trimestre: lister 3 objectifs max, en parler à Anaïs vendredi",
+"due": "2026-10-09",
+"actions": [
+"lister 3 objectifs max",
+"en parler à Anaïs"
+]
+},
+{
+"id": "fr-38",
+"lang": "fr",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "dictated",
+"text": "bon il faut que je prenne une demi-journée pour réfléchir à mon poste, euh écrire ce qui me plaît et ce qui me pèse, et ensuite seulement en parler à mon manager",
+"due": null,
+"actions": [
+"prendre une demi-journée pour réfléchir à mon poste",
+"écrire ce qui me plaît et ce qui me pèse",
+"en parler à mon manager"
+]
+},
+{
+"id": "fr-39",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "relire mes notes de l'an dernier sur la reconversion avant lundi prochain, avant de decider quoi que ce soit",
+"due": "2026-10-12",
+"actions": [
+"relire mes notes de l'an dernier sur la reconversion"
+]
+},
+{
+"id": "fr-40",
+"lang": "fr",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "typed",
+"text": "idée: passer à 4 jours par semaine à partir de janvier, quitte à baisser un peu le salaire",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-41",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "dictated",
+"text": "peut-être que je devrais arrêter les réseaux le soir, euh ou au moins couper les notifications, ça m'aiderait à mieux dormir, je sais pas, on verra",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-42",
+"lang": "fr",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "typed",
+"text": "Est-ce que je reste dans cette boîte juste par confort ? Qu'est-ce qui me retient vraiment ?",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-43",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "dictated",
+"text": "alors la vraie question c'est est-ce que je veux manager des gens ou est-ce que je préfère rester expert, parce que là on me propose le poste de lead et je sais pas",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-44",
+"lang": "fr",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "bon voilà j'ai tranché je refuse la promotion, je préfère garder du temps pour moi et pour les enfants",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-45",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "donc j'ai finalement choisi de rester à Lyon, euh on ne déménage pas à Nantes, les enfants ont leurs repères et franchement ça m'enlève un poids",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-46",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "bug",
+"style": "typed",
+"text": "Mon système de priorités déraille: la liste fait 80 lignes, je n'en traite plus aucune, rien n'avance depuis 2 semaines",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-47",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "research",
+"style": "typed",
+"text": "Lu: 'Deep Work' de Cal Newport — blocs de 90 min sans interruption, rituels fixes; à comparer avec le Pomodoro qui coupe à 25 min. Le podcast de Hubert dit l'inverse.",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-48",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "note",
+"style": "dictated",
+"text": "ce que je retiens de la discussion avec Papa hier c'est qu'il a changé de métier à quarante ans, et qu'il ne le regrette pas, enfin voilà c'est bon à savoir",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-49",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "payer la taxe foncière avant le 15, + renouveler carte d'identité de Léa (RDV mairie)",
+"due": "2026-10-15",
+"actions": [
+"payer la taxe foncière",
+"renouveler la carte d'identité de Léa"
+]
+},
+{
+"id": "fr-50",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "alors demain il faut que j'appelle le plombier pour la chaudière, euh que je prenne rendez-vous chez le dentiste, et que j'achète des piles pour le détecteur de fumée",
+"due": "2026-10-06",
+"actions": [
+"appeler le plombier pour la chaudière",
+"prendre rendez-vous chez le dentiste",
+"acheter des piles pour le détecteur de fumée"
+]
+},
+{
+"id": "fr-51",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "courses: lait, oeufs, lessive, pain de mie. penser aussi à rendre les livres à la médiathèque avant samedi",
+"due": "2026-10-10",
+"actions": [
+"acheter lait, oeufs, lessive, pain de mie",
+"rendre les livres à la médiathèque"
+]
+},
+{
+"id": "fr-52",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "on pourrait faire un week-end à Annecy fin novembre, ou alors plutôt la Bretagne, euh on verra selon la météo",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-53",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "euh je pensais qu'on pourrait peut-être offrir à Maman un abonnement à la salle de concert pour son anniversaire, enfin si elle y va vraiment",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-54",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "question",
+"style": "typed",
+"text": "Mutuelle: est-ce qu'on change pour Harmonie ou on garde l'actuelle ? 62€ vs 48€/mois pour la même couverture ?",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-55",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "question",
+"style": "dictated",
+"text": "alors je me demande combien on peut mettre de côté par mois pour les vacances d'été, parce qu'avec le prêt qui augmente je sais plus où j'en suis",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-56",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "typed",
+"text": "Décidé: on prend le forfait fibre à 29,99€, on résilie l'ancienne box le 12/10",
+"due": "2026-10-12",
+"actions": [
+"résilier l'ancienne box"
+]
+},
+{
+"id": "fr-57",
+"lang": "fr",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "donc voilà on a choisi la voiture d'occasion, la Clio de 2019 à 11 500 euros, on la prend, pas de neuve",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-58",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "bug",
+"style": "typed",
+"text": "chaudière: fuite sous le ballon + pression qui tombe à 0,5 bar chaque matin",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-59",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "research",
+"style": "typed",
+"text": "Comparatif assurances habitation: MAIF 312€/an, Matmut 289€, Direct Assurance 245€ mais franchise 400€. Garantie dégâts des eaux incluse chez les trois.",
+"due": null,
+"actions": []
+},
+{
+"id": "fr-60",
+"lang": "fr",
+"split": "test",
+"line_of_work": "personal",
+"nature": "note",
+"style": "dictated",
+"text": "le portail se ferme tout seul à vingt-deux heures, euh et le contrat d'électricité est chez EDF jusqu'en mars, le numéro de compteur est sur la facture",
+"due": null,
+"actions": []
+},
+{
+"id": "es-01",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "Migrar la API de pagos a la v3 antes del viernes. Actualizar el SDK, revisar los webhooks y quitar el endpoint viejo /v2/charge.",
+"due": "2026-10-09",
+"actions": [
+"Migrar la API de pagos a la v3",
+"Actualizar el SDK",
+"revisar los webhooks",
+"quitar el endpoint viejo /v2/charge"
+]
+},
+{
+"id": "es-02",
+"lang": "es",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "dictated",
+"text": "A ver, tengo que acordarme de, eh, subir la versión de Node en el Dockerfile para la semana que viene porque la 18 ya no tiene soporte, y de paso revisar que los tests de integración sigan pasando en el pipeline",
+"due": "2026-10-12",
+"actions": [
+"subir la versión de Node en el Dockerfile",
+"revisar que los tests de integración sigan pasando en el pipeline"
+]
+},
+{
+"id": "es-03",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "TODO: escribir tests para el servicio de notificaciones, la cobertura está en un 40%. Pedir revisión a Marta mañana.",
+"due": "2026-10-06",
+"actions": [
+"escribir tests para el servicio de notificaciones",
+"Pedir revisión a Marta"
+]
+},
+{
+"id": "es-04",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "typed",
+"text": "Podríamos cachear las consultas del dashboard en Redis, igual baja de 3 s a menos de 500 ms. No sé si vale la pena la complejidad.",
+"due": null,
+"actions": []
+},
+{
+"id": "es-05",
+"lang": "es",
+"split": "test",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "Estaba pensando que quizá deberíamos pasar el monolito a módulos separados, o sea, no microservicios todavía, solo módulos, pero bueno, eso hay que decidirlo con el equipo, no está nada claro",
+"due": null,
+"actions": []
+},
+{
+"id": "es-06",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "question",
+"style": "typed",
+"text": "¿Usamos Postgres o seguimos con MySQL para el nuevo servicio de facturación? Alguien ha probado las columnas JSONB en producción?",
+"due": null,
+"actions": []
+},
+{
+"id": "es-07",
+"lang": "es",
+"split": "test",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "Oye y, este, por qué el job de sincronización se lanza dos veces cada madrugada, será por el cron duplicado en el servidor o es cosa del orquestador, no tengo ni idea",
+"due": null,
+"actions": []
+},
+{
+"id": "es-08",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "typed",
+"text": "Decidido: TypeScript estricto en todo el front, sin any. Se queda así, se acabó el debate.",
+"due": null,
+"actions": []
+},
+{
+"id": "es-09",
+"lang": "es",
+"split": "test",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "Al final hemos quedado en que no vamos a usar GraphQL para la app móvil, nos quedamos con REST porque el equipo ya lo conoce y no hay tiempo para aprender otra cosa",
+"due": null,
+"actions": []
+},
+{
+"id": "es-10",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "bug",
+"style": "typed",
+"text": "Bug: el login con Google falla en Safari iOS, pantalla en blanco tras el redirect. En Chrome va bien. Sale error CORS en la consola.",
+"due": null,
+"actions": []
+},
+{
+"id": "es-11",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "research",
+"style": "dictated",
+"text": "He estado comparando Vite y Webpack para el proyecto nuevo, en mi prueba Vite arranca en dos segundos y Webpack en unos catorce, pero Webpack tiene más plugins para lo que necesitamos de módulos federados",
+"due": null,
+"actions": []
+},
+{
+"id": "es-12",
+"lang": "es",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "note",
+"style": "dictated",
+"text": "El servidor de staging está en la 10.0.4.12 y la base de datos se resetea todos los domingos a las tres de la madrugada, lo digo para que lo tengamos presente",
+"due": null,
+"actions": []
+},
+{
+"id": "es-13",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "enviar el newsletter de octubre el jueves 8. Falta el copy de la cabecera y el banner. Pedirle las fotos a Carlos",
+"due": "2026-10-08",
+"actions": [
+"enviar el newsletter de octubre",
+"hacer el copy de la cabecera y el banner",
+"Pedirle las fotos a Carlos"
+]
+},
+{
+"id": "es-14",
+"lang": "es",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "dictated",
+"text": "Tengo que, a ver, preparar el informe de campañas de septiembre para la reunión del lunes que viene, con el CPC, las conversiones y la comparativa con agosto",
+"due": "2026-10-12",
+"actions": [
+"preparar el informe de campañas de septiembre"
+]
+},
+{
+"id": "es-15",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "Renovar el dominio de la web de la marca antes de fin de mes y actualizar los textos legales del footer",
+"due": "2026-10-31",
+"actions": [
+"Renovar el dominio de la web de la marca",
+"actualizar los textos legales del footer"
+]
+},
+{
+"id": "es-16",
+"lang": "es",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "typed",
+"text": "Idea: sorteo en Instagram con los clientes de Valencia, premio una cena en un restaurante local. Quizá colaborar con alguna cuenta de foodies",
+"due": null,
+"actions": []
+},
+{
+"id": "es-17",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "dictated",
+"text": "Pues pensaba que podríamos probar a hacer unos vídeos cortos de, no sé, treinta segundos, mostrando cómo se usa el producto, igual en TikTok, aunque no sé si nuestro público está ahí",
+"due": null,
+"actions": []
+},
+{
+"id": "es-18",
+"lang": "es",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "typed",
+"text": "Cuánto presupuesto asignamos a Meta Ads el próximo trimestre? Hay que cerrarlo antes del 12/10 y con 3.000 € no llegamos al objetivo de leads",
+"due": "2026-10-12",
+"actions": []
+},
+{
+"id": "es-19",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "dictated",
+"text": "Me pregunto si el nuevo logo va a funcionar bien en pequeño, o sea en el favicon y en la foto de perfil, porque con tantos detalles igual se pierde",
+"due": null,
+"actions": []
+},
+{
+"id": "es-20",
+"lang": "es",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "typed",
+"text": "Nos quedamos con la agencia de Madrid para las redes, la oferta de 1.200 €/mes era la mejor. Firmamos el contrato el 14.",
+"due": "2026-10-14",
+"actions": [
+"Firmamos el contrato"
+]
+},
+{
+"id": "es-21",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "Al final hemos decidido no hacer descuentos en el Black Friday, vamos a regalar un accesorio con la compra, que nos sale mejor de margen",
+"due": null,
+"actions": []
+},
+{
+"id": "es-22",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "bug",
+"style": "typed",
+"text": "El newsletter de ayer rebotó en gmail, casi 800 correos devueltos. Parece problema del SPF del dominio",
+"due": null,
+"actions": []
+},
+{
+"id": "es-23",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "research",
+"style": "dictated",
+"text": "Estuve mirando lo que hace la competencia y la mayoría publica tres veces por semana en Instagram, sobre todo reels, y los que tienen más interacción usan testimonios de clientes, según un informe que leí",
+"due": null,
+"actions": []
+},
+{
+"id": "es-24",
+"lang": "es",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "note",
+"style": "dictated",
+"text": "Apunto que la reunión con la agencia fue el martes pasado, estuvimos Laura, Pablo y yo, duró como tres cuartos de hora y hablamos de tarifas y del calendario editorial",
+"due": null,
+"actions": []
+},
+{
+"id": "es-25",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "enviar el cuestionario piloto a 20 participantes el miércoles. Revisar antes la pregunta 7, es ambigua",
+"due": "2026-10-07",
+"actions": [
+"enviar el cuestionario piloto a 20 participantes",
+"Revisar la pregunta 7"
+]
+},
+{
+"id": "es-26",
+"lang": "es",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "dictated",
+"text": "Tengo pendiente transcribir las entrevistas, que son ocho, y codificarlas en NVivo, y luego pasar el resumen a la directora de tesis antes de que acabe el mes",
+"due": "2026-10-31",
+"actions": [
+"transcribir las entrevistas",
+"codificarlas en NVivo",
+"pasar el resumen a la directora de tesis"
+]
+},
+{
+"id": "es-27",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "pedir acceso a la base de datos de la Biblioteca Nacional antes del 20. Mandar el formulario + carta del tutor",
+"due": "2026-10-20",
+"actions": [
+"pedir acceso a la base de datos de la Biblioteca Nacional",
+"Mandar el formulario y la carta del tutor"
+]
+},
+{
+"id": "es-28",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "idea",
+"style": "typed",
+"text": "Se podría ampliar el estudio a Latinoamérica, comparar México y Argentina con España. Habría que ver si hay datos comparables",
+"due": null,
+"actions": []
+},
+{
+"id": "es-29",
+"lang": "es",
+"split": "test",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "Igual podríamos hacer los grupos focales online en vez de presenciales, eh, así llegamos a gente de otras ciudades, aunque pierdes un poco la dinámica de grupo",
+"due": null,
+"actions": []
+},
+{
+"id": "es-30",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "question",
+"style": "typed",
+"text": "¿Con 120 participantes tenemos potencia suficiente para un efecto mediano? No me acuerdo si hay que corregir por comparaciones múltiples",
+"due": null,
+"actions": []
+},
+{
+"id": "es-31",
+"lang": "es",
+"split": "test",
+"line_of_work": "research",
+"nature": "question",
+"style": "dictated",
+"text": "Una duda, la muestra de la encuesta del INE que estamos usando está ponderada o no, porque si no lo está los porcentajes que he sacado no valen",
+"due": null,
+"actions": []
+},
+{
+"id": "es-32",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "decision",
+"style": "typed",
+"text": "Usaremos Zotero para las referencias, no Mendeley. Ya está acordado con el grupo",
+"due": null,
+"actions": []
+},
+{
+"id": "es-33",
+"lang": "es",
+"split": "test",
+"line_of_work": "research",
+"nature": "decision",
+"style": "dictated",
+"text": "Hemos decidido dejar fuera del análisis a los participantes que tardaron menos de cinco minutos en la encuesta porque contestaron al azar claramente",
+"due": null,
+"actions": []
+},
+{
+"id": "es-34",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "bug",
+"style": "typed",
+"text": "El enlace de la encuesta está caído, da error 404 desde esta mañana. Ya habían contestado 35 personas, ojo con perder las respuestas",
+"due": null,
+"actions": []
+},
+{
+"id": "es-35",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "research",
+"style": "dictated",
+"text": "Leyendo un metaanálisis de dos mil veinte, dicen que el efecto del teletrabajo en la productividad es pequeño pero positivo, con una muestra de unas cuatro mil personas en España, y que varía bastante según el sector",
+"due": null,
+"actions": []
+},
+{
+"id": "es-36",
+"lang": "es",
+"split": "tune",
+"line_of_work": "research",
+"nature": "note",
+"style": "dictated",
+"text": "Apunto que en el marco teórico el capítulo dos ya tiene treinta y cuatro páginas y el tres va por veinte, y el límite de la facultad es de ciento cincuenta en total",
+"due": null,
+"actions": []
+},
+{
+"id": "es-37",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "hablar con mi jefa sobre reducir jornada, el viernes a más tardar. Preparar números antes",
+"due": "2026-10-09",
+"actions": [
+"hablar con mi jefa sobre reducir jornada",
+"Preparar números"
+]
+},
+{
+"id": "es-38",
+"lang": "es",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "dictated",
+"text": "Para pensar bien lo del cambio de trabajo tengo que sentarme el sábado y hacer la lista de pros y contras, y pues escribir qué es lo que de verdad me importa",
+"due": "2026-10-10",
+"actions": [
+"hacer la lista de pros y contras",
+"escribir qué es lo que de verdad me importa"
+]
+},
+{
+"id": "es-39",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "Releer mi diario de los últimos tres meses para ver patrones antes de la terapia",
+"due": null,
+"actions": [
+"Releer mi diario de los últimos tres meses"
+]
+},
+{
+"id": "es-40",
+"lang": "es",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "dictated",
+"text": "Y si en vez de dejar el trabajo del todo, no sé, pidiera una excedencia de seis meses, así pruebo lo de montar mi propio estudio sin quemar todos los puentes",
+"due": null,
+"actions": []
+},
+{
+"id": "es-41",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "typed",
+"text": "quizá lo mío es freelance + media jornada, mezclar. No lo tengo claro",
+"due": null,
+"actions": []
+},
+{
+"id": "es-42",
+"lang": "es",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "typed",
+"text": "Me compensa quedarme en la ciudad solo por el sueldo? Qué valoro más: tiempo o dinero?",
+"due": null,
+"actions": []
+},
+{
+"id": "es-43",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "dictated",
+"text": "Me estoy preguntando si de verdad quiero ser jefe de equipo o solo me atrae porque es lo que toca después de cinco años, o sea qué quiero yo y no lo que se espera de mí",
+"due": null,
+"actions": []
+},
+{
+"id": "es-44",
+"lang": "es",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "typed",
+"text": "He rechazado la oferta de Barcelona. Demasiado alquiler y me alejo de mi familia. Final.",
+"due": null,
+"actions": []
+},
+{
+"id": "es-45",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "Bueno pues lo he pensado mucho y me quedo donde estoy este año, no me muevo de empresa, a lo mejor el año que viene lo vuelvo a mirar pero ahora no",
+"due": null,
+"actions": []
+},
+{
+"id": "es-46",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "bug",
+"style": "typed",
+"text": "llevo dos semanas durmiendo fatal y no rindo en el trabajo, algo no va bien con mi rutina",
+"due": null,
+"actions": []
+},
+{
+"id": "es-47",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "research",
+"style": "dictated",
+"text": "He leído un libro sobre toma de decisiones que dice que lo que funciona es poner un plazo y no darle más vueltas, y que los que sopesan demasiadas opciones acaban menos contentos, lo llaman la paradoja de la elección",
+"due": null,
+"actions": []
+},
+{
+"id": "es-48",
+"lang": "es",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "note",
+"style": "dictated",
+"text": "Apunto las cosas que me hacen bien porque se me olvidan: caminar por la mañana, llamar a mi hermana y no mirar el móvil hasta las nueve",
+"due": null,
+"actions": []
+},
+{
+"id": "es-49",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "Llamar al fontanero mañana por lo del grifo del baño, y comprar bombillas LED",
+"due": "2026-10-06",
+"actions": [
+"Llamar al fontanero",
+"comprar bombillas LED"
+]
+},
+{
+"id": "es-50",
+"lang": "es",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "Tengo que sacar cita con el médico de cabecera para renovar la receta, y también pedir cita para la revisión del coche, la ITV vence el doce de octubre",
+"due": "2026-10-12",
+"actions": [
+"sacar cita con el médico de cabecera para renovar la receta",
+"pedir cita para la revisión del coche"
+]
+},
+{
+"id": "es-51",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "Hay que renovar el DNI de mamá, pedir cita previa en la comisaría, y comprar el regalo del cumple de Lucía, que se me olvida siempre",
+"due": null,
+"actions": [
+"renovar el DNI de mamá",
+"pedir cita previa en la comisaría",
+"comprar el regalo del cumple de Lucía"
+]
+},
+{
+"id": "es-52",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "Podríamos hacer un viaje a Asturias en el puente de diciembre, alquilar una casa rural entre todos, la familia y los primos, aunque habría que ver precios",
+"due": null,
+"actions": []
+},
+{
+"id": "es-53",
+"lang": "es",
+"split": "test",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "typed",
+"text": "montar un huerto urbano en la terraza? tomates y albahaca, quizá",
+"due": null,
+"actions": []
+},
+{
+"id": "es-54",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "question",
+"style": "typed",
+"text": "Cambiamos de compañía de luz? Ahora pagamos unos 85 €/mes y Octopus anuncia una tarifa más barata",
+"due": null,
+"actions": []
+},
+{
+"id": "es-55",
+"lang": "es",
+"split": "test",
+"line_of_work": "personal",
+"nature": "question",
+"style": "dictated",
+"text": "No me acuerdo si ya hemos pagado el seguro del piso este año o si se renueva en noviembre, a ver quién lo sabe",
+"due": null,
+"actions": []
+},
+{
+"id": "es-56",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "typed",
+"text": "Vamos a comprar el sofá de 640 € de Ikea, no el de la tienda de muebles de 1.100. Pedido hecho",
+"due": null,
+"actions": []
+},
+{
+"id": "es-57",
+"lang": "es",
+"split": "test",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "Pues hemos decidido que este año las vacaciones de Navidad las pasamos en casa de mis suegros en Sevilla y no viajamos a la playa, es lo más sensato con lo de los gastos",
+"due": null,
+"actions": []
+},
+{
+"id": "es-58",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "bug",
+"style": "typed",
+"text": "La caldera pierde agua otra vez y la presión baja a 0,5. Sale agua por debajo",
+"due": null,
+"actions": []
+},
+{
+"id": "es-59",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "research",
+"style": "dictated",
+"text": "Estuve mirando hipotecas, en el banco de mi nómina un tipo fijo del tres con cinco y en uno online del tres con ocho, pero el primero pide vincular el seguro de hogar y la nómina",
+"due": null,
+"actions": []
+},
+{
+"id": "es-60",
+"lang": "es",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "note",
+"style": "typed",
+"text": "wifi del piso: red Casa_Ruiz. Contador del agua en el sótano, llave general detrás de la puerta",
+"due": null,
+"actions": []
+},
+{
+"id": "de-01",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "PR #212 reviewen, Migrationsskript für die users-Tabelle auf staging testen. Bis Freitag.",
+"due": "2026-10-09",
+"actions": [
+"PR #212 reviewen",
+"Migrationsskript für die users-Tabelle auf staging testen"
+]
+},
+{
+"id": "de-02",
+"lang": "de",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "dictated",
+"text": "Ähm also ich muss noch die Rate-Limits im Gateway einbauen, also eigentlich erst mal schauen was Nginx schon kann, und dann Tests schreiben, das muss vor dem Release Ende des Monats stehen",
+"due": "2026-10-31",
+"actions": [
+"Rate-Limits im Gateway einbauen",
+"schauen was Nginx schon kann",
+"Tests schreiben"
+]
+},
+{
+"id": "de-03",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "TODO: Dependabot-Updates mergen, node auf 22 hochziehen, README aktualisieren",
+"due": null,
+"actions": [
+"Dependabot-Updates mergen",
+"node auf 22 hochziehen",
+"README aktualisieren"
+]
+},
+{
+"id": "de-04",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "typed",
+"text": "Man könnte die Suchindex-Neuberechnung nachts per Cron laufen lassen statt bei jedem Speichern. Wäre deutlich weniger Last auf der DB.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-05",
+"lang": "de",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "Also was mir gerade einfällt, wir könnten, äh, die Feature-Flags in eine eigene kleine Konfig-Seite packen, dann muss nicht jedes Mal jemand ins Repo, aber das ist erstmal nur so ein Gedanke, nichts entschieden.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-06",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "question",
+"style": "typed",
+"text": "Warum braucht der Docker-Build lokal 14 Minuten und in der CI nur 4? Cache-Problem?",
+"due": null,
+"actions": []
+},
+{
+"id": "de-07",
+"lang": "de",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "Sag mal, weiß jemand ob wir für die Postgres-Migration auf Version 16 überhaupt ein Wartungsfenster brauchen oder geht das im laufenden Betrieb, also ich hab da echt keine Ahnung",
+"due": null,
+"actions": []
+},
+{
+"id": "de-08",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "typed",
+"text": "Entscheidung: wir bleiben bei REST, GraphQL lohnt sich für die paar Endpunkte nicht.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-09",
+"lang": "de",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "Okay also wir haben uns heute im Daily geeinigt, dass wir Vite statt Webpack nehmen, äh, ja, das ganze Team war sich einig, Webpack fliegt raus.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-10",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "bug",
+"style": "typed",
+"text": "Login-Redirect kaputt auf Safari: nach OAuth landet man auf einer weißen Seite, Konsole zeigt CORS-Fehler. Chrome geht. Hotfix muss morgen raus.",
+"due": "2026-10-06",
+"actions": [
+"Hotfix ausliefern"
+]
+},
+{
+"id": "de-11",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "research",
+"style": "dictated",
+"text": "Hab mir heute mal Drizzle und Prisma angeschaut, also Drizzle ist deutlich leichter beim Cold Start auf Lambda, ungefähr 40 Millisekunden gegenüber 300, aber Prisma hat das bessere Tooling und die Migrationen sind ausgereifter",
+"due": null,
+"actions": []
+},
+{
+"id": "de-12",
+"lang": "de",
+"split": "test",
+"line_of_work": "dev",
+"nature": "note",
+"style": "dictated",
+"text": "Ähm, nur zur Erinnerung: die Staging-Datenbank läuft auf db-stg-02, Backup jede Nacht um drei, und die Zugangsdaten liegen im Vaultwarden unter stg.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-13",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "Newsletter-Entwurf für Oktober fertig machen, Betreffzeilen A/B testen, Bilder von Anna holen. Versand am 14.",
+"due": "2026-10-14",
+"actions": [
+"Newsletter-Entwurf fertig machen",
+"Betreffzeilen A/B testen",
+"Bilder von Anna holen"
+]
+},
+{
+"id": "de-14",
+"lang": "de",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "dictated",
+"text": "Also ich muss morgen früh unbedingt Jonas wegen der Messe-Standgebühren anrufen und dann, äh, die Rechnung vom Grafiker freigeben, sonst zahlen wir Mahngebühren",
+"due": "2026-10-06",
+"actions": [
+"Jonas wegen der Messe-Standgebühren anrufen",
+"Rechnung vom Grafiker freigeben"
+]
+},
+{
+"id": "de-15",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "UTM-Parameter in allen LinkedIn-Anzeigen prüfen + Budget für Q4 nachziehen, alles bis Freitag",
+"due": "2026-10-09",
+"actions": [
+"UTM-Parameter in allen LinkedIn-Anzeigen prüfen",
+"Budget für Q4 nachziehen"
+]
+},
+{
+"id": "de-16",
+"lang": "de",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "dictated",
+"text": "Was wäre wenn wir, ähm, so eine Art Kundenstimmen-Reihe auf Instagram machen, jede Woche ein kurzer Clip, also ich weiß nicht ob das Team dafür Zeit hat, aber es wäre authentischer als diese Stockfotos",
+"due": null,
+"actions": []
+},
+{
+"id": "de-17",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "typed",
+"text": "Idee: Podcast-Kooperation mit Kaffeekontor, würde Reichweite im B2B-Bereich bringen.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-18",
+"lang": "de",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "dictated",
+"text": "Äh, weiß eigentlich jemand wie hoch unsere Öffnungsrate beim letzten Newsletter war, also ich hab nur die Klickrate gesehen und die war ziemlich mies",
+"due": null,
+"actions": []
+},
+{
+"id": "de-19",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "typed",
+"text": "Lohnt sich TikTok für unsere Zielgruppe 45+ überhaupt? Oder verbrennen wir da nur Budget??",
+"due": null,
+"actions": []
+},
+{
+"id": "de-20",
+"lang": "de",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "typed",
+"text": "Black-Friday-Aktion wird 20 % statt 30 %, Marge reicht sonst nicht. Steht fest.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-21",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "So, wir haben jetzt final entschieden, den Relaunch der Landingpage erst im Januar zu machen, also nicht mehr dieses Jahr, weil die Agentur ausgebucht ist",
+"due": null,
+"actions": []
+},
+{
+"id": "de-22",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "bug",
+"style": "typed",
+"text": "Newsletter-Versand gestern: 380 Bounces, Absenderdomain wohl nicht sauber authentifiziert (SPF?). Antworten kommen nicht an.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-23",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "research",
+"style": "dictated",
+"text": "Ich hab mir mal die Anzeigenpreise angesehen, also bei Google kostet ein Klick im Schnitt 1,80 Euro für unser Keyword, bei Meta eher 0,60, aber die Conversion ist da deutlich schlechter, laut einer Branchenstudie ungefähr halb so hoch",
+"due": null,
+"actions": []
+},
+{
+"id": "de-24",
+"lang": "de",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "note",
+"style": "dictated",
+"text": "Nur zur Erinnerung, äh, die Markenfarben sind Petrol und Sand, also Hex 0F5C66 und E8DCC4, Schrift ist Inter, und das Logo nie auf bunten Hintergrund.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-25",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "Interviewleitfaden überarbeiten, Einverständniserklärung 20x ausdrucken, Termine mit Teilnehmenden bestätigen. Bis Mittwoch.",
+"due": "2026-10-07",
+"actions": [
+"Interviewleitfaden überarbeiten",
+"Einverständniserklärung 20x ausdrucken",
+"Termine mit Teilnehmenden bestätigen"
+]
+},
+{
+"id": "de-26",
+"lang": "de",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "dictated",
+"text": "Also ich sollte, ähm, noch die Literatur zu Selbstwirksamkeit durchgehen, also die drei Aufsätze von Bandura und dann die Metaanalyse, und das muss bis Ende des Monats in Kapitel zwei einfließen",
+"due": "2026-10-31",
+"actions": [
+"Literatur zu Selbstwirksamkeit durchgehen",
+"in Kapitel zwei einarbeiten"
+]
+},
+{
+"id": "de-27",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "Umfragedaten bereinigen (Ausreißer über 3 SD raus), dann Cronbachs Alpha rechnen. Bis morgen Abend.",
+"due": "2026-10-06",
+"actions": [
+"Umfragedaten bereinigen",
+"Cronbachs Alpha rechnen"
+]
+},
+{
+"id": "de-28",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "idea",
+"style": "typed",
+"text": "Man könnte die Stichprobe um Berufsschüler erweitern, dann wäre sie weniger akademisch verzerrt.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-29",
+"lang": "de",
+"split": "tune",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "Mir kommt da grad ein Gedanke, vielleicht sollten wir statt der Online-Umfrage doch ein paar Tagebuchstudien machen, also das wäre aufwendiger aber, äh, tiefer. Müsste man aber erst mal besprechen.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-30",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "question",
+"style": "typed",
+"text": "Ist n=48 für die Regressionsanalyse mit 6 Prädiktoren überhaupt ausreichend?",
+"due": null,
+"actions": []
+},
+{
+"id": "de-31",
+"lang": "de",
+"split": "tune",
+"line_of_work": "research",
+"nature": "question",
+"style": "dictated",
+"text": "Die Frage ist ja, ob wir die Interviews transkribieren lassen oder selber machen, also ich weiß nicht, was der Förderantrag da zulässt",
+"due": null,
+"actions": []
+},
+{
+"id": "de-32",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "decision",
+"style": "typed",
+"text": "Wir nehmen qualitative Inhaltsanalyse nach Mayring, nicht Grounded Theory. Passt besser zum Zeitrahmen.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-33",
+"lang": "de",
+"split": "tune",
+"line_of_work": "research",
+"nature": "decision",
+"style": "dictated",
+"text": "Also gut, äh, wir haben uns jetzt entschieden, die Befragung auf Deutsch und Englisch anzubieten, nicht auch noch auf Türkisch, das wäre zu viel Aufwand mit der Übersetzung",
+"due": null,
+"actions": []
+},
+{
+"id": "de-34",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "bug",
+"style": "typed",
+"text": "Umfragelink in der Mail an die Teilnehmenden ist tot (404), 60 Leute haben ihn schon bekommen. SoSci-Survey-Projekt wurde versehentlich archiviert.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-35",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "research",
+"style": "dictated",
+"text": "Zusammenfassung vom Paper von Schmidt und Keller, ähm, die haben 1200 Beschäftigte befragt und finden einen Zusammenhang zwischen Homeoffice-Anteil und Erschöpfung, aber nur ab drei Tagen pro Woche, und der Effekt ist klein, also r ungefähr 0,2",
+"due": null,
+"actions": []
+},
+{
+"id": "de-36",
+"lang": "de",
+"split": "test",
+"line_of_work": "research",
+"nature": "note",
+"style": "dictated",
+"text": "Ach ja, die Ethikkommission tagt immer am ersten Dienstag im Monat, das Antragsformular liegt im Teamlaufwerk im Ordner Ethik.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-37",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "Pro-Contra-Liste zur Selbstständigkeit zu Ende schreiben, mit Sven darüber reden, Kündigungsfrist im Vertrag nachlesen. Bis Freitag.",
+"due": "2026-10-09",
+"actions": [
+"Pro-Contra-Liste zur Selbstständigkeit zu Ende schreiben",
+"mit Sven darüber reden",
+"Kündigungsfrist im Vertrag nachlesen"
+]
+},
+{
+"id": "de-38",
+"lang": "de",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "dictated",
+"text": "Ich sollte mir wirklich mal einen Abend Zeit nehmen und aufschreiben, was mir an dem Job eigentlich noch Spaß macht, so ganz ehrlich, bis Sonntag, damit ich nächste Woche mit klarem Kopf ins Gespräch mit Frau Brandt gehe",
+"due": "2026-10-11",
+"actions": [
+"aufschreiben, was mir an dem Job noch Spaß macht"
+]
+},
+{
+"id": "de-39",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "Jahresziele überprüfen: was habe ich bis jetzt geschafft? Review am 31.10.",
+"due": "2026-10-31",
+"actions": [
+"Jahresziele überprüfen"
+]
+},
+{
+"id": "de-40",
+"lang": "de",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "dictated",
+"text": "Vielleicht, also nur mal so gedacht, könnte ich einen Tag in der Woche komplett offline arbeiten, ohne Slack, ohne Mails, äh, um mal wieder tiefer ranzukommen",
+"due": null,
+"actions": []
+},
+{
+"id": "de-41",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "typed",
+"text": "Sabbatical 2027? Drei Monate Portugal, Remote-Job pausieren. Nur eine Überlegung.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-42",
+"lang": "de",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "dictated",
+"text": "Will ich eigentlich wirklich Teamleiter werden oder will ich nur, dass die anderen denken, ich hätte es geschafft, also das muss ich mir ehrlich beantworten",
+"due": null,
+"actions": []
+},
+{
+"id": "de-43",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "typed",
+"text": "Warum schiebe ich die Steuererklärung seit Monaten vor mir her? Angst vor dem Ergebnis oder reine Faulheit?",
+"due": null,
+"actions": []
+},
+{
+"id": "de-44",
+"lang": "de",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "typed",
+"text": "Hab mich entschieden: ich bleibe erstmal bei der Firma, mindestens bis Sommer. Kein Wechsel jetzt.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-45",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "Also ich hab mich dann doch dafür entschieden, das Masterstudium nicht anzufangen, äh, das Geld und die Zeit stimmen einfach nicht, und ja, damit ist das Thema für mich durch",
+"due": null,
+"actions": []
+},
+{
+"id": "de-46",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "bug",
+"style": "typed",
+"text": "Meine Abendroutine läuft komplett aus dem Ruder: Handy bis 1 Uhr, morgens todmüde, Konzentration im Keller.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-47",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "research",
+"style": "dictated",
+"text": "Ich hab das Buch 'Deep Work' nochmal durchgeblättert, also Newport sagt, vier Stunden echte Konzentration am Tag sind das Maximum, und er empfiehlt feste Rituale, äh, und dazu hab ich einen Artikel gelesen, der sagt das Gleiche mit Studien von Ericsson",
+"due": null,
+"actions": []
+},
+{
+"id": "de-48",
+"lang": "de",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "note",
+"style": "dictated",
+"text": "Das Gespräch mit Frau Brandt war ja am Dienstag, und sie hat gesagt, äh, die Beförderung wird frühestens im Frühjahr entschieden, also nichts vor März.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-49",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "Zahnarzttermin ausmachen, Hausratversicherung kündigen (Frist 31.10.!), Paket zur Post bringen",
+"due": "2026-10-31",
+"actions": [
+"Zahnarzttermin ausmachen",
+"Hausratversicherung kündigen",
+"Paket zur Post bringen"
+]
+},
+{
+"id": "de-50",
+"lang": "de",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "Ich muss, äh, morgen unbedingt noch die Nebenkostenabrechnung bei der Hausverwaltung abgeben, und dann auch noch die Kopie vom Mietvertrag einscannen, sonst bekomme ich die Rückzahlung nicht",
+"due": "2026-10-06",
+"actions": [
+"Nebenkostenabrechnung bei der Hausverwaltung abgeben",
+"Kopie vom Mietvertrag einscannen"
+]
+},
+{
+"id": "de-51",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "Flüge nach Lissabon buchen, Hotel checken, Reisepass läuft ab, also verlängern. Alles bis 12.10.",
+"due": "2026-10-12",
+"actions": [
+"Flüge nach Lissabon buchen",
+"Hotel checken",
+"Reisepass verlängern"
+]
+},
+{
+"id": "de-52",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "Wir könnten doch, hm, dieses Jahr Weihnachten mal bei uns feiern statt bei meinen Eltern, so mit allen, ich weiß nicht, vielleicht wäre das mal schön, aber mal sehen",
+"due": null,
+"actions": []
+},
+{
+"id": "de-53",
+"lang": "de",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "typed",
+"text": "Balkon im Frühjahr mit Kräutern bepflanzen, Hochbeet aus Paletten wäre günstig.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-54",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "question",
+"style": "typed",
+"text": "Wie lange muss man Kontoauszüge eigentlich aufbewahren? 10 Jahre?",
+"due": null,
+"actions": []
+},
+{
+"id": "de-55",
+"lang": "de",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "question",
+"style": "dictated",
+"text": "Ähm, sollen wir die alte Waschmaschine noch reparieren lassen oder lohnt sich das nicht mehr, die ist ja schon zwölf Jahre alt, ich weiß es echt nicht",
+"due": null,
+"actions": []
+},
+{
+"id": "de-56",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "typed",
+"text": "Wir kaufen den gebrauchten Golf, nicht den Neuwagen. 8.500 Euro, Kaufvertrag unterschrieben.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-57",
+"lang": "de",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "Also Luisa und ich haben beschlossen, dass wir die Kinder doch in der Grundschule am Park anmelden, äh, nicht in der anderen, weil der Schulweg kürzer ist",
+"due": null,
+"actions": []
+},
+{
+"id": "de-58",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "bug",
+"style": "typed",
+"text": "Heizung im Bad tropft, Ventil undicht, Eimer steht drunter. Hausmeister nicht erreichbar.",
+"due": null,
+"actions": []
+},
+{
+"id": "de-59",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "research",
+"style": "dictated",
+"text": "Hab Stromanbieter verglichen, also laut Vergleichsportal kostet Vattenfall 31 Cent, Naturstrom 33 Cent, aber der Grundpreis bei Naturstrom ist niedriger, am Ende ungefähr gleich bei unserem Verbrauch von 2800 Kilowattstunden",
+"due": null,
+"actions": []
+},
+{
+"id": "de-60",
+"lang": "de",
+"split": "test",
+"line_of_work": "personal",
+"nature": "note",
+"style": "dictated",
+"text": "Äh, Kundennummer bei den Stadtwerken ist 4471-882, und der Zählerstand am ersten Oktober war 18342.",
+"due": null,
+"actions": []
+},
+{
+"id": "it-01",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "da fare: sistemare la paginazione dell'api /utenti, scrivere i test per il filtro x data, aprire la PR entro venerdì",
+"due": "2026-10-09",
+"actions": [
+"sistemare la paginazione dell'api /utenti",
+"scrivere i test per il filtro x data",
+"aprire la PR"
+]
+},
+{
+"id": "it-02",
+"lang": "it",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "dictated",
+"text": "allora ricordati di, ehm, controllare che la pipeline di gitlab regga e poi aggiornare node alla 22 sul server di staging, e avvisare Marco quando hai finito, il tutto entro mercoledì",
+"due": "2026-10-07",
+"actions": [
+"controllare che la pipeline di gitlab regga",
+"aggiornare node alla 22 sul server di staging",
+"avvisare Marco"
+]
+},
+{
+"id": "it-03",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "togliere i console.log dal checkout prima del deploy di domani. rivedere pure la PR di Giulia",
+"due": "2026-10-06",
+"actions": [
+"togliere i console.log dal checkout",
+"rivedere la PR di Giulia"
+]
+},
+{
+"id": "it-04",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "typed",
+"text": "magari potremmo spostare le immagini su cloudflare r2, costa meno di s3 e non fa pagare l'egress",
+"due": null,
+"actions": []
+},
+{
+"id": "it-05",
+"lang": "it",
+"split": "test",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "senti mi è venuto in mente che potremmo, boh, aggiungere una modalità offline all'app con una cache locale, tipo sqlite, così i tecnici in cantiere non perdono i dati quando manca la linea, però non so se ne vale la pena",
+"due": null,
+"actions": []
+},
+{
+"id": "it-06",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "question",
+"style": "typed",
+"text": "ma perché il job notturno ci mette 40 minuti da quando abbiamo cambiato db?",
+"due": null,
+"actions": []
+},
+{
+"id": "it-07",
+"lang": "it",
+"split": "test",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "uhm quindi alla fine usiamo redis o no per le sessioni, perché Paolo diceva che bastava il database ma io non sono sicuro che regga con i picchi del lunedì mattina",
+"due": null,
+"actions": []
+},
+{
+"id": "it-08",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "allora decisione presa, restiamo su postgres 15 e niente migrazione alla 17 prima di gennaio, ne riparliamo dopo il rilascio",
+"due": null,
+"actions": []
+},
+{
+"id": "it-09",
+"lang": "it",
+"split": "test",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "ok abbiamo scelto, dopo la riunione con Elena, di tenere il monolite per ora e di non spezzare in microservizi, almeno fino a quando il team non passa da quattro a otto persone",
+"due": null,
+"actions": []
+},
+{
+"id": "it-10",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "bug",
+"style": "typed",
+"text": "su safari ios il login ti butta fuori dopo 2 minuti, il token scade subito. su chrome nessun problema. sembra il cookie samesite",
+"due": null,
+"actions": []
+},
+{
+"id": "it-11",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "research",
+"style": "dictated",
+"text": "ho confrontato un po' tre librerie per i grafici, allora chart.js è leggera ma poco flessibile, d3 fa tutto ma la curva di apprendimento è ripida, e recharts si integra bene con react però pesa circa 400 kb. per la dashboard di Brescia potrebbe andare recharts",
+"due": null,
+"actions": []
+},
+{
+"id": "it-12",
+"lang": "it",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "note",
+"style": "typed",
+"text": "credenziali sandbox stripe in 1password sotto Progetti. il webhook di test gira su porta 8443",
+"due": null,
+"actions": []
+},
+{
+"id": "it-13",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "mandare la newsletter di ottobre entro giovedì, prima rivedere oggetto e preheader con Chiara. caricare le foto del nuovo catalogo",
+"due": "2026-10-08",
+"actions": [
+"mandare la newsletter di ottobre",
+"rivedere oggetto e preheader con Chiara",
+"caricare le foto del nuovo catalogo"
+]
+},
+{
+"id": "it-14",
+"lang": "it",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "dictated",
+"text": "dobbiamo ordinare i gadget per la fiera di Bologna entro il 14, quindi, ehm, chiedere preventivo a due fornitori, penne e tote bag, e poi mandare il logo in vettoriale a Davide",
+"due": "2026-10-14",
+"actions": [
+"ordinare i gadget per la fiera di Bologna",
+"chiedere preventivo a due fornitori",
+"mandare il logo in vettoriale a Davide"
+]
+},
+{
+"id": "it-15",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "TODO: programmare 3 post linkedin per il lancio, rispondere ai commenti sotto il reel",
+"due": null,
+"actions": [
+"programmare 3 post linkedin per il lancio",
+"rispondere ai commenti sotto il reel"
+]
+},
+{
+"id": "it-16",
+"lang": "it",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "dictated",
+"text": "mi chiedevo se non fosse il caso di, come dire, fare una collaborazione con qualche micro influencer del running, tipo cinque o sei, invece di spendere tutto su meta ads, ma è solo un'idea",
+"due": null,
+"actions": []
+},
+{
+"id": "it-17",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "typed",
+"text": "campagna porta un amico, 10€ di sconto a entrambi, potrebbe funzionare per il black friday",
+"due": null,
+"actions": []
+},
+{
+"id": "it-18",
+"lang": "it",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "typed",
+"text": "qualcuno sa perché il tasso di apertura è sceso dal 38 al 24% dopo il cambio di dominio mittente?",
+"due": null,
+"actions": []
+},
+{
+"id": "it-19",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "dictated",
+"text": "non mi è chiaro se il budget del terzo trimestre includa anche i video di Matteo o se quelli vanno sul conto del prodotto",
+"due": null,
+"actions": []
+},
+{
+"id": "it-20",
+"lang": "it",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "ok quindi niente tiktok per ora, ehm, ci concentriamo su instagram e linkedin fino a fine anno, poi vediamo",
+"due": null,
+"actions": []
+},
+{
+"id": "it-21",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "abbiamo deciso con Sara di tenere il pacchetto da 49 euro e di non fare lo sconto del 20 per cento a novembre, perché abbassa il valore percepito",
+"due": null,
+"actions": []
+},
+{
+"id": "it-22",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "bug",
+"style": "typed",
+"text": "la newsletter di ieri è rimbalzata per 300 iscritti, link di disiscrizione rotto, errore 404",
+"due": null,
+"actions": []
+},
+{
+"id": "it-23",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "research",
+"style": "dictated",
+"text": "ho guardato i dati di tre concorrenti, allora Rossi Calzature posta quasi ogni giorno ma con poco engagement, circa 0,8 per cento, mentre Bianchi Sport posta due volte a settimana e sta sopra il 3, quindi più frequenza non vuol dire più risultati",
+"due": null,
+"actions": []
+},
+{
+"id": "it-24",
+"lang": "it",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "note",
+"style": "typed",
+"text": "palette del brand: blu #1F3A93 e arancio #F28C28. font dei titoli Montserrat. il logo minimo è 24 px",
+"due": null,
+"actions": []
+},
+{
+"id": "it-25",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "leggere i 4 paper su sonno e memoria, fare le schede, mandare la sintesi alla prof. Ferri entro il 16",
+"due": "2026-10-16",
+"actions": [
+"leggere i 4 paper su sonno e memoria",
+"fare le schede",
+"mandare la sintesi alla prof. Ferri"
+]
+},
+{
+"id": "it-26",
+"lang": "it",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "dictated",
+"text": "dunque per il questionario devo ricontrollare le domande 7 e 8 che sono ambigue, poi farlo testare a cinque persone e solo dopo mandare il link al campione, il 12/10 al massimo",
+"due": "2026-10-12",
+"actions": [
+"ricontrollare le domande 7 e 8",
+"farlo testare a cinque persone",
+"mandare il link al campione"
+]
+},
+{
+"id": "it-27",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "chiedere accesso al dataset istat a Luca; pulire i valori mancanti nella colonna reddito; rilanciare la regressione. tutto entro fine mese",
+"due": "2026-10-31",
+"actions": [
+"chiedere accesso al dataset istat a Luca",
+"pulire i valori mancanti nella colonna reddito",
+"rilanciare la regressione"
+]
+},
+{
+"id": "it-28",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "forse, non so, si potrebbe incrociare i dati delle interviste con quelli del censimento per vedere se le differenze regionali reggono davvero",
+"due": null,
+"actions": []
+},
+{
+"id": "it-29",
+"lang": "it",
+"split": "test",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "mi viene in mente che invece di fare solo interviste potremmo anche far tenere un diario di una settimana ai partecipanti, che ne so, con vocali su whatsapp, così vediamo i comportamenti veri",
+"due": null,
+"actions": []
+},
+{
+"id": "it-30",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "question",
+"style": "typed",
+"text": "il campione di 120 è sufficiente per un effetto medio con potenza 0.8?",
+"due": null,
+"actions": []
+},
+{
+"id": "it-31",
+"lang": "it",
+"split": "test",
+"line_of_work": "research",
+"nature": "question",
+"style": "dictated",
+"text": "non ho ancora capito se la prof vuole la bibliografia in apa o in chicago, e se i working paper contano come fonti",
+"due": null,
+"actions": []
+},
+{
+"id": "it-32",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "decision",
+"style": "typed",
+"text": "scelto: useremo il test di Mann-Whitney perché i dati non sono normali. niente t-test",
+"due": null,
+"actions": []
+},
+{
+"id": "it-33",
+"lang": "it",
+"split": "test",
+"line_of_work": "research",
+"nature": "decision",
+"style": "dictated",
+"text": "alla fine abbiamo deciso di escludere i partecipanti sotto i 18 anni dall'analisi, perché il consenso dei genitori non è arrivato per tutti",
+"due": null,
+"actions": []
+},
+{
+"id": "it-34",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "bug",
+"style": "typed",
+"text": "lo script di scraping si blocca al 60% e non salva più nulla, errore timeout dal sito dell'ateneo",
+"due": null,
+"actions": []
+},
+{
+"id": "it-35",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "research",
+"style": "dictated",
+"text": "ho letto Bianchi e Conti del 2021, dicono che il lavoro da remoto aumenta la produttività del 5 per cento ma solo nelle imprese sopra i 50 dipendenti, il campione però è tutto del nord, quindi attenzione a generalizzare",
+"due": null,
+"actions": []
+},
+{
+"id": "it-36",
+"lang": "it",
+"split": "tune",
+"line_of_work": "research",
+"nature": "note",
+"style": "typed",
+"text": "colloquio con prof Ferri giovedì scorso (1/10): impostazione ok, ha apprezzato il capitolo 2, ricevimento il giovedì dalle 15",
+"due": null,
+"actions": []
+},
+{
+"id": "it-37",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "per il trimestre: bloccare le mattine per il lavoro profondo, togliere le riunioni del venerdì, riprendere il diario serale. iniziare da lunedì prossimo",
+"due": "2026-10-12",
+"actions": [
+"bloccare le mattine per il lavoro profondo",
+"togliere le riunioni del venerdì",
+"riprendere il diario serale"
+]
+},
+{
+"id": "it-38",
+"lang": "it",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "dictated",
+"text": "ehm allora, devo parlare con Andrea di quella cosa del ruolo, prima però mi scrivo i tre punti che voglio dire, e poi lo chiamo giovedì",
+"due": "2026-10-08",
+"actions": [
+"scrivermi i tre punti",
+"chiamare Andrea"
+]
+},
+{
+"id": "it-39",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "rileggere gli appunti del ritiro di settembre e scegliere 2 priorità per l'anno, entro il 20",
+"due": "2026-10-20",
+"actions": [
+"rileggere gli appunti del ritiro di settembre",
+"scegliere 2 priorità per l'anno"
+]
+},
+{
+"id": "it-40",
+"lang": "it",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "dictated",
+"text": "forse dovrei provare a lavorare quattro giorni a settimana, boh, parlarne magari al capo, anche se mi sembra una cosa un po' da sognatori",
+"due": null,
+"actions": []
+},
+{
+"id": "it-41",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "typed",
+"text": "potrei trasferirmi a Torino per un anno e fare smart working da lì, oppure no",
+"due": null,
+"actions": []
+},
+{
+"id": "it-42",
+"lang": "it",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "dictated",
+"text": "ma io voglio davvero fare il manager o mi piace solo l'idea dello stipendio più alto, cioè è questo che mi devo chiedere",
+"due": null,
+"actions": []
+},
+{
+"id": "it-43",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "typed",
+"text": "cosa mi frena dal dire di no a quel progetto? paura di deludere?",
+"due": null,
+"actions": []
+},
+{
+"id": "it-44",
+"lang": "it",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "typed",
+"text": "ok basta, resto in azienda almeno fino a giugno, poi vedo. niente colloqui per ora",
+"due": null,
+"actions": []
+},
+{
+"id": "it-45",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "ho deciso che il sabato mattina è tempo mio, niente mail e niente telefono, lo tengo da adesso in poi, anche se c'è urgenza",
+"due": null,
+"actions": []
+},
+{
+"id": "it-46",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "bug",
+"style": "dictated",
+"text": "niente, la mia routine del mattino è saltata un'altra volta, sveglia alle nove e un'ora col telefono in mano, così non funziona proprio",
+"due": null,
+"actions": []
+},
+{
+"id": "it-47",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "research",
+"style": "dictated",
+"text": "ho riletto un po' di cose sulla fatica decisionale e sul principio del 10 10 10 di Suzy Welch, cioè pensare a come ti sentirai tra dieci minuti, dieci mesi e dieci anni, mi sembra utile per le scelte grosse",
+"due": null,
+"actions": []
+},
+{
+"id": "it-48",
+"lang": "it",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "note",
+"style": "typed",
+"text": "notato che lavoro meglio dopo la camminata di mezzogiorno, anche lunedì 28 era così",
+"due": null,
+"actions": []
+},
+{
+"id": "it-49",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "pagare bollo auto entro il 31, ritirare le analisi al laboratorio, prenotare revisione",
+"due": "2026-10-31",
+"actions": [
+"pagare bollo auto",
+"ritirare le analisi al laboratorio",
+"prenotare revisione"
+]
+},
+{
+"id": "it-50",
+"lang": "it",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "domani mattina devo portare la bimba dal pediatra alle nove e mezza, poi passare in posta a ritirare il pacco, e ricordarmi di comprare il latte",
+"due": "2026-10-06",
+"actions": [
+"portare la bimba dal pediatra",
+"passare in posta a ritirare il pacco",
+"comprare il latte"
+]
+},
+{
+"id": "it-51",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "chiamare idraulico x caldaia domani; mandare a Franco il bonifico di 120 € per la cena; disdire abbonamento palestra",
+"due": "2026-10-06",
+"actions": [
+"chiamare idraulico x caldaia",
+"mandare a Franco il bonifico di 120 € per la cena",
+"disdire abbonamento palestra"
+]
+},
+{
+"id": "it-52",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "pensavo che per le vacanze di natale potremmo andare in Puglia dai nonni invece di prendere l'aereo per la Sicilia, costa meno e i bambini sono contenti, però bisogna vedere",
+"due": null,
+"actions": []
+},
+{
+"id": "it-53",
+"lang": "it",
+"split": "test",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "typed",
+"text": "weekend a Lucca col camper? magari a novembre se fa bel tempo",
+"due": null,
+"actions": []
+},
+{
+"id": "it-54",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "question",
+"style": "typed",
+"text": "il 730 precompilato conviene accettarlo o è meglio farlo controllare dal commercialista?",
+"due": null,
+"actions": []
+},
+{
+"id": "it-55",
+"lang": "it",
+"split": "test",
+"line_of_work": "personal",
+"nature": "question",
+"style": "dictated",
+"text": "boh non ricordo se la rata della tari l'abbiamo pagata a luglio oppure no, tu ti ricordi",
+"due": null,
+"actions": []
+},
+{
+"id": "it-56",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "alla fine ho scelto la lavatrice Bosch da 589 euro, con consegna e installazione comprese, basta confronti",
+"due": null,
+"actions": []
+},
+{
+"id": "it-57",
+"lang": "it",
+"split": "test",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "abbiamo deciso con Anna che quest'anno il pranzo di Natale lo facciamo da noi, tanto la casa è più grande, e mia madre porta i dolci",
+"due": null,
+"actions": []
+},
+{
+"id": "it-58",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "bug",
+"style": "typed",
+"text": "la caldaia perde acqua dal fondo, pressione scesa a 0,5 bar stamattina. brutto",
+"due": null,
+"actions": []
+},
+{
+"id": "it-59",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "research",
+"style": "dictated",
+"text": "ho guardato i mutui, allora la banca A fa il tasso fisso al 3,4, la banca B al 3,1 ma con più spese di istruttoria, e poi c'è quello variabile che parte da 2,6, quindi vedi che dipende da quanto vogliamo rischiare",
+"due": null,
+"actions": []
+},
+{
+"id": "it-60",
+"lang": "it",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "note",
+"style": "typed",
+"text": "codice fiscale di Marta nella cartella documenti. tessera sanitaria scade 03/2028. pediatra: dott.ssa Neri, numero in rubrica",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-01",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "TODO: subir o fix do timeout na api de pagamentos até sexta, depois rodar os testes de integração e avisar o Rafa no PR",
+"due": "2026-10-09",
+"actions": [
+"subir o fix do timeout na api de pagamentos",
+"rodar os testes de integração",
+"avisar o Rafa no PR"
+]
+},
+{
+"id": "pt-02",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "dictated",
+"text": "então, preciso lembrar de atualizar o node pra versão vinte no pipeline, é, acho que são dois arquivos, o dockerfile e o workflow do github, e depois reabrir aquele pr que eu fechei sem querer",
+"due": null,
+"actions": [
+"atualizar o node pra versão vinte no pipeline",
+"reabrir aquele pr"
+]
+},
+{
+"id": "pt-03",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "todo",
+"style": "typed",
+"text": "revisar PR do Thiago amanhã cedo; migrar tabela usuarios p/ uuid; limpar branches velhas",
+"due": "2026-10-06",
+"actions": [
+"revisar PR do Thiago",
+"migrar tabela usuarios p/ uuid",
+"limpar branches velhas"
+]
+},
+{
+"id": "pt-04",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "dictated",
+"text": "ei, e se a gente, tipo, cacheasse a resposta do endpoint de catálogo no redis por uns cinco minutos? não sei se vale a pena, mas talvez derrubasse a carga no banco pela metade",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-05",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "idea",
+"style": "typed",
+"text": "talvez dê pra trocar o moment por date-fns, o bundle cairia uns 60kb. a gente podia testar num módulo só",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-06",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "alguém sabe por que o job de build demora catorze minutos só no runner novo, hein, antes era uns cinco",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-07",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "question",
+"style": "dictated",
+"text": "uhm, será que a gente devia usar postgres mesmo ou ir de sqlite pra esse serviço pequeno, sei lá, o volume é baixinho, mas e se crescer, hein",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-08",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "typed",
+"text": "Decidido: vamos ficar com monorepo (pnpm workspaces). Sem migração pra multi-repo neste trimestre.",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-09",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "dev",
+"nature": "decision",
+"style": "dictated",
+"text": "beleza então ficou combinado com o pessoal que a gente vai manter o rest e não vai migrar pra graphql agora, tá, foi a conclusão da reunião de ontem, pelo menos até o fim do ano",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-10",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "bug",
+"style": "typed",
+"text": "Bug: login com google dá 500 no safari ios, só quando o cookie de sessão já existe. log: invalid_state",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-11",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "research",
+"style": "dictated",
+"text": "então, comparei o drizzle com o prisma pra esse projeto, o drizzle gera queries mais enxutas e o cold start no lambda ficou uns duzentos milissegundos menor, mas o prisma tem a documentação melhor e o studio é bem útil, anotei os números numa planilha",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-12",
+"lang": "pt",
+"split": "test",
+"line_of_work": "dev",
+"nature": "note",
+"style": "typed",
+"text": "staging roda na porta 8443 atrás do nginx; credenciais ficam no cofre, não no repo. deploy só via pipeline",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-13",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "fechar o calendário de posts de novembro até dia 14, falar com a Camila sobre as artes e pedir orçamento do influenciador",
+"due": "2026-10-14",
+"actions": [
+"fechar o calendário de posts de novembro",
+"falar com a Camila sobre as artes",
+"pedir orçamento do influenciador"
+]
+},
+{
+"id": "pt-14",
+"lang": "pt",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "dictated",
+"text": "tá, amanhã eu preciso mandar o briefing da campanha de black friday pra agência, é, e também confirmar com o financeiro o orçamento de vinte mil, esse eu nem sei se já aprovaram",
+"due": "2026-10-06",
+"actions": [
+"mandar o briefing da campanha de black friday pra agência",
+"confirmar com o financeiro o orçamento de vinte mil"
+]
+},
+{
+"id": "pt-15",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "todo",
+"style": "typed",
+"text": "ajustar utm das campanhas do insta; revisar a copy do e-mail de boas-vindas; subir o banner novo no site até quinta",
+"due": "2026-10-08",
+"actions": [
+"ajustar utm das campanhas do insta",
+"revisar a copy do e-mail de boas-vindas",
+"subir o banner novo no site"
+]
+},
+{
+"id": "pt-16",
+"lang": "pt",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "dictated",
+"text": "olha, eu tava pensando, a gente podia fazer um sorteio no instagram em parceria com a loja da Marina, talvez ajude a subir os seguidores, mas ainda não decidi nada, só uma ideia mesmo",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-17",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "idea",
+"style": "typed",
+"text": "Ideia: série de reels mostrando os bastidores da fábrica, 30s cada, um por semana",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-18",
+"lang": "pt",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "typed",
+"text": "o público de 35+ responde melhor a e-mail ou whatsapp? vale testar?",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-19",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "question",
+"style": "dictated",
+"text": "gente, será que a gente deveria mexer no logo antes do lançamento ou deixa pra depois, porque o prazo tá apertado e o cliente já viu a versão antiga",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-20",
+"lang": "pt",
+"split": "test",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "typed",
+"text": "orçamento de mídia paga de outubro fica em R$ 8 mil, 60% meta ads e 40% google. fechado com o Eduardo.",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-21",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "decision",
+"style": "dictated",
+"text": "então a gente resolveu cancelar o patrocínio do evento de São Paulo, o retorno do ano passado foi muito fraco, e vai jogar essa verba pro conteúdo de blog, ficou assim",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-22",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "bug",
+"style": "typed",
+"text": "newsletter de ontem teve 12% de bounce e o link de descadastro tá quebrado no template",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-23",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "research",
+"style": "dictated",
+"text": "fiz uma olhada nos concorrentes, a Nuvem e a Vitta, os dois estão apostando forte em vídeo curto, a Vitta posta quase todo dia no tiktok e tem engajamento de uns quatro por cento, a Nuvem ainda tá só no instagram",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-24",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "marketing",
+"nature": "note",
+"style": "dictated",
+"text": "lembrando que a reunião com a agência foi na terça passada, e o cliente prefere um tom mais informal, a paleta é verde e off-white, tá",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-25",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "ler os 3 artigos do Silva (2021) sobre letramento digital antes da reunião de quinta; fichar no zotero",
+"due": "2026-10-08",
+"actions": [
+"ler os 3 artigos do Silva (2021) sobre letramento digital",
+"fichar no zotero"
+]
+},
+{
+"id": "pt-26",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "research",
+"nature": "todo",
+"style": "dictated",
+"text": "preciso mandar o termo de consentimento revisado pro comitê de ética, é, e depois marcar as entrevistas com os professores da escola estadual, acho que até o fim do mês dá",
+"due": "2026-10-31",
+"actions": [
+"mandar o termo de consentimento revisado pro comitê de ética",
+"marcar as entrevistas com os professores da escola estadual"
+]
+},
+{
+"id": "pt-27",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "todo",
+"style": "typed",
+"text": "transcrever entrevistas 4 e 5 até 12/10; codificar no nvivo; pedir a base do IBGE pra Larissa",
+"due": "2026-10-12",
+"actions": [
+"transcrever entrevistas 4 e 5",
+"codificar no nvivo",
+"pedir a base do IBGE pra Larissa"
+]
+},
+{
+"id": "pt-28",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "idea",
+"style": "dictated",
+"text": "ahn, talvez desse pra cruzar os dados da pesquisa de satisfação com o histórico de compras, aí a gente via se quem reclama mais compra menos, não sei se tem dado suficiente mas seria interessante",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-29",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "research",
+"nature": "idea",
+"style": "typed",
+"text": "talvez incluir grupo controle no estudo piloto? ajudaria a isolar o efeito da intervenção",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-30",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "question",
+"style": "typed",
+"text": "amostra de 120 é suficiente p/ detectar efeito médio com poder de 0,8?",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-31",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "research",
+"nature": "question",
+"style": "dictated",
+"text": "então, será que o questionário tá longo demais, porque o pré-teste teve muita gente desistindo na pergunta vinte e dois, e será que é a escala likert que confunde",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-32",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "decision",
+"style": "typed",
+"text": "vamos usar amostragem estratificada por região (Sul, Sudeste, Nordeste). decidido com a Profa. Helena.",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-33",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "research",
+"nature": "decision",
+"style": "dictated",
+"text": "ficou decidido que a gente vai seguir só com a abordagem qualitativa nessa etapa, nada de survey grande por enquanto, a orientadora concordou e o cronograma comporta",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-34",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "bug",
+"style": "typed",
+"text": "link do formulário da pesquisa tá fora do ar, 12 respostas perdidas, google forms deu erro de cota",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-35",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "research",
+"style": "dictated",
+"text": "li o relatório da pesquisa TIC Domicílios e basicamente oitenta e quatro por cento dos domicílios têm internet, mas o acesso só pelo celular ainda é grande nas classes D e E, tem uma tabela boa na página trinta que dá pra usar na revisão",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-36",
+"lang": "pt",
+"split": "test",
+"line_of_work": "research",
+"nature": "note",
+"style": "dictated",
+"text": "o banco de dados da pesquisa fica no drive compartilhado, na pasta coleta_2026, e a defesa da qualificação foi lá em agosto, só pra constar",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-37",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "escrever no caderno os 3 motivos pra aceitar ou recusar a proposta; conversar com a Bia no domingo",
+"due": "2026-10-11",
+"actions": [
+"escrever no caderno os 3 motivos pra aceitar ou recusar a proposta",
+"conversar com a Bia no domingo"
+]
+},
+{
+"id": "pt-38",
+"lang": "pt",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "dictated",
+"text": "preciso sentar e rever as minhas metas do ano, tipo, o que eu realmente quero manter, e depois marcar um café com o meu mentor pra discutir isso, vou fazer isso na semana que vem",
+"due": "2026-10-12",
+"actions": [
+"rever as minhas metas do ano",
+"marcar um café com o meu mentor"
+]
+},
+{
+"id": "pt-39",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "todo",
+"style": "typed",
+"text": "parar de adiar: pedir feedback ao chefe; reduzir reuniões da agenda; dormir antes das 23h",
+"due": null,
+"actions": [
+"pedir feedback ao chefe",
+"reduzir reuniões da agenda",
+"dormir antes das 23h"
+]
+},
+{
+"id": "pt-40",
+"lang": "pt",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "typed",
+"text": "e se eu fizesse 4 dias por semana por um tempo? testar durante um mês, ver se rende igual",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-41",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "idea",
+"style": "dictated",
+"text": "sei lá, às vezes eu penso que podia largar a consultoria e ir pro ensino, dar aula, talvez, não é uma decisão, é só uma possibilidade que fica rodando na cabeça",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-42",
+"lang": "pt",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "typed",
+"text": "o que eu quero mesmo: crescer na empresa ou ter mais tempo livre?",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-43",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "question",
+"style": "dictated",
+"text": "será que eu tô cansado de verdade do trabalho ou é só essa fase, porque, assim, nas férias eu fiquei bem, então, hum, será que o problema é o time ou é a função",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-44",
+"lang": "pt",
+"split": "test",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "typed",
+"text": "Decisão: fico no emprego atual até março e só aí reavalio. sem mandar currículo por enquanto.",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-45",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "decision",
+"style": "dictated",
+"text": "decidi que vou recusar a promoção pra gerente, pelo menos agora, porque eu ia perder o que mais gosto, que é mexer com a mão na massa, conversei com a Paula e ela entendeu",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-46",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "bug",
+"style": "typed",
+"text": "toda segunda eu travo e não consigo começar nada; a procrastinação tá fora do controle essa semana",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-47",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "research",
+"style": "dictated",
+"text": "tava lendo um livro do Cal Newport, o trabalho focado, e ele fala que quatro horas por dia de foco profundo já é o limite pra maioria das pessoas, e aí eu comparei com o meu dia que tem no máximo uma hora, anotei umas ideias",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-48",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "reflection",
+"nature": "note",
+"style": "dictated",
+"text": "olha, ano passado nessa época eu tava bem mais ansioso, hoje, assim, o saldo é positivo, mesmo com o ritmo corrido",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-49",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "pagar o iptu dia 14; renovar a cnh; marcar o dentista da Sofia",
+"due": "2026-10-14",
+"actions": [
+"pagar iptu",
+"renovar cnh",
+"marcar dentista"
+]
+},
+{
+"id": "pt-50",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "dictated",
+"text": "ó, amanhã eu tenho que levar a Sofia no pediatra às três da tarde, e passar no mercado antes pra comprar fralda e leite, ah e lembrar de pegar o cartão do plano de saúde",
+"due": "2026-10-06",
+"actions": [
+"levar a Sofia no pediatra às três da tarde",
+"passar no mercado pra comprar fralda e leite",
+"pegar o cartão do plano de saúde"
+]
+},
+{
+"id": "pt-51",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "todo",
+"style": "typed",
+"text": "comprar passagem p/ Salvador (feriado de novembro) até o fim do mês, ver hotel perto da praia",
+"due": "2026-10-31",
+"actions": [
+"comprar passagem p/ Salvador",
+"ver hotel perto da praia"
+]
+},
+{
+"id": "pt-52",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "typed",
+"text": "talvez fazer a festa da vó no sítio em vez do salão? sairia bem mais barato",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-53",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "idea",
+"style": "dictated",
+"text": "estava pensando, e se a gente fizesse uma viagem de carro até Gramado nas férias de julho, em vez de avião, assim dá pra levar as crianças com mais calma, mas ainda não conversei com o Marcos",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-54",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "question",
+"style": "typed",
+"text": "vale a pena trocar o plano de internet de 300 mega pra 600? tá R$ 40 mais caro",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-55",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "question",
+"style": "dictated",
+"text": "será que eu devo antecipar o financiamento do apartamento ou deixar o dinheiro rendendo no tesouro, hum, depende da taxa né, alguém sabe me dizer",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-56",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "typed",
+"text": "fechado: vamos contratar a diarista 2x por semana (terça e sexta), R$ 160 cada, começa na terça dia 13.",
+"due": "2026-10-13",
+"actions": [
+"contratar a diarista 2x por semana"
+]
+},
+{
+"id": "pt-57",
+"lang": "pt",
+"split": "tune",
+"line_of_work": "personal",
+"nature": "decision",
+"style": "dictated",
+"text": "então a gente resolveu que o Natal esse ano vai ser na casa da minha mãe e o ano novo na praia, ficou combinado com a família toda ontem",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-58",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "bug",
+"style": "typed",
+"text": "chuveiro elétrico parou de esquentar e o disjuntor desarma toda hora",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-59",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "research",
+"style": "dictated",
+"text": "pesquisei seguro viagem pra Portugal, a Assist Card tá em uns trezentos e vinte reais pra quinze dias, a Porto Seguro uns duzentos e noventa, mas a cobertura médica da Porto é de trinta mil euros e a outra de sessenta mil, anotei as duas",
+"due": null,
+"actions": []
+},
+{
+"id": "pt-60",
+"lang": "pt",
+"split": "test",
+"line_of_work": "personal",
+"nature": "note",
+"style": "dictated",
+"text": "o contrato do aluguel vence em março de 2027, a consulta da Sofia foi dia dois, e o wifi novo já foi instalado com o roteador na sala",
+"due": null,
+"actions": []
+}
+]

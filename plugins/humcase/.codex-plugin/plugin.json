@@ -1,0 +1,36 @@
+{
+  "name": "humcase",
+  "description": "Humcase skills so Codex resumes work, files and writes cases, and delivers results the person accepts or sends back for rework.",
+  "author": {
+    "name": "Humcase"
+  },
+  "homepage": "https://github.com/humcase/humcase/blob/master/docs/AGENT_SETUP.md",
+  "repository": "https://github.com/humcase/humcase",
+  "license": "AGPL-3.0-only",
+  "keywords": [
+    "humcase",
+    "cases",
+    "notes",
+    "tasks",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./clients/codex/mcp.json",
+  "interface": {
+    "displayName": "Humcase",
+    "shortDescription": "Resume, file and deliver work tracked in Humcase",
+    "longDescription": "Skills for the Humcase desktop app: reload the brief and the reworks the person asked for, write cases faithful to what was said, file them as sub-cases of the right subject, and resolve them only after verification with a report. The Humcase MCP server is declared in ~/.codex/config.toml, because a Codex plugin cannot ask for the path of Humcase.exe (see docs/AGENT_SETUP.md).",
+    "developerName": "Humcase",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/humcase/humcase",
+    "defaultPrompt": [
+      "Where are we? Reload the Humcase brief for this project.",
+      "Log this bug in Humcase, inside the case it belongs to.",
+      "Handle the reworks waiting in Humcase."
+    ]
+  }
+}

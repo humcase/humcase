@@ -1,0 +1,161 @@
+/* The document stays the direct destination. Its organization does not change the writes. */
+.workspace-mini .note-editor-document { display: contents; }
+.workspace-mini .note-editor-created, .workspace-mini .note-editor-section-label { display: none; }
+.workspace-app:not(.workspace-mini) .note-editor {
+  display: grid; grid-template-columns: minmax(0, 900px) minmax(280px, 320px);
+  align-content: start; align-items: start; justify-content: center; gap: 48px;
+  width: 100%; height: 100%; margin-inline: auto; padding: 40px var(--workspace-page-gutter) 64px;
+  overflow-y: auto; overflow-x: hidden; background: var(--workspace-canvas); color: var(--workspace-ink);
+}
+.workspace-app:not(.workspace-mini) .note-editor-document {
+  min-width: 0; background: transparent; border: 0;
+  border-radius: 0; box-shadow: none;
+}
+.workspace-app:not(.workspace-mini) .note-editor-header {
+  display: block; padding: 12px 0 28px; border: 0; margin: 0; width: 100%;
+}
+.workspace-app:not(.workspace-mini) .note-editor-header > div:first-child { min-width: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-save-state { height: 20px; margin-bottom: 8px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-app:not(.workspace-mini) .note-editor-header textarea.note-editor-title {
+  width: 100%; min-height: 48px; margin: 0; padding: 0; color: var(--workspace-ink);
+  font-size: clamp(28px, 1.65vw, 36px); font-weight: 600; line-height: 1.25; letter-spacing: -.035em;
+}
+.workspace-app .note-editor-header textarea.note-editor-title { field-sizing: content; resize: none; overflow: hidden; overflow-wrap: anywhere; }
+.workspace-app:not(.workspace-mini) .note-editor-created { margin: 10px 0 0; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-app:not(.workspace-mini) .note-editor-writing { display: flex; flex-direction: column; min-width: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-toolbar {
+  margin: 0; width: auto; gap: 8px; min-height: 53px; padding: 0 0 16px;
+  border-bottom: 1px solid var(--workspace-line);
+}
+.workspace-app:not(.workspace-mini) .note-editor-toolbar .ml-auto { margin-left: 0; justify-content: flex-start; }
+.note-editor-toolbar .ui-button > svg { margin-inline: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-body { min-height: 480px; height: auto; padding: 20px 0 48px; overflow: visible; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap-wrapper { height: auto; overflow: visible; flex: 1; background: transparent; border: 0; border-radius: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap {
+  min-height: max(400px, 44vh); max-width: 78ch; margin: 0; padding: 0;
+  color: var(--workspace-ink); font-size: calc(var(--editor-font-scale, 1) * var(--workspace-text-body)); line-height: 1.75;
+}
+.workspace-app:not(.workspace-mini) .note-editor-body .ProseMirror:focus-visible { outline: none; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap p { margin-block: 12px; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap :is(ul, ol) { margin-block: 12px; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap li, .workspace-app:not(.workspace-mini) .note-editor-body .tiptap li > p { margin-block: 4px; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap :is(h1, h2, h3, h4) { margin-top: 28px; margin-bottom: 12px; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap > :first-child { margin-top: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap > :last-child { margin-bottom: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap hr { margin: 24px 0; border: 0; border-top: 1px solid var(--workspace-line); }
+.workspace-app:not(.workspace-mini) .note-editor-support { display: flex; flex-direction: column; gap: 24px; min-width: 0; padding: 12px 0 0 24px; border-left: 1px solid var(--workspace-line); }
+.workspace-app:not(.workspace-mini) .note-editor-support > * { width: 100%; margin: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-section-label { margin: 0 0 16px; } /* typography: game-object.css */
+.workspace-app:not(.workspace-mini) .note-editor-properties { padding-bottom: 24px; border-bottom: 1px solid var(--workspace-line); margin-bottom: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-metadata { display: flex; flex-direction: column; align-items: stretch; gap: 12px; margin: 0; font-size: var(--workspace-text-ui); }
+.workspace-app:not(.workspace-mini) .note-editor-due { flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+.workspace-app:not(.workspace-mini) .note-editor-due input { flex: 1; width: 130px; }
+.workspace-app:not(.workspace-mini) .note-editor-tags { min-width: 0; width: 100%; }
+.workspace-app:not(.workspace-mini) .note-editor-tags input { width: 100%; min-width: 80px; height: 24px; min-height: 24px; padding: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+.workspace-app:not(.workspace-mini) .note-status-field { width: 100%; min-height: var(--workspace-control-height); }
+.workspace-app:not(.workspace-mini) .note-editor-similar { margin-top: 16px; color: var(--workspace-warning-ink); font-size: var(--workspace-text-caption); }
+.workspace-app:not(.workspace-mini) .note-editor-similar summary { cursor: pointer; }
+.workspace-app:not(.workspace-mini) .note-editor-similar ul { margin: 8px 0 0 19px; color: var(--workspace-text-secondary); }
+.workspace-app:not(.workspace-mini) .note-editor-support .note-report-add { width: 100%; margin-inline: 0; justify-content: flex-start; }
+.workspace-app:not(.workspace-mini) .note-editor-support .note-relations { min-width: 0; }
+@media (min-width: 2240px) {
+  .workspace-app:not(.workspace-mini) .note-editor { grid-template-columns: minmax(0, 1080px) 320px; gap: 72px; }
+  .workspace-app:not(.workspace-mini) .note-editor-header { padding-inline: 0; }
+  .workspace-app:not(.workspace-mini) .note-editor-toolbar { margin-inline: 0; }
+  .workspace-app:not(.workspace-mini) .note-editor-body { padding-inline: 0; }
+}
+@media (max-width: 1150px) {
+  .workspace-app:not(.workspace-mini) .note-editor { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .workspace-app:not(.workspace-mini) .note-editor-support { padding: 24px 0 0; border-left: 0; border-top: 1px solid var(--workspace-line); }
+  .workspace-app:not(.workspace-mini) .note-editor-metadata { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .workspace-app:not(.workspace-mini) .note-editor-metadata > :is(.note-editor-branch, .note-editor-tags) { grid-column: 1 / -1; }
+  .workspace-app:not(.workspace-mini) .note-editor-metadata > .note-editor-branch { width: fit-content; max-width: 100%; overflow-wrap: anywhere; }
+
+}
+@media (max-width: 760px) {
+  .workspace-app:not(.workspace-mini) .note-editor { padding: 12px 16px 40px; }
+  .workspace-app:not(.workspace-mini) .note-editor-header { padding: 12px 0 20px; }
+  .workspace-app:not(.workspace-mini) .note-editor-toolbar { margin-inline: 0; }
+  .workspace-app:not(.workspace-mini) .note-editor-body { padding: 20px 0 32px; min-height: 360px; }
+  .workspace-app:not(.workspace-mini) .note-editor-body .tiptap { min-height: 320px; }
+  .workspace-app:not(.workspace-mini) .note-editor-body > .flex.gap-4 { flex-direction: column; }
+}
+
+
+.workspace-app:not(.workspace-mini) .note-editor-property { display: grid; grid-template-columns: 76px minmax(0, 1fr); align-items: center; gap: 8px; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); }
+.workspace-app:not(.workspace-mini) .note-editor-status { margin-bottom: 12px; }
+.workspace-app:not(.workspace-mini) .note-editor-due { display: grid; grid-template-columns: 76px minmax(0, 1fr); }
+.workspace-app:not(.workspace-mini) .note-editor-due input { width: 100%; }
+.workspace-app:not(.workspace-mini) .note-editor-header { position: relative; }
+.workspace-app:not(.workspace-mini) .note-editor-save-state { position: absolute; top: -18px; right: 0; margin: 0; }
+.workspace-mini .note-editor-property { display: flex; align-items: center; gap: 8px; color: var(--workspace-text-secondary); font-size: var(--workspace-text-caption); }
+.workspace-mini .note-editor-status { margin-bottom: 8px; }
+
+/* Checkbox paragraphs are wrapped in a div by Tiptap. */
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap li > div > p { margin-block: 0; }
+.workspace-app:not(.workspace-mini) .note-editor-body .tiptap ul[data-type='taskList'] li { padding-left: 0; margin-block: 8px; }
+.workspace-app .note-editor-details-jump.ui-button { display: none; }
+@media (max-width: 1150px) {
+  .workspace-app .note-editor-details-jump.ui-button { display: inline-flex; margin-top: 4px; }
+}
+
+@media (max-width: 600px) { .workspace-app:not(.workspace-mini) .note-editor-metadata { grid-template-columns: minmax(0, 1fr); } }
+
+/* Formatting bar: key tray, see "Note keyboard" in editor-toolbar.css. */
+
+.workspace-app:not(.workspace-mini) .note-editor-due:has(> .note-editor-clear) {
+  grid-template-columns: 76px minmax(0, 1fr) var(--workspace-target-small);
+}
+.workspace-app:not(.workspace-mini) .note-editor-property > span,
+.workspace-app:not(.workspace-mini) .note-editor-due > span {
+  font-size: var(--workspace-text-caption);
+  color: var(--workspace-text-secondary);
+}
+.workspace-app:not(.workspace-mini) .note-editor-actions {
+  padding-top: 16px;
+  border-top: 1px solid var(--workspace-line);
+}
+
+/* The light document stands out from the workbench, without changing the order of the tools. */
+.workspace-app[data-theme="light"]:not(.workspace-mini) .note-editor-document {
+  padding: 24px 32px 0;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: var(--workspace-radius-card);
+  background: var(--workspace-surface);
+  box-shadow: var(--workspace-shadow-card);
+}
+@media (max-width: 760px) {
+  .workspace-app[data-theme="light"]:not(.workspace-mini) .note-editor-document { padding: 16px 20px 0; }
+}
+.workspace-app .ui-menu.note-template-menu { min-width: 280px; }
+
+/* Delete confirmation: alert casing, kit buttons. */
+.workspace-app .note-editor-confirm-delete { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--workspace-danger-border); border-radius: var(--workspace-radius-control); background: var(--workspace-danger-soft); color: var(--workspace-danger); font-size: var(--workspace-text-ui); font-weight: 550; }
+.workspace-app .note-editor-confirm-delete > span { margin-right: auto; }
+
+/* Panel without a selected note: kit empty state, centered. */
+.note-editor-empty { position: relative; display: grid; flex: 1; place-items: center; }
+
+/* Live dictation: kit card placed over the text; the red indicator signals recording. */
+.workspace-app .note-editor-dictation { position: absolute; inset: 24px; z-index: 10; overflow-y: auto; padding: 16px; }
+.note-editor-dictation__heading { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; color: var(--workspace-ink); font-weight: 600; }
+.note-editor-dictation__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--workspace-danger); animation: note-editor-pulse 1.6s ease-in-out infinite; }
+.note-editor-dictation__text { color: var(--workspace-ink); white-space: pre-wrap; }
+.note-editor-dictation__interim { color: var(--workspace-text-muted); }
+@keyframes note-editor-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .note-editor-dictation__dot { animation: none; } }
+
+/* Source comparison: two kit cards side by side. */
+.workspace-app .note-editor-compare { display: flex; flex: 1; flex-direction: column; min-height: 0; overflow: hidden; }
+.note-editor-compare__heading { padding: 6px 12px; border-bottom: 1px solid var(--workspace-line); background: var(--workspace-muted-surface); color: var(--workspace-text-secondary); font-size: var(--workspace-text-caption); font-weight: 500; }
+.note-editor-compare__source,
+.note-editor-compare__result { flex: 1; overflow-y: auto; padding: 12px; color: var(--workspace-ink); }
+.note-editor-compare__source { font-family: var(--workspace-font-mono); font-size: var(--workspace-text-ui); white-space: pre-wrap; }
+
+/* Note page warnings (outside the kit, theme tokens): similar notes, unsaved
+   writes whose text is kept. */
+.note-editor-similar__list { color: var(--workspace-warning-ink); }
+.note-editor-pending { border: 1px solid color-mix(in srgb, var(--workspace-warning-ink) 35%, transparent); border-radius: var(--workspace-radius-control); background: color-mix(in srgb, var(--workspace-warning-ink) 8%, transparent); color: var(--workspace-ink); }
+.note-editor-pending__text { border-radius: var(--workspace-radius-control); background: var(--workspace-muted-surface); }

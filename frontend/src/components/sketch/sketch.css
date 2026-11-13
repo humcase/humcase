@@ -1,0 +1,93 @@
+.sketch-case {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0 var(--workspace-space-6) var(--workspace-space-4);
+}
+
+.sketch-case__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sketch-case__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--workspace-text-caption);
+  color: var(--workspace-text-muted);
+}
+
+.sketch-case__title {
+  flex: 1 1 240px;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sketch-case__state {
+  font-size: var(--workspace-text-caption);
+  color: var(--workspace-text-muted);
+}
+
+.sketch-case__state.is-error,
+.sketch-case__error {
+  color: var(--workspace-danger);
+}
+
+.sketch-case__error {
+  margin: 0;
+  font-size: 13px;
+}
+
+.sketch-case__canvas {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 360px;
+  border-radius: var(--workspace-radius-dialog);
+  overflow: hidden;
+  border: 1px solid var(--workspace-line);
+}
+
+.sketch-case__loading {
+  padding: 24px;
+  font-size: 13px;
+}
+
+.sketch-case__unreadable pre {
+  white-space: pre-wrap;
+  max-height: 50vh;
+  overflow: auto;
+  font-size: var(--workspace-text-caption);
+}
+
+.case-sketch-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  overflow: hidden;
+  border-radius: var(--workspace-radius-small);
+  background: var(--workspace-muted-surface);
+}
+
+.case-sketch-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.case-sketch-thumb.is-empty {
+  color: var(--workspace-text-muted);
+}
+
+/* Same inversion as Excalidraw's dark canvas: the drawing keeps its colors' meaning. */
+[data-theme="dark"] .case-sketch-thumb img {
+  filter: invert(93%) hue-rotate(180deg);
+}

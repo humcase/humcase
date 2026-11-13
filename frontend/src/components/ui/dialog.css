@@ -1,0 +1,103 @@
+/* Humcase kit — modal window (0.9.67). A raised casing resting on its edge, in the center of a
+   veil; "page" takes the whole application space (settings); "palette" anchors at the top. */
+
+.workspace-app .ui-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: var(--workspace-overlay);
+}
+.workspace-app .ui-dialog-overlay[data-state='open'] { animation: ui-dialog-fade 140ms var(--workspace-ease-out, ease-out); }
+.workspace-app .ui-dialog-overlay[data-size='page'] { display: none; }
+
+.workspace-app .ui-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 81;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--ui-dialog-width, 560px), calc(100vw - 32px));
+  max-height: calc(100dvh - 40px);
+  overflow: hidden;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: var(--workspace-radius-dialog, 14px);
+  background: var(--workspace-raised);
+  color: var(--workspace-ink);
+  box-shadow: var(--workspace-shadow-dialog), 0 3px 0 var(--key-edge);
+  transform: translate(-50%, -50%);
+  outline: none;
+}
+.workspace-app .ui-dialog[data-state='open'] { animation: ui-dialog-in 160ms var(--workspace-ease-out, ease-out); }
+@keyframes ui-dialog-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-dialog-in { from { opacity: 0; transform: translate(-50%, -48%) scale(.98); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
+.workspace-app .ui-dialog[data-size='sm'] { --ui-dialog-width: 480px; }
+.workspace-app .ui-dialog[data-size='md'] { --ui-dialog-width: 560px; }
+.workspace-app .ui-dialog[data-size='lg'] { --ui-dialog-width: 820px; }
+.workspace-app .ui-dialog[data-size='xl'] { --ui-dialog-width: 1152px; }
+
+/* Palette: anchored in the top third, without animation (opened dozens of times a day). */
+.workspace-app .ui-dialog[data-size='palette'] {
+  --ui-dialog-width: 740px;
+  top: min(16vh, 140px);
+  max-height: calc(100dvh - min(16vh, 140px) - 24px);
+  transform: translateX(-50%);
+  animation: none !important;
+}
+.workspace-app .ui-dialog-overlay[data-size='palette'] { animation: none !important; }
+@media (min-width: 2240px) { .workspace-app .ui-dialog[data-size='palette'] { --ui-dialog-width: 860px; } }
+@media (max-width: 850px) { .workspace-app .ui-dialog[data-size='palette'] { top: 50px; max-height: calc(100dvh - 74px); } }
+
+/* Page: takes the whole window (settings), without veil or casing. */
+.workspace-app .ui-dialog[data-size='page'] {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100%;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  background: var(--workspace-canvas);
+  box-shadow: none;
+  transform: none;
+  animation: none !important;
+}
+
+/* Casing sections. */
+.workspace-app .ui-dialog__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 24px 28px 0; }
+.workspace-app .ui-dialog__heading { min-width: 0; }
+.workspace-app .ui-dialog__title { margin: 0; color: var(--workspace-ink); font-size: var(--workspace-text-section, 20px); font-weight: 650; line-height: 1.25; letter-spacing: -.02em; }
+.workspace-app .ui-dialog__description { margin-top: 6px; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); line-height: 1.5; }
+.workspace-app .ui-dialog__close.ui-button { flex: none; margin: -4px -8px 0 0; }
+.workspace-app .ui-dialog__body { min-height: 0; overflow-y: auto; padding: 20px 28px 0; }
+.workspace-app .ui-dialog__footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; padding: 20px 28px 24px; }
+.workspace-app .ui-dialog__note { flex: 1 1 200px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+
+/* A form wraps header, body and footer: it follows the casing column. */
+.workspace-app .ui-dialog__form { display: flex; flex-direction: column; min-height: 0; }
+
+/* Dialog form fields: screen-printed label above, full-width field. */
+.workspace-app .ui-dialog__field { display: block; margin-top: 18px; }
+.workspace-app .ui-dialog__field:first-child { margin-top: 0; }
+.workspace-app .ui-dialog__field > label,
+.workspace-app .ui-dialog legend {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--workspace-text-secondary);
+  font-family: var(--workspace-font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+.workspace-app .ui-dialog__field .ui-field { display: block; width: 100%; }
+.workspace-app .ui-dialog__error { margin-top: 10px; color: var(--workspace-danger); font-size: var(--workspace-text-caption); }
+
+@media (max-width: 600px) {
+  .workspace-app .ui-dialog__header { padding: 20px 20px 0; }
+  .workspace-app .ui-dialog__body { padding: 16px 20px 0; }
+  .workspace-app .ui-dialog__footer { padding: 16px 20px 20px; }
+}
+@media (prefers-reduced-motion: reduce) { .workspace-app :is(.ui-dialog, .ui-dialog-overlay) { animation: none !important; } }

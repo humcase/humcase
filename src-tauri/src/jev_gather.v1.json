@@ -1,0 +1,18 @@
+{
+  "version": "gather.v1",
+  "model": "jev-1.13.0",
+  "together": {
+    "instructions": "`a` and `b` are two cases from the same person's notes, in the same project. Do they belong together, so that one should be filed inside the other?",
+    "criteria": {
+      "true": "Both are about the same piece of work: the same feature, problem, plan, event or purchase; or one is a step, an incident, a question or a detail of the other; or they repeat each other.",
+      "false": "They are different subjects, even when they belong to the same project, product or field, or share words."
+    }
+  },
+  "conflict": {
+    "instructions": "`decision` is a decision in force in the person's notes; `case` is another case of theirs. Does `case` go against `decision`?",
+    "criteria": {
+      "true": "Doing or believing what `case` says would break `decision`: it plans, proposes or states the opposite of what was decided.",
+      "false": "`case` agrees with `decision`, applies it, adds details to it, or is about something else."
+    }
+  }
+}

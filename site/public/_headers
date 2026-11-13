@@ -1,0 +1,22 @@
+# Cache rules for Cloudflare (Pages and Workers static assets read this file).
+# Hashed build files never change under the same name. The page asks for the scripts and the
+# screenshots with a fingerprint of their content (?v=, src/versioned.ts), so they are kept for good too.
+# The maple frames are named by world.js without a fingerprint: a day, so a new render shows up soon.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/maple/px/*
+  Cache-Control: public, max-age=86400
+
+/shots/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/maple/maple-data.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

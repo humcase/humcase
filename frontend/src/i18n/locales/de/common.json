@@ -1,0 +1,21 @@
+{
+  "cancel": "Abbrechen",
+  "untitled": "Ohne Titel",
+  "space": {
+    "work": "Arbeit",
+    "private": "Privat"
+  },
+  "inboxOf": "Eingang · {{space}}",
+  "close": "Schließen",
+  "save": "Speichern",
+  "delete": "Löschen",
+  "retry": "Erneut versuchen",
+  "copy": "Kopieren",
+  "dueTitle": "Fällig: {{date}}",
+  "keys": {
+    "control": "Strg",
+    "shift": "Umschalt",
+    "alt": "Alt",
+    "meta": "Win"
+  }
+}

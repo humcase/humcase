@@ -1,0 +1,56 @@
+/* Humcase kit — Menu (0.9.65). Raised casing resting on its edge; option hovered or active
+   by keyboard in state gray, selected option checked. */
+
+.ui-menu-anchor { display: inline-flex; }
+
+.workspace-app .ui-menu {
+  z-index: 100;
+  min-width: 200px;
+  max-width: calc(100vw - 24px);
+  padding: 5px;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: 10px;
+  background: var(--workspace-raised);
+  color: var(--workspace-ink);
+  box-shadow: var(--workspace-shadow-raised), 0 2px 0 var(--key-edge);
+  transform-origin: var(--radix-dropdown-menu-content-transform-origin);
+}
+.workspace-app .ui-menu[data-state='open'] { animation: ui-menu-in 120ms var(--workspace-ease-out, ease-out); }
+@keyframes ui-menu-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+
+.workspace-app .ui-menu__label {
+  padding: 8px 10px 8px;
+  color: var(--workspace-text-muted);
+  font-family: var(--workspace-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.workspace-app .ui-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  color: var(--workspace-ink);
+  font-size: var(--workspace-text-ui);
+  outline: none;
+  cursor: default;
+  user-select: none;
+}
+.workspace-app .ui-menu__item > svg { flex: none; width: 19px; height: 19px; color: var(--workspace-text-secondary); }
+.workspace-app .ui-menu__item[data-highlighted] { background: var(--workspace-state-hover); }
+.workspace-app .ui-menu__item[data-state='checked'] { background: var(--workspace-state-selected); font-weight: 600; }
+.workspace-app .ui-menu__item[data-state='checked'][data-highlighted] { background: var(--workspace-state-pressed); }
+.workspace-app .ui-menu__item[data-tone='danger'] { color: var(--workspace-danger); }
+.workspace-app .ui-menu__item[data-disabled] { opacity: .5; }
+.workspace-app .ui-menu__text { display: grid; flex: 1; min-width: 0; }
+.workspace-app .ui-menu__text > span { font-weight: inherit; }
+.workspace-app .ui-menu__text small { margin-top: 3px; color: var(--workspace-text-secondary); font-size: var(--workspace-text-caption); line-height: 1.45; }
+.workspace-app .ui-menu__check { display: inline-flex; margin-left: auto; color: var(--workspace-ink); }
+.workspace-app .ui-menu__separator { height: 1px; margin: 5px 4px; background: var(--workspace-line); }
+
+@media (prefers-reduced-motion: reduce) { .workspace-app .ui-menu[data-state='open'] { animation: none; } }

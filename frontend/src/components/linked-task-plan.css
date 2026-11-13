@@ -1,0 +1,23 @@
+.note-relations-group .linked-task-plan { display: flex; flex-direction: column; gap: 2px; }
+.note-relations-group .linked-task-plan__item { display: block; padding: 9px 0; border: 0; }
+.linked-task-plan__row { display: flex; align-items: flex-start; gap: 8px; }
+.linked-task-plan__status { flex: none; margin-top: 8px; color: var(--workspace-text-muted); }
+.linked-task-plan__item[data-status='resolved'] { opacity: .68; transition: opacity 150ms ease; }
+.linked-task-plan__item[data-status='resolved']:is(:hover, :focus-within) { opacity: 1; }
+.linked-task-plan__item[data-status='resolved'] rect { fill: currentColor; fill-opacity: .12; }
+.linked-task-plan__check { stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: no-preference) { .linked-task-plan__check { animation: linked-task-draw 200ms cubic-bezier(0.23, 1, 0.32, 1) both; } }
+@keyframes linked-task-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.linked-task-plan__item[data-status='resolved'] .linked-task-plan__status { color: var(--workspace-success); }
+.linked-task-plan__item[data-status='in_progress'] .linked-task-plan__status { color: var(--workspace-action); }
+.linked-task-plan__title { flex: 1; min-width: 0; padding-block: 5px; color: var(--workspace-ink); text-align: left; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.linked-task-plan__title:hover:not(:disabled) { text-decoration: underline; text-underline-offset: 3px; }
+.workspace-app :is(.linked-task-plan__toggle, .linked-task-plan__row .note-relations-unlink) { flex: none; }
+.linked-task-plan__toggle svg { transition: transform 150ms ease; }
+.linked-task-plan__toggle[aria-expanded='true'] svg { transform: rotate(90deg); }
+.linked-task-plan__meta { padding-left: 24px; font-size: var(--workspace-text-caption); color: var(--workspace-text-muted); line-height: 1.5; }
+.linked-task-plan__detail { margin: 8px 0 0 8px; padding: 4px 8px 4px 17px; border-left: 1px dashed var(--workspace-line); font-size: var(--workspace-text-caption); }
+.linked-task-plan__detail > span { font-weight: 550; color: var(--workspace-text-secondary); }
+.linked-task-plan__detail p { margin: 5px 0 0; color: var(--workspace-text-secondary); white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+.linked-task-plan__title:disabled { opacity: .5; }
+@media(prefers-reduced-motion:reduce) { .linked-task-plan__toggle svg { transition: none; } }

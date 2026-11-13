@@ -1,0 +1,92 @@
+[
+  {
+    "id": "fr-hosting",
+    "expected": "replaces",
+    "older": { "title": "Héberger Humcase en ligne sur Supabase", "text": "On part sur Supabase pour la base et les comptes : authentification prête, Postgres connu." },
+    "newer": { "title": "Abandonner Supabase : Cloudflare pour la version en ligne", "text": "On abandonne Supabase. Cloudflare D1 et R2 coûtent moins cher à 1 000 personnes actives, et Workers suffit pour la synchronisation." }
+  },
+  {
+    "id": "fr-offer",
+    "expected": "replaces",
+    "older": { "title": "Version locale gratuite, service en ligne payant", "text": "La version de bureau reste gratuite ; le service en ligne est payant dès le premier jour." },
+    "newer": { "title": "Offre : tout gratuit avec votre clé, service Humcase en option", "text": "Plus de version payante obligatoire : tout marche gratuitement avec la clé de la personne, le service Humcase devient une option payante." }
+  },
+  {
+    "id": "fr-adds",
+    "expected": "same",
+    "older": { "title": "Licence AGPL-3.0 pour le dépôt", "text": "Le code est publié sous AGPL-3.0." },
+    "newer": { "title": "Contributions sous CLA", "text": "En plus de l'AGPL-3.0, les contributions extérieures signent un CLA pour garder la double licence possible." }
+  },
+  {
+    "id": "fr-other",
+    "expected": "other",
+    "older": { "title": "Police DM Sans pour l'interface", "text": "On garde DM Sans et DM Mono pour les chiffres." },
+    "newer": { "title": "Interface en anglais et en français d'abord", "text": "Les autres langues viendront avec la version web." }
+  },
+  {
+    "id": "en-db",
+    "expected": "replaces",
+    "older": { "title": "Store sessions in Redis", "text": "Sessions live in Redis with a 24 h expiry." },
+    "newer": { "title": "Drop Redis: sessions in Postgres", "text": "We remove Redis. Sessions move to a Postgres table; one less service to run." }
+  },
+  {
+    "id": "en-confirms",
+    "expected": "same",
+    "older": { "title": "Release every two weeks", "text": "We ship a release every second Thursday." },
+    "newer": { "title": "Release train: keep the two-week rhythm, add a freeze day", "text": "The two-week release stays; the Wednesday before is a freeze day for fixes only." }
+  },
+  {
+    "id": "en-other",
+    "expected": "other",
+    "older": { "title": "Use Postgres for analytics", "text": "Analytics queries run on a Postgres replica." },
+    "newer": { "title": "Hire a second designer", "text": "We open a designer position in March." }
+  },
+  {
+    "id": "es-supplier",
+    "expected": "replaces",
+    "older": { "title": "Proveedor de café: Cafés Rivera", "text": "Compramos el café a Cafés Rivera, entrega cada lunes." },
+    "newer": { "title": "Cambiamos de proveedor de café a Tostadores del Sur", "text": "Dejamos Cafés Rivera por los retrasos; desde abril el café viene de Tostadores del Sur." }
+  },
+  {
+    "id": "es-other",
+    "expected": "other",
+    "older": { "title": "Horario de apertura de 9 a 18", "text": "La tienda abre de 9 a 18 de lunes a sábado." },
+    "newer": { "title": "Nuevo logotipo en verde", "text": "El logotipo pasa a verde oscuro." }
+  },
+  {
+    "id": "de-meeting",
+    "expected": "replaces",
+    "older": { "title": "Teammeeting jeden Montag um 9 Uhr", "text": "Das Teammeeting findet jeden Montag um 9 Uhr im großen Raum statt." },
+    "newer": { "title": "Teammeeting auf Dienstag 10 Uhr verschoben", "text": "Ab sofort treffen wir uns dienstags um 10 Uhr, montags sind zu viele unterwegs." }
+  },
+  {
+    "id": "de-adds",
+    "expected": "same",
+    "older": { "title": "Homeoffice zwei Tage pro Woche", "text": "Jede Person darf zwei Tage pro Woche von zu Hause arbeiten." },
+    "newer": { "title": "Homeoffice: Kernzeit 10 bis 15 Uhr", "text": "Für die Homeoffice-Tage gilt eine Kernzeit von 10 bis 15 Uhr." }
+  },
+  {
+    "id": "it-trip",
+    "expected": "replaces",
+    "older": { "title": "Viaggio in Giappone a ottobre", "text": "Partiamo per il Giappone a ottobre, due settimane." },
+    "newer": { "title": "Giappone rimandato a primavera", "text": "Il viaggio in Giappone slitta ad aprile: a ottobre Luca non ha ferie." }
+  },
+  {
+    "id": "it-other",
+    "expected": "other",
+    "older": { "title": "Prenotare i voli con ITA", "text": "Voli con ITA per avere il bagaglio incluso." },
+    "newer": { "title": "Rinnovare l'assicurazione della casa", "text": "L'assicurazione scade a maggio, rinnoviamo con la stessa compagnia." }
+  },
+  {
+    "id": "pt-shop",
+    "expected": "replaces",
+    "older": { "title": "Loja na Shopify", "text": "A loja online fica na Shopify, plano básico." },
+    "newer": { "title": "Migrar a loja da Shopify para a Nuvemshop", "text": "Saímos da Shopify: a Nuvemshop cobra menos e calcula o frete dos Correios." }
+  },
+  {
+    "id": "pt-adds",
+    "expected": "same",
+    "older": { "title": "Fotos com luz natural", "text": "As fotos das peças são feitas com luz natural, de manhã." },
+    "newer": { "title": "Fotos: fundo branco além da luz natural", "text": "Mantemos a luz natural e passamos a usar um fundo branco." }
+  }
+]

@@ -1,0 +1,71 @@
+/* Humcase kit — feedback (0.9.67): floating message (Toast) and inline message (Notice). */
+
+.workspace-app .ui-toast {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(560px, calc(100% - 32px));
+  min-height: 40px;
+  padding: 6px 8px 6px 14px;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: 999px;
+  background: var(--workspace-raised);
+  color: var(--workspace-ink);
+  font-size: var(--workspace-text-ui);
+  line-height: 1.4;
+  box-shadow: var(--workspace-shadow-raised), 0 2px 0 var(--key-edge);
+  transform: translateX(-50%);
+  animation: ui-toast-in 220ms var(--workspace-ease-out);
+}
+.workspace-app .ui-toast:not(:has(.ui-toast__action)) { padding-right: 16px; }
+.workspace-app .ui-toast__icon { flex: none; color: var(--workspace-text-secondary); }
+.workspace-app .ui-toast__message { min-width: 0; overflow-wrap: anywhere; }
+.workspace-app .ui-toast[data-tone='danger'] { border-color: var(--workspace-danger-border); background: var(--workspace-danger-soft); }
+.workspace-app .ui-toast[data-tone='danger'] .ui-toast__icon { color: var(--workspace-danger); }
+.workspace-app .ui-toast[data-tone='success'] .ui-toast__icon { color: var(--workspace-success); }
+
+/* Action and remaining-time ring: it empties during `--ui-toast-duration`. */
+.workspace-app .ui-toast__action { position: relative; display: inline-grid; flex: none; place-items: center; }
+.workspace-app .ui-toast__timer { position: absolute; left: 6px; width: 18px; height: 18px; pointer-events: none; transform: rotate(-90deg); }
+.workspace-app .ui-toast__timer circle {
+  fill: none;
+  stroke: var(--workspace-action);
+  stroke-width: 3.5;
+  stroke-dasharray: 100;
+  stroke-linecap: round;
+  animation: ui-toast-drain var(--ui-toast-duration, 5s) linear forwards;
+}
+.workspace-app .ui-toast__action:has(.ui-toast__timer) .ui-button { padding-left: 30px; }
+
+@keyframes ui-toast-in { from { opacity: 0; transform: translate(-50%, -6px); } }
+@keyframes ui-toast-drain { to { stroke-dashoffset: 100; } }
+
+/* Inline message: tinted band, leading icon. */
+.workspace-app .ui-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--workspace-line);
+  border-radius: var(--workspace-radius-control);
+  background: var(--workspace-muted-surface);
+  color: var(--workspace-ink);
+  font-size: var(--workspace-text-caption);
+  line-height: 1.45;
+}
+.workspace-app .ui-notice__icon { flex: none; margin-top: 1px; color: var(--workspace-text-secondary); }
+.workspace-app .ui-notice__message { min-width: 0; overflow-wrap: anywhere; }
+.workspace-app .ui-notice[data-tone='danger'] { border-color: var(--workspace-danger-border); background: var(--workspace-danger-soft); }
+.workspace-app .ui-notice[data-tone='danger'] .ui-notice__icon { color: var(--workspace-danger); }
+.workspace-app .ui-notice[data-tone='success'] { background: var(--workspace-success-soft); }
+.workspace-app .ui-notice[data-tone='success'] .ui-notice__icon { color: var(--workspace-success); }
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app .ui-toast { animation: none; }
+  .workspace-app .ui-toast__timer circle { animation: none; }
+}

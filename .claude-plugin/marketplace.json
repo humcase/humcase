@@ -1,0 +1,14 @@
+{
+  "name": "humcase",
+  "owner": {
+    "name": "Humcase"
+  },
+  "description": "Humcase plugins distributed from the application repository.",
+  "plugins": [
+    {
+      "name": "humcase",
+      "source": "./plugins/humcase",
+      "description": "Humcase MCP server and skills so agents resume work, file and write cases, and deliver results the person accepts or sends back for rework."
+    }
+  ]
+}

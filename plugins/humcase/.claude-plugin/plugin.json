@@ -1,0 +1,25 @@
+{
+  "name": "humcase",
+  "description": "Humcase MCP server and skills so agents resume work, file and write cases, and deliver results the person accepts or sends back for rework.",
+  "author": {
+    "name": "Humcase"
+  },
+  "homepage": "https://github.com/humcase/humcase/blob/master/docs/AGENT_SETUP.md",
+  "repository": "https://github.com/humcase/humcase",
+  "license": "AGPL-3.0-only",
+  "keywords": [
+    "humcase",
+    "cases",
+    "notes",
+    "tasks",
+    "mcp"
+  ],
+  "userConfig": {
+    "exe_path": {
+      "type": "file",
+      "title": "Humcase executable",
+      "description": "Full path of the Humcase executable (Humcase.exe). The plugin launches it with the \"mcp\" argument.",
+      "required": true
+    }
+  }
+}

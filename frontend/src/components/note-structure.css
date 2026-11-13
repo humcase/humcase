@@ -1,0 +1,42 @@
+/* Context sent to the AI, under the dialog description. */
+.workspace-app .note-structure-context { margin-top: 6px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+
+/* Match the source and editable result, independently of the full-page editor. */
+.note-structure-dialog .note-structure-source,
+.note-structure-dialog .note-structure-proposal .tiptap {
+  font-family: inherit;
+  font-size: var(--workspace-text-body);
+  line-height: 1.65;
+  color: var(--workspace-ink);
+}
+
+.note-structure-dialog .note-structure-source,
+.note-structure-dialog .note-structure-proposal {
+  padding: 20px;
+}
+
+.note-structure-dialog .tiptap :is(h1, h2, h3) {
+  font-family: inherit;
+  font-size: var(--workspace-text-lead);
+  line-height: 1.35;
+  margin: 1.1em 0 0.5em;
+}
+
+.note-structure-dialog .tiptap :is(p, ul, ol) {
+  margin-top: 0.5em;
+  margin-bottom: 0.75em;
+}
+
+.note-structure-dialog .tiptap > :first-child { margin-top: 0; }
+.note-structure-dialog .tiptap li { margin-block: 0.25em; }
+.note-structure-dialog .tiptap li p { margin-block: 0; }
+
+@media (max-width: 720px) {
+  .note-structure-dialog .note-structure-source,
+  .note-structure-dialog .note-structure-proposal { padding: 14px; }
+}
+
+/* Frame choice in the structuring window (0.9.78). */
+.note-structure-frame { display: flex; align-items: center; gap: 10px; margin: 12px 20px 0; }
+.note-structure-frame label { color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.note-history-restore { margin-left: auto; }

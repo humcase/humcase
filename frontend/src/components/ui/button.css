@@ -1,0 +1,136 @@
+/* Humcase kit — Button (0.9.65). Single source of the design and states of all buttons.
+   Deliberately outside @layer: no screen stylesheet must redefine the color or state of a
+   button; Tailwind utilities stay reserved for layout (margins, width).
+   Variants: default = action key, secondary/outline = key, ghost = discreet command
+   (+ data-tone="danger"), field = menu trigger with a field design, link, destructive
+   (+ data-tone="soft"). Sizes: default, sm, lg, icon, icon-sm.
+   States: --workspace-state-* and --workspace-control-* tokens (workspace-theme.css). */
+
+.workspace-app .ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--workspace-control-height);
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--workspace-radius-control, 8px);
+  background: transparent;
+  color: var(--workspace-ink);
+  font-family: var(--workspace-font-ui);
+  font-size: var(--workspace-text-ui, 14px);
+  font-weight: 550;
+  line-height: 1.25;
+  white-space: normal;
+  text-align: center;
+  cursor: pointer;
+  transition-property: background-color, border-color, box-shadow, color, transform;
+  transition-duration: 140ms, 140ms, 140ms, 140ms, 100ms;
+  transition-timing-function: ease, ease, ease, ease, var(--workspace-ease-out, ease-out);
+}
+.workspace-app .ui-button svg { width: 18px; height: 18px; flex: none; }
+.workspace-app .ui-button[data-size='sm'] svg,
+.workspace-app .ui-button[data-size='icon-sm'] svg { width: 16px; height: 16px; }
+
+/* Tailles */
+.workspace-app .ui-button[data-size='sm'] { min-height: var(--workspace-control-compact); padding: 5px 12px; white-space: nowrap; }
+.workspace-app .ui-button[data-size='lg'] { padding-inline: 20px; }
+/* Very compact: discreet action in an information bar (legend, detail). */
+.workspace-app .ui-button[data-size='xs'] { min-height: 28px; padding: 3px 8px; font-size: var(--workspace-text-caption); }
+.workspace-app .ui-button[data-size='xs'] svg { width: 14px; height: 14px; }
+.workspace-app .ui-button[data-size='icon'] { width: var(--workspace-control-height); min-height: var(--workspace-control-height); padding: 0; }
+.workspace-app .ui-button[data-size='icon-sm'] { width: var(--workspace-control-compact); min-height: var(--workspace-control-compact); padding: 0; }
+
+/* Action key: orange face, dark edge; pressing sinks the key. */
+.workspace-app .ui-button[data-variant='default'] {
+  border-color: var(--workspace-action);
+  background: var(--workspace-action);
+  color: var(--workspace-on-accent);
+  box-shadow: inset 0 1px 0 #ffffff38, 0 3px 0 var(--key-action-edge), var(--key-shade);
+}
+.workspace-app .ui-button[data-variant='default']:not(:disabled):hover { border-color: var(--workspace-action-hover); background: var(--workspace-action-hover); }
+.workspace-app .ui-button[data-variant='default']:not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 0 #ffffff26, 0 1px 0 var(--key-action-edge), 0 1px 3px -1px #0000004d;
+}
+
+/* Key: control face, readable border, edge. */
+.workspace-app .ui-button:is([data-variant='secondary'], [data-variant='outline']) {
+  border-color: var(--workspace-control-border);
+  background: var(--workspace-control);
+  color: var(--workspace-ink);
+  box-shadow: inset 0 1px 0 #ffffff14, 0 2px 0 var(--key-edge), 0 3px 6px -3px #00000066;
+}
+.workspace-app[data-theme='light'] .ui-button:is([data-variant='secondary'], [data-variant='outline']) {
+  box-shadow: inset 0 1px 0 #ffffffcc, 0 2px 0 var(--key-edge), 0 4px 7px -3px #1a1a1847;
+}
+.workspace-app .ui-button:is([data-variant='secondary'], [data-variant='outline']):not(:disabled):hover {
+  border-color: var(--workspace-card-hover-border);
+  background: var(--workspace-control-hover);
+}
+.workspace-app .ui-button:is([data-variant='secondary'], [data-variant='outline']):not(:disabled):is(:active, [data-state='open']) {
+  background: var(--workspace-control-pressed);
+}
+.workspace-app .ui-button:is([data-variant='secondary'], [data-variant='outline']):not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 2px #0000001f;
+}
+
+/* Trigger field (choice menu: status, sort): field design, not a key. */
+.workspace-app .ui-button[data-variant='field'] {
+  justify-content: space-between;
+  border-color: var(--workspace-input-border);
+  background: var(--workspace-surface);
+  color: var(--workspace-ink);
+  font-weight: 500;
+  text-align: left;
+}
+.workspace-app .ui-button[data-variant='field']:not(:disabled):hover { border-color: var(--workspace-card-hover-border); background: var(--workspace-state-hover); }
+.workspace-app .ui-button[data-variant='field'][data-state='open'] { border-color: var(--workspace-action); box-shadow: 0 0 0 1px var(--workspace-action); }
+
+/* Discreet command: no face at rest, visible hover and press. */
+.workspace-app .ui-button[data-variant='ghost'] { color: var(--workspace-text-secondary); }
+.workspace-app .ui-button[data-variant='ghost']:not(:disabled):hover { background: var(--workspace-state-hover); color: var(--workspace-ink); }
+.workspace-app .ui-button[data-variant='ghost']:not(:disabled):is(:active, [data-state='open']) { background: var(--workspace-state-pressed); color: var(--workspace-ink); }
+.workspace-app .ui-button[data-variant='ghost']:is([aria-pressed='true'], [data-selected='true']) { background: var(--workspace-state-selected); color: var(--workspace-ink); }
+/* Risky discreet command (Delete…): red only on hover. */
+.workspace-app .ui-button[data-variant='ghost'][data-tone='danger']:not(:disabled):hover { background: var(--workspace-danger-soft); color: var(--workspace-danger); }
+
+/* Navigation (settings sections): left-aligned row; the open section is a
+   raised badge, like the sidebar's active item. */
+.workspace-app .ui-button[data-variant='nav'] { justify-content: flex-start; gap: 12px; min-height: 42px; padding: 8px 12px; color: var(--workspace-text-secondary); font-weight: 500; white-space: nowrap; }
+.workspace-app .ui-button[data-variant='nav']:not(:disabled):hover { background: var(--workspace-state-hover); color: var(--workspace-ink); }
+.workspace-app .ui-button[data-variant='nav'][aria-current='page'] { background: var(--workspace-sidebar-active); color: var(--workspace-ink); font-weight: 600; box-shadow: var(--workspace-shadow-card); }
+.workspace-app .ui-button[data-variant='link'] {
+  min-height: var(--workspace-control-compact);
+  padding: 4px 2px;
+  color: var(--workspace-accent-ink);
+  text-underline-offset: 4px;
+}
+.workspace-app .ui-button[data-variant='link']:not(:disabled):hover { text-decoration: underline; }
+
+.workspace-app .ui-button[data-variant='destructive'] {
+  border-color: var(--workspace-danger-border);
+  background: var(--workspace-danger);
+  color: #fff;
+}
+.workspace-app[data-theme='dark'] .ui-button[data-variant='destructive']:not([data-tone='soft']) { color: #261d20; }
+.workspace-app .ui-button[data-variant='destructive']:not(:disabled):hover { filter: brightness(1.06); }
+.workspace-app .ui-button[data-variant='destructive'][data-tone='soft'] {
+  border-color: var(--workspace-danger-border);
+  background: var(--workspace-danger-soft);
+  color: var(--workspace-danger);
+}
+.workspace-app .ui-button[data-variant='destructive'][data-tone='soft']:not(:disabled):hover {
+  border-color: var(--workspace-danger);
+  background: color-mix(in srgb, var(--workspace-danger-soft) 82%, var(--workspace-danger));
+  filter: none;
+}
+
+.workspace-app .ui-button:focus-visible { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+.workspace-app .ui-button:disabled { opacity: .55; cursor: default; box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app .ui-button { transition: none; }
+  .workspace-app .ui-button:active { transform: none !important; }
+}

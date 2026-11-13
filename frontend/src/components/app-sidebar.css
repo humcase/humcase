@@ -1,0 +1,15 @@
+/* Placement of the shadcn sidebar in the `.workspace-app` grid. Only the position and the
+   narrow window are handled here: the appearance comes from the shadcn primitives' classes. */
+.app-sidebar { display: flex; min-height: 0; min-width: 0; }
+.app-sidebar .app-sidebar__close.ui-button { display: none; }
+@media (max-width: 850px) {
+  .app-sidebar { display: none; position: fixed; z-index: 72; inset: 0 auto 0 0; width: 264px; box-shadow: var(--workspace-shadow-dialog); }
+  .app-sidebar--open { display: flex; }
+  .app-sidebar .app-sidebar__close.ui-button { display: inline-flex; }
+}
+@media (prefers-reduced-motion: reduce) { .app-sidebar * { transition: none !important; } }
+
+/* Shortcuts by nature: choice of the shortcuts shown, under "Customize". */
+.app-sidebar__shortcut-choice fieldset { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px; padding: 6px 8px; border: 1px solid var(--sidebar-border); border-radius: 6px; }
+.app-sidebar__shortcut-choice legend { padding: 0 4px; color: var(--workspace-text-muted); font-size: 12px; }
+.app-sidebar__shortcut-choice label { display: flex; align-items: center; gap: 8px; padding: 2px 0; font-size: 13px; cursor: pointer; }

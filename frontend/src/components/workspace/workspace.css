@@ -1,0 +1,95 @@
+.workspace-page {
+  --workspace-border: var(--workspace-card-border);
+  --workspace-hover-border: var(--workspace-card-hover-border);
+  --workspace-secondary: var(--workspace-text-secondary);
+  --workspace-muted: var(--workspace-text-muted);
+  --workspace-accent: var(--workspace-action);
+  --workspace-note-due: var(--workspace-warning-ink);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  padding: var(--workspace-page-top) var(--workspace-page-gutter) var(--workspace-page-bottom);
+  background: var(--workspace-canvas);
+  color: var(--workspace-ink);
+  font-family: var(--workspace-font-ui, 'DM Sans', Arial, sans-serif);
+}
+
+.workspace-page * { box-sizing: border-box; }
+.workspace-page button, .workspace-page input { font: inherit; }
+.workspace-page button { cursor: pointer; }
+.workspace-page button:focus-visible, .workspace-page input:focus-visible { outline: 2px solid var(--workspace-accent); outline-offset: 3px; }
+/* One header for every page (PageHeader): eyebrow, title and count, a line of context, the page
+   action on the right. Spacing from the scale only; no page redefines it. */
+.workspace-page__header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--workspace-space-4) var(--workspace-space-8); margin: 0 0 var(--workspace-space-6); }
+.workspace-page__intro { flex: 1 1 320px; min-width: 0; }
+.workspace-page__eyebrow { display: block; margin: 0 0 var(--workspace-space-2); color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+/* Size, weight and line height of the title: foundations.css (single source). */
+.workspace-page__title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--workspace-space-3); }
+.workspace-page__header h1 { display: flex; align-items: center; gap: var(--workspace-space-3); min-width: 0; margin: 0; font-family: var(--workspace-font-ui); overflow-wrap: anywhere; }
+.workspace-page__header h1 svg { flex: none; color: var(--workspace-text-muted); }
+.workspace-page__header p { margin: var(--workspace-space-2) 0 0; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); line-height: var(--workspace-leading-body); }
+.workspace-page__action { display: flex; flex: none; align-items: center; gap: var(--workspace-space-2); margin-left: auto; }
+.workspace-section { min-width: 0; }
+.workspace-trash__actions { display: flex; align-items: center; gap: 6px; }
+.workspace-section__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 0 0 18px; }
+.workspace-section__heading h2 { margin: 0; font-size: var(--workspace-text-section); line-height: 1.25; font-weight: 500; letter-spacing: -.025em; }
+.workspace-section__heading > span { color: var(--workspace-muted); font-size: var(--workspace-text-caption); font-variant-numeric: tabular-nums; }
+.workspace-home__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 340px); gap: var(--workspace-grid-gap); align-items: start; }
+.workspace-home__layout.workspace-home__layout--single { grid-template-columns: minmax(0, 1fr); }
+.workspace-home__main { min-width: 0; }
+.workspace-home__recent { margin-top: 40px; }
+.workspace-note-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--workspace-grid-gap); }
+.workspace-note-card { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: var(--workspace-card-height); padding: var(--workspace-padding); }
+/* The type no longer determines the card's dominant color: the status carries the
+   main signal. All cards share the same surface. */
+.workspace-note-card--compact { min-height: calc(var(--workspace-card-height) - 32px); }
+.workspace-note-card__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--workspace-secondary); font-size: var(--workspace-text-caption); line-height: 1.3; }
+.workspace-note-card__date { flex: none; color: var(--workspace-muted); }
+.workspace-note-card__title { margin: 19px 0 12px; font-size: var(--workspace-text-card); line-height: var(--workspace-leading-title); font-weight: 600; letter-spacing: -.025em; }
+.workspace-note-card__title button { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; width: 100%; padding: 0; border: 0; background: transparent; color: var(--workspace-ink); text-align: left; line-height: inherit; }
+.workspace-note-card__title button::after { position: absolute; z-index: 1; inset: 0; content: ''; }
+.workspace-note-card__title button:focus-visible { outline: none; }
+.workspace-note-card__preview { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; min-height: 0; margin: 0 0 18px; color: var(--workspace-secondary); font-size: var(--workspace-text-body); line-height: var(--workspace-leading-body); overflow-wrap: anywhere; }
+.workspace-note-card__bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: auto; padding-top: 15px; border-top: 1px solid var(--workspace-line); color: var(--workspace-muted); font-size: var(--workspace-text-caption); line-height: 1.4; }
+.workspace-note-card__project { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.workspace-note-card__project { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: auto; }
+.workspace-note-card__project-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--workspace-accent-ink); }
+
+@media (min-width: 2240px) {
+  .workspace-home__layout { grid-template-columns: minmax(0, 1fr) 370px; }
+  .workspace-note-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 1599px) {
+  .workspace-home__layout { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1100px) {
+  .workspace-note-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .workspace-page { --workspace-page-gutter: 20px; --workspace-page-top: 24px; --workspace-page-bottom: 44px; }
+  .workspace-page__header { align-items: flex-start; flex-direction: column; gap: var(--workspace-space-4); }
+  /* In a column the intro's basis would become a height: it takes its content's. */
+  .workspace-page__intro { flex: none; width: 100%; }
+  .workspace-page__title .workspace-page__action { flex-basis: 100%; margin-left: 0; }
+  .workspace-note-card, .workspace-note-card--compact { min-height: var(--workspace-card-height); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-page * { transition-duration: 0ms !important; }
+}
+
+/* Pearl / iris direction: existing content, surfaces and hierarchy of the validated study. */
+.workspace-section__heading h2 { font-size: var(--workspace-text-card); font-weight: 550; }
+.workspace-note-card { overflow: hidden; padding-bottom: 0; }
+.workspace-note-card__preview { -webkit-line-clamp: 4; }
+.workspace-note-card:has(.workspace-note-card__report) .workspace-note-card__preview { -webkit-line-clamp: 2; }
+.workspace-note-card__report { margin: 0 0 18px; padding: 12px 14px; border-left: 2px solid var(--workspace-card-hover-border); border-radius: 0 7px 7px 0; background: var(--workspace-raised); }
+.workspace-note-card__report > span { display: flex; align-items: center; gap: 6px; color: var(--workspace-accent-ink); font-size: var(--workspace-text-caption); font-weight: 550; }
+.workspace-note-card__report p { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; overflow-wrap: anywhere; margin: 7px 0 0; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); line-height: 1.5; }
+.workspace-note-card__context { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; margin-bottom: 16px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-note-card__branch { display: inline-flex; align-items: center; gap: 5px; min-width: 0; max-width: 100%; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.workspace-note-card__branch svg { flex: none; }
+.workspace-note-card__bottom { margin-inline: calc(-1 * var(--workspace-padding)); padding: 13px var(--workspace-padding); background: var(--workspace-raised); }
+
+/* Where a case lives (brief, shortcuts): project dot, then the path. */
+.case-location { display: inline-flex; align-items: center; gap: 6px; min-width: 0; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); overflow-wrap: anywhere; }
+.case-location__dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--case-location-dot); }

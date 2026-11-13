@@ -1,0 +1,373 @@
+{
+  "ai": {
+    "reason": {
+      "readFailed": "Lesen fehlgeschlagen ({{error}})",
+      "notText": "kein Textinhalt",
+      "invalidJson": "ungültiges JSON (Zeile {{line}}, Spalte {{column}})"
+    },
+    "alert": {
+      "quarantineCopy": "{{reason}}; Kopie behalten: {{path}}",
+      "leftIntact": "{{reason}}; Datei unangetastet gelassen",
+      "quarantinedOriginal": "{{reason}}; Original in Quarantäne behalten",
+      "notMovable": "{{reason}}; das Original lässt sich nicht verschieben: manuelles Eingreifen nötig",
+      "writesBlocked": "{{reason}}; Schreiben gesperrt, solange die Datei nicht zugänglich ist"
+    },
+    "settings": {
+      "corruptNotQuarantined": "Die KI-Einstellungen sind beschädigt und konnten nicht in Quarantäne verschoben werden ({{error}}). Speichern wird abgelehnt, damit das Original nicht überschrieben wird. Schließe andere Programme, die diese Datei verwenden, oder prüfe ihre Berechtigungen, und versuche es dann erneut.",
+      "unreadable": "Auf die KI-Einstellungen kann gerade nicht zugegriffen werden (Lesen fehlgeschlagen). Speichern wird abgelehnt, weil das Überschreiben der Datei Schlüssel verlieren könnte. Stelle sicher, dass kein anderes Programm sie sperrt, und versuche es dann erneut.",
+      "writeFailed": "Die KI-Einstellungen konnten nicht geschrieben werden: {{error}}",
+      "replaceFailed": "Die KI-Einstellungen konnten nicht ersetzt werden: {{error}}"
+    },
+    "lock": {
+      "heldByOther": "Die KI-Einstellungen werden von einem anderen Prozess gehalten (PID {{pid}}). Versuche es in ein paar Sekunden erneut.",
+      "locked": "Die KI-Einstellungen sind gesperrt oder nicht zugänglich (Datei „{{path}}“). Versuche es in ein paar Sekunden erneut.",
+      "failed": "Die KI-Einstellungen konnten nicht gesperrt werden: {{error}}"
+    },
+    "keyfile": {
+      "randomFailed": "Zufallsbytes zum Schutz der KI-Schlüssel konnten nicht gelesen werden: {{error}}",
+      "invalid": "Die KI-Schlüsseldatei „{{path}}“ ist beschädigt. Lösche sie und gib die Schlüssel neu ein.",
+      "unreadable": "Die KI-Schlüsseldatei konnte nicht gelesen oder erstellt werden: {{error}}",
+      "encryptFailed": "Der KI-Schlüssel konnte nicht geschützt werden",
+      "decryptFailed": "Der gespeicherte KI-Schlüssel konnte nicht gelesen werden"
+    },
+    "dpapi": {
+      "encryptDenied": "DPAPI-Verschlüsselung abgelehnt",
+      "decryptDenied": "DPAPI-Entschlüsselung abgelehnt",
+      "unavailable": "DPAPI ist außerhalb von Windows nicht verfügbar"
+    },
+    "integration": {
+      "empty": "Leere Integration",
+      "lostTarget": "Integration abgelehnt: Link oder Bild verloren ({{target}})",
+      "shortened": "Integration abgelehnt: Notiz verkürzt ({{before}} → {{after}} Wörter)"
+    },
+    "frame": {
+      "unknown": "Unbekanntes Gerüst: {{frame}}",
+      "reflectionSections": {
+        "direction": "Richtung",
+        "decisions": "Entscheidungen",
+        "rejected": "Verworfen",
+        "evolution": "Wie sich die Ideen entwickelt haben",
+        "ideas": "Ideen",
+        "questions": "Offene Fragen",
+        "explore": "Zu erkunden",
+        "actions": "Nächste Schritte"
+      }
+    },
+    "http": {
+      "clientUnavailable": "HTTP-Client nicht verfügbar ({{error}})",
+      "requestFailed": "{{provider}}: Anfrage fehlgeschlagen ({{error}})",
+      "unreachable": "{{url}} ist nicht erreichbar. Prüfe, ob der Server läuft und die Adresse stimmt.",
+      "status": "{{provider}} HTTP {{status}}",
+      "unreadable": "Antwort von {{provider}} nicht lesbar ({{error}})"
+    },
+    "dictation": {
+      "empty": "Leeres Diktat"
+    },
+    "note": {
+      "empty": "Die Notiz ist leer"
+    },
+    "provider": {
+      "unknown": "Unbekannter Anbieter: {{provider}}",
+      "unknownCleaning": "Unbekannter Bereinigungsanbieter: {{id}}",
+      "unknownTranscription": "Unbekannter Transkriptionsanbieter: {{id}}",
+      "missingUrl": "URL für den Anbieter „{{provider}}“ fehlt ({{source}}).",
+      "missingKey": "{{name}} fehlt",
+      "missingModel": "Modell für den Anbieter „{{provider}}“ fehlt.",
+      "emptyResponse": "Leere oder unerwartete Antwort des Anbieters",
+      "custom": "Benutzerdefiniert (OpenAI-kompatibel)",
+      "noUrl": "keine URL",
+      "invalidUrl": "Ungültige Adresse: {{url}}. Gib eine Adresse ein, die mit http:// oder https:// beginnt, z. B. http://localhost:11434.",
+      "urlNotEditable": "Die Adresse des Anbieters „{{provider}}“ lässt sich nicht ändern."
+    },
+    "transcription": {
+      "inProgress": "Es läuft bereits eine Transkription.",
+      "badRequest": "Deepgram: ungültige Anfrage ({{error}})",
+      "badAuthHeader": "Deepgram: ungültiger Authentifizierungs-Header",
+      "connectFailed": "Deepgram: Verbindung fehlgeschlagen ({{error}})",
+      "connectTimeout": "Deepgram: Zeitüberschreitung bei der Verbindung (10 s)",
+      "notRunning": "Keine Transkription läuft",
+      "interrupted": "Transkription unterbrochen"
+    },
+    "gate": {
+      "restoring": "Eine Wiederherstellung läuft bereits: Schreiben ist ausgesetzt"
+    },
+    "structure": {
+      "empty": "Leere Strukturierung",
+      "lostTarget": "Strukturierung abgelehnt: Link oder Bild verloren ({{target}})",
+      "shortened": "Strukturierung abgelehnt: Fall verkürzt ({{before}} → {{after}} Wörter)"
+    }
+  },
+  "notes": {
+    "notFound": "Notiz nicht gefunden: {{id}}",
+    "noFieldToUpdate": "Kein Feld zu aktualisieren.",
+    "titleEmpty": "title darf nicht leer sein",
+    "resolutionChanged": "resolution_comment hat sich geändert (gleichzeitige Aktualisierung), abgelehnt"
+  },
+  "projects": {
+    "duplicateName": "ein anderes Projekt hat bereits diesen Namen",
+    "notFound": "Projekt nicht gefunden: {{id}}",
+    "inboxLocked": "der Eingang kann nicht umbenannt, umgefärbt, archiviert oder gelöscht werden",
+    "nameEmpty": "der Projektname darf nicht leer sein",
+    "nameTooLong": "der Projektname ist zu lang (höchstens 120 Zeichen)",
+    "invalidColor": "ungültige Projektfarbe: {{color}} (erwartet #rrggbb)",
+    "needsSpaceToDelete": "weise das Projekt einem Raum zu, bevor du es löschst"
+  },
+  "tray": {
+    "show": "Humcase anzeigen",
+    "quickCapture": "Schnellerfassung (Alt+Umschalt+N)",
+    "quit": "Beenden"
+  },
+  "backup": {
+    "activityLinksInvalid": "Ungültige Bereichsverknüpfungen",
+    "activityLinksInvalidWithError": "Ungültige Bereichsverknüpfungen: {{error}}",
+    "activitySpacesInvalid": "Ungültige Räume der Bereiche",
+    "activitySpacesInvalidWithError": "Ungültige Räume der Bereiche: {{error}}",
+    "alreadyExists": "{{path}} existiert bereits",
+    "alreadyExistsChooseName": "{{path}} existiert bereits: Wähle einen anderen Namen",
+    "archiveMigrationFailed": "Das Archiv kann nicht migriert werden: {{error}}",
+    "archiveMigrationIncomplete": "Archivmigration unvollständig: Version {{version}}, erwartet {{expected}}",
+    "archiveTooLarge": "Archiv zu groß",
+    "archiveUnreadable": "Auf das Archiv kann nicht zugegriffen werden: {{error}}",
+    "blockedAfterRestore": "Schreiben ist nach einer Wiederherstellung gesperrt: Der Stand deiner Daten kann sich geändert haben.",
+    "commitAmbiguous": "Fehler beim Veröffentlichen: Der Stand deiner Daten ist ungewiss ({{error}}).",
+    "dataFolderNotFound": "Datenordner nicht gefunden",
+    "databaseTooLarge": "SQLite-Datenbank zu groß",
+    "decompressedTooLarge": "Entpacktes Archiv zu groß",
+    "entryCountInvalid": "Ungültige Anzahl von Einträgen",
+    "entryTooLarge": "Eintrag zu groß",
+    "explorerOpenFailed": "Der Explorer kann nicht geöffnet werden: {{error}}",
+    "foreignKeysInvalid": "Ungültige Fremdschlüssel",
+    "foreignKeysInvalidWithError": "Ungültige Fremdschlüssel: {{error}}",
+    "hashInvalid": "Ungültige Prüfsumme: {{name}}",
+    "imageInvalid": "Ungültiges Bild: {{name}}: {{reason}}",
+    "imageInvalidName": "ungültiger Name",
+    "imageMissingFromFolder": "Internes Bild fehlt im Ordner: {{name}}",
+    "imageMissingOrInvalid": "Internes Bild fehlt oder ist ungültig: {{name}}",
+    "imageOutsideFolder": "Internes Bild außerhalb des aktuellen Ordners",
+    "imageTooLarge": "Datei zu groß ({{size}} Byte > {{max}})",
+    "imageUnreadable": "nicht lesbar: {{error}}",
+    "imageUnsupportedEntry": "nicht unterstützter Eintrag (Ordner oder anderes)",
+    "imageUrlNotPortable": "Die URL des internen Bildes ist nicht übertragbar",
+    "inboxesInvalid": "Ungültige Eingänge",
+    "inboxesInvalidWithError": "Ungültige Eingänge: {{error}}",
+    "inboxesMultiple": "Mehrere Eingänge im selben Raum",
+    "invalidDatabase": "Ungültige SQLite-Datenbank: {{error}}",
+    "invalidDestination": "Ungültiges Ziel",
+    "lockPoisoned": "Die Sitzungssperre wurde durch einen früheren Panic vergiftet ({{error}})",
+    "lockStateInvalid": "Der interne Zustand der Sitzungssperre ist ungültig: {{error}}. Es wurden keine Daten ersetzt.",
+    "lockUnavailable": "Schließe die anderen Humcase-Sitzungen (MCP, CLI oder ein anderes Fenster), bevor du wiederherstellst: {{error}}",
+    "manifestEntryInvalid": "Ungültiger oder doppelter Manifest-Eintrag",
+    "manifestInvalid": "Ungültiges Manifest: {{error}}",
+    "manifestOrDatabaseMissing": "Manifest oder SQLite-Datenbank fehlt",
+    "manifestTooLarge": "Manifest zu groß",
+    "manifestZipMismatch": "Manifest und ZIP passen nicht zusammen",
+    "noCandidateLocation": "kein möglicher Speicherort",
+    "noWritableFolder": "Kein zugänglicher Ordner für das Backup ({{error}})",
+    "noteLinksCycle": "Ungültiger Zyklus in den Notiz-Aufgaben-Verknüpfungen",
+    "noteLinksInvalid": "Ungültige Notiz-Aufgaben-Verknüpfungen",
+    "noteLinksInvalidWithError": "Ungültige Notiz-Aufgaben-Verknüpfungen: {{error}}",
+    "noteLinksUnreadable": "Nicht lesbare Notiz-Aufgaben-Verknüpfungen: {{error}}",
+    "notesTableInvalid": "Ungültige Notiztabelle: {{error}}",
+    "projectSpacesInvalid": "Ungültige Räume der Projekte",
+    "projectSpacesInvalidWithError": "Ungültige Räume der Projekte: {{error}}",
+    "projectsTableInvalid": "Ungültige Projekttabelle: {{error}}",
+    "quitAndRestart": "Beende Humcase über das Symbol im Infobereich (Beenden) und starte die App dann neu.",
+    "restoreAppliedLockFailed": "Wiederherstellung angewendet: Sie wurde veröffentlicht, aber die Sitzungssperre konnte nicht neu erworben werden ({{error}}).",
+    "restoreFailed": "Wiederherstellung fehlgeschlagen: {{error}}",
+    "restoreInProgress": "Eine Wiederherstellung läuft bereits",
+    "restoreNotAppliedLockFailed": "Wiederherstellung nicht angewendet: Deine Daten sind unverändert, aber die Sitzungssperre konnte nicht neu erworben werden ({{error}}).",
+    "restoreUncertainLockFailed": "Wiederherstellung in ungewissem Zustand: Der Fehler trat beim Veröffentlichen auf, deine Daten wurden möglicherweise ersetzt, und die Sitzungssperre konnte nicht neu erworben werden ({{error}}).",
+    "safetyArchiveKept": "{{error}}. Sicherheitsarchiv behalten: {{path}}",
+    "schemaIncompatible": "Inkompatibles SQLite-Schema: Version {{version}}, erwartet {{expected}}",
+    "sizeExceeded": "Größe überschritten",
+    "sizeInvalid": "Ungültige Größe: {{name}}",
+    "tooManyImages": "Zu viele Bilder",
+    "versionIncompatible": "Inkompatible Archiv- oder Datenbankversion",
+    "versionMismatch": "Die Datenbankversion passt nicht zum Manifest",
+    "zipEntryTooLarge": "ZIP-Eintrag zu groß: {{name}}",
+    "zipInvalid": "Ungültiges ZIP: {{error}}",
+    "zipPathInvalid": "Ungültiger oder doppelter ZIP-Pfad: {{name}}",
+    "archiveChanged": "Das Archiv hat sich seit der Vorschau geändert",
+    "countsInvalid": "Ungültige Zahlen nach dem Import",
+    "dictationFragmentsInvalid": "Inkonsistentes Roh-Diktat (Notiz {{id}}): Seine Fragmente passen nicht zum Rohtext",
+    "dictationFragmentsUnreadable": "Nicht lesbare Diktatfragmente: {{error}}",
+    "ftsInvalid": "Ungültiger Suchindex nach dem Import: {{error}}",
+    "commitFailed": "Fehler beim Veröffentlichen der Wiederherstellung (COMMIT): {{error}}",
+    "subCasesInvalidWithError": "Ungültige Unterfälle im Archiv: {{error}}",
+    "subCasesInvalid": "Das Archiv enthält einen Unterfall, dessen übergeordneter Fall fehlt oder in einem anderen Projekt liegt, oder eine unbekannte Inhaltsart.",
+    "subCasesCycle": "Das Archiv enthält einen Fall, der in einem seiner eigenen Unterfälle liegt.",
+    "imageFormatUnknown": "Ungültiges Bild: Format nicht erkannt (PNG oder JPEG erwartet)",
+    "fingerprintInvalid": "Ungültiger Fingerabdruck: {{path}}",
+    "imageMissing": "Bild fehlt im Archiv: {{name}}"
+  },
+  "handoff": {
+    "title": "# Sitzungsbrief: {{project}}",
+    "summary": "_Aus Humcase erstellt am {{date}}: {{total}} insgesamt, {{toResume}} zum Weitermachen, {{resolved}} erledigt, {{overdue}} überfällig._",
+    "toResumeHeading": "Zum Weitermachen",
+    "noneOpen": "Keine offenen oder laufenden Notizen.",
+    "decisionsHeading": "Letzte Entscheidungen (nicht neu machen)",
+    "noneResolved": "Keine erledigten Notizen.",
+    "resolvedNoComment": "erledigt (ohne Kommentar)",
+    "contextHeading": "Kontext",
+    "lastBranch": "Zuletzt in den Notizen gesehener Git-Branch: `{{branch}}`",
+    "dueEntry": "fällig {{date}} ({{when}})",
+    "unknownProject": "Unbekanntes Projekt",
+    "allProjects": "Alle Projekte",
+    "status": {
+      "open": "offen",
+      "inProgress": "in Arbeit",
+      "resolved": "erledigt"
+    },
+    "type": {
+      "bug": "Problem",
+      "todo": "Aufgabe",
+      "idea": "Idee",
+      "note": "Gedanke",
+      "question": "Frage",
+      "research": "Recherche",
+      "decision": "Entscheidung"
+    },
+    "due": {
+      "overdue": "überfällig",
+      "today": "heute",
+      "thisWeek": "diese Woche",
+      "upcoming": "demnächst"
+    },
+    "reworkHeading": "Überarbeitung angefordert (zuerst erledigen)",
+    "reworkEntry": "{{title}} [{{id}}], Überarbeitung Nr. {{number}}: {{reason}}",
+    "awaitingReview": "wartet auf die Entscheidung der Person",
+    "accepted": "von der Person angenommen",
+    "acceptedChanged": "angenommen, seither geändert",
+    "replacedBy": "ersetzt durch {{id}}, lies diese Entscheidung",
+    "inForceHeading": "Gültige Entscheidungen (zu beachten)",
+    "inForceMore": "… {{count}} weitere: get_project_summary listet sie auf",
+    "conflictEntry": "{{case}} [{{caseId}}] widerspricht evtl. der Entscheidung {{decision}} [{{decisionId}}]: mit der Person klären",
+    "profileHeading": "Wie die Person arbeitet (ihr Profil, zu beachten)"
+  },
+  "data": {
+    "selfLink": "Eine Notiz kann nicht ihre eigene Aufgabe sein",
+    "sourceNotFound": "Quellnotiz nicht gefunden: {{id}}",
+    "taskNotFound": "Aufgabe nicht gefunden: {{id}}",
+    "trashedCannotLink": "Eine Notiz im Papierkorb kann nicht verknüpft werden",
+    "linkedSameProject": "Verknüpfte Notizen müssen zum selben Projekt gehören",
+    "targetMustBeTask": "Die Zielnotiz muss eine Aufgabe sein",
+    "taskTitleEmpty": "Der Titel der Aufgabe ist leer",
+    "trashedCannotReceiveTask": "Eine Notiz im Papierkorb kann keine Aufgabe erhalten",
+    "trashedCannotFile": "Eine Notiz im Papierkorb kann nicht abgelegt werden.",
+    "onlyInboxCanBeFiled": "Nur eine Notiz im Eingang kann in einem Projekt abgelegt werden.",
+    "destinationNotFound": "Zielprojekt nicht gefunden.",
+    "destinationMustBeRegular": "Das Ziel muss ein normales Projekt im selben Raum wie der Eingang sein.",
+    "linkedOtherProject": "Diese Notiz ist mit einer Notiz in einem anderen Projekt verknüpft. Löse die Verknüpfung, bevor du sie ablegst.",
+    "structureEmpty": "Originaltext und Vorschlag dürfen nicht leer sein",
+    "contentChanged": "Der Inhalt der Notiz hat sich geändert; aktualisiere den Vorschlag",
+    "parentCaseNotFound": "Übergeordneter Fall nicht gefunden: {{id}}",
+    "trashedCannotReceiveSubCase": "Ein Fall im Papierkorb kann keinen Unterfall erhalten.",
+    "subCaseSameProject": "Ein Unterfall muss zum selben Projekt gehören wie sein übergeordneter Fall.",
+    "caseCycle": "Ein Fall kann nicht in sich selbst oder in einen seiner Unterfälle gelegt werden.",
+    "trashedCannotMove": "Ein Fall im Papierkorb kann nicht verschoben werden.",
+    "trashedCannotAnnotate": "Ein Fall im Papierkorb kann keine Herkunft erhalten.",
+    "restoreParentFirst": "Der übergeordnete Fall dieses Unterfalls liegt im Papierkorb. Stelle zuerst den übergeordneten Fall wieder her.",
+    "subCaseFollowsParent": "Ein Unterfall folgt seinem übergeordneten Fall. Lege stattdessen den Fall der obersten Ebene ab.",
+    "sketchInvalid": "Eine Zeichnung behält nur Excalidraw-Inhalt: Dieser Inhalt ist keiner.",
+    "sketchTooLarge": "Diese Zeichnung ist größer als 5 MB. Entferne die eingefügten Bilder: Ein Bild gehört in einen Bildfall.",
+    "sketchNotStructured": "Eine Zeichnung lässt sich nicht strukturieren.",
+    "linkNotWeb": "Aus einem Linkfall lassen sich nur Webadressen (http oder https) öffnen.",
+    "imageTooLarge": "Bild zu groß ({{size}} Byte, höchstens 20 MB)",
+    "dbBusy": "Die Datenbank wird von einem anderen Programm verwendet. Versuche es gleich noch einmal.",
+    "dbReadOnly": "Die Datenbank ist nur lesbar: Prüfe die Berechtigungen des Datenordners.",
+    "dbFull": "Der Datenträger ist voll: Schaffe Platz, damit Humcase speichern kann.",
+    "dbIo": "Die Datenbankdatei konnte nicht gelesen oder geschrieben werden ({{error}}).",
+    "dbCorrupt": "Die Datenbankdatei ist beschädigt ({{error}}). Stelle eine Sicherung unter Einstellungen → Daten wieder her."
+  },
+  "app": {
+    "dataMigrationFailed": "Humcase konnte deine Daten nicht übernehmen.\n\n{{error}}\n\nDeine Notizen wurden nicht verändert. Schließe alle Humcase-Fenster und Agent-Sitzungen und versuche es dann erneut.",
+    "sessionUnavailable": "Humcase-Sitzung nicht verfügbar ({{path}}): {{error}}",
+    "databaseUnavailable": "Datenbank nicht verfügbar ({{path}}): {{error}}",
+    "startFailed": "Humcase konnte nicht starten.\n\n{{error}}\n\nWenn Humcase schon geöffnet ist, öffne es über sein Symbol im Infobereich erneut.",
+    "leaseNotHeld": "die gemeinsame Sitzungssperre wird nicht gehalten",
+    "cli": {
+      "projectNotFound": "Projekt nicht gefunden: {{id}}",
+      "noSpace": "kein Raum",
+      "noteCreated": "✅ Notiz '{{title}}' in „{{project}}“ erstellt (Raum: {{space}}). ID: {{id}}"
+    }
+  },
+  "dataFolder": {
+    "homeUnavailable": "Dein Benutzerordner für die Daten von Humcase wurde nicht gefunden",
+    "movedButMissing": "Deine Daten wurden nach {{path}} verschoben, aber diese Datei fehlt. Die früheren Daten liegen noch in {{legacy}}.",
+    "openAppFirst": "Humcase speichert seine Daten jetzt in {{path}}. Öffne die Humcase-Anwendung einmal, um deine Daten aus {{legacy}} dorthin zu verschieben, und starte dann diesen Agent erneut.",
+    "legacyInUse": "Eine andere Humcase-Sitzung verwendet {{path}}, deshalb konnten deine Daten nicht verschoben werden: {{error}}. Schließe alle Humcase-Fenster und Agent-Sitzungen und starte dann neu.",
+    "webviewCopyFailed": "Humcase konnte den gespeicherten Zustand der Oberfläche (Entwürfe, Einstellungen) nicht in den neuen Ordner kopieren: {{error}}"
+  },
+  "review": {
+    "reasonRequired": "Sag dem Agent, was fehlt, um eine Überarbeitung anzufordern.",
+    "notFound": "Dieser Fall existiert nicht mehr.",
+    "inTrash": "Dieser Fall liegt im Papierkorb.",
+    "changed": "Der Fall hat sich geändert, seit du ihn geprüft hast: Lies ihn erneut, bevor du entscheidest.",
+    "notResolved": "Nur ein abgeschlossenes Ergebnis kann angenommen oder zur Überarbeitung zurückgegeben werden."
+  },
+  "activities": {
+    "nameLength": "der Name des Bereichs muss 1 bis 80 Zeichen enthalten",
+    "notFound": "Bereich nicht gefunden: {{id}}",
+    "inboxHasNone": "der Eingang kann keinen Bereichen angehören",
+    "changedExternally": "die Bereiche des Projekts wurden extern geändert; aktualisiere und versuche es erneut",
+    "needsSpace": "weise das Projekt einem Raum zu, bevor du Bereiche verknüpfst",
+    "otherSpace": "der Bereich gehört zu einem anderen Raum: {{id}}"
+  },
+  "canvas": {
+    "tooLarge": "Canvas zu groß (höchstens 20 MB)",
+    "unreadable": "kein JSON-Canvas-Dokument: {{error}}",
+    "notObject": "kein JSON-Canvas-Dokument: ein Objekt mit nodes wird erwartet",
+    "nodesNotArray": "nodes muss ein Array sein",
+    "tooManyNodes": "zu viele Knoten ({{found}}, höchstens {{max}})",
+    "nodeNotObject": "Knoten {{index}} ist kein Objekt",
+    "nodeNotNumber": "Knoten {{index}}: {{field}} muss eine Zahl sein",
+    "nodeIdMissing": "Knoten {{index}}: id ist erforderlich",
+    "nodeDuplicateId": "Knoten {{index}}: doppelte id {{id}}",
+    "nodeTypeMissing": "Knoten {{index}}: type ist erforderlich"
+  },
+  "germinate": {
+    "notText": "Nur ein Textfall lässt sich entfalten.",
+    "tooShort": "Schreibe zuerst ein paar Wörter in den Fall: Humcase schlägt seine nächsten Schritte aus dem vor, was darin steht.",
+    "noAi": "Kein KI-Schlüssel: Füge einen unter Einstellungen → KI-Dienste hinzu.",
+    "answered": "Dieser Vorschlag wurde schon beantwortet: Lade den Fall neu.",
+    "cannotPlace": "Dieser Fall liegt in einem anderen Fall oder Projekt: Er bleibt, wo er ist.",
+    "noProposals": "Die KI hat ohne Vorschläge geantwortet.",
+    "unreadable": "Nicht lesbare Antwort der KI: {{error}}"
+  },
+  "profile": {
+    "title": "Deine Arbeitsweise",
+    "section": {
+      "rules": "Regeln",
+      "work": "Arbeitsfelder",
+      "refused": "Oft abgelehnt"
+    },
+    "from": {
+      "decision": "Entscheidung vom {{date}}",
+      "count": "in deinen Fällen gezählt, ohne KI",
+      "sprout": "deine Antworten bei „Entfalten“",
+      "agent": "vorgeschlagen von {{agent}}"
+    },
+    "work": {
+      "dev": "Softwareentwicklung",
+      "marketing": "Marketing",
+      "research": "Recherche",
+      "reflection": "Denken und Schreiben",
+      "personal": "Privatleben"
+    },
+    "workDetail": "{{count}} deiner {{total}} Fälle",
+    "refusedLine": "{{natures}}, von „Entfalten“ vorgeschlagen: oft abgelehnt",
+    "refusedDetail": "{{refused}} von {{total}} abgelehnt",
+    "natures": {
+      "todo": "Aktionen",
+      "question": "Fragen",
+      "research": "Rechercheschritte",
+      "decision": "Entscheidungen",
+      "idea": "Ideen"
+    }
+  },
+  "tidy": {
+    "alreadyAnswered": "Dieser Vorschlag existiert nicht mehr oder wurde schon beantwortet.",
+    "otherGone": "Der andere Fall existiert nicht mehr.",
+    "weeks": "Dauer nicht angeboten: {{weeks}} Wochen."
+  }
+}

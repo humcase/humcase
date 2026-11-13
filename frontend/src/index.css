@@ -1,0 +1,185 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@plugin "@tailwindcss/typography";
+
+/* Semantic colors (shadcn/ui vocabulary): actual values in workspace-theme.css. */
+@theme inline {
+  --font-mono: var(--workspace-font-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+@layer base {
+  /* Tailwind 4 puts the arrow cursor back on buttons: every clickable element gets the hand back
+     (shadcn sidebar included). In the `base` layer, an explicit utility stays prioritized. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  summary,
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+}
+
+/* Custom Scrollbar (its width is a token: scrolling areas take it out of their right margin) */
+:root {
+  --scrollbar-size: 8px;
+}
+::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--muted-foreground);
+}
+
+/* Tiptap styles */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--muted-foreground);
+  pointer-events: none;
+  height: 0;
+}
+.tiptap pre {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  padding: 1rem;
+  border-radius: 0.375rem;
+  overflow-x: auto;
+}
+/* Checklists (Tiptap v3): `taskItem` renders `<label><input></label><div>content</div>`, and
+   `@tiptap/extension-list` provides no CSS. Without these rules, the content goes block under the
+   checkbox and `.prose ul` reapplies a bullet. */
+.tiptap ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0;
+  margin-left: 0;
+}
+.tiptap ul[data-type='taskList'] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.tiptap ul[data-type='taskList'] li > label {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+  user-select: none;
+}
+.tiptap ul[data-type='taskList'] li > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tiptap ul[data-type='taskList'] li > div > p {
+  margin: 0;
+}
+.tiptap ul[data-type='taskList'] ul[data-type='taskList'] {
+  margin-top: 0.25rem;
+}
+/* Checkboxes: native `<input type="checkbox">` = dark square unreadable on the theme.
+   Covers the editor (Tiptap `taskItem` node) AND the Markdown preview (remark-gfm). */
+.tiptap ul[data-type='taskList'] input[type='checkbox'],
+.prose input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 1.5px solid var(--muted-foreground);
+  border-radius: 0.25rem;
+  background-color: transparent;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  flex: 0 0 auto;
+  opacity: 1;
+  cursor: pointer;
+}
+.tiptap ul[data-type='taskList'] input[type='checkbox']:checked,
+.prose input[type='checkbox']:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.tiptap ul[data-type='taskList'] input[type='checkbox']:checked::after,
+.prose input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+/* Markdown preview: same layout as the editor (no bullet, checkbox and text side by side). */
+.prose ul.contains-task-list {
+  list-style: none;
+  padding-left: 0;
+}
+.prose li.task-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.prose li.task-list-item > input[type='checkbox'] {
+  margin-top: 0.2rem;
+}
+.tiptap-wrapper {
+  cursor: text;
+}
+/* Editor text size (80–140 % setting in Settings):
+   rule outside @layer, so it takes precedence over Tailwind's `.prose` sizes. */
+.tiptap-wrapper .ProseMirror {
+  font-size: calc(var(--editor-font-scale, 1) * 1rem);
+}
+.tiptap {
+  min-height: 100%;
+}
+
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}

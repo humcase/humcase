@@ -1,0 +1,26 @@
+/* Visual foundations (0.9.55) — depth, interaction finishes, hierarchy.
+   Loaded after the component stylesheets: only redefines elevation and states, never
+   the layout. Palette and shadows: workspace-theme.css. */
+
+/* Cards: surface, hover and focus in the kit (components/ui/card.css). */
+
+
+/* Section titles and counters: readable hierarchy, discreet counters. */
+
+/* Raised surfaces (menus, dialogs, Radix popovers): dedicated shadow. */
+.workspace-app [data-slot="popover-content"],
+.workspace-app [role="menu"],
+.workspace-app [role="listbox"] { box-shadow: var(--workspace-shadow-raised); border-color: var(--workspace-card-border); }
+
+
+
+/* Page titles: a single scale, same weight everywhere. */
+.workspace-app .workspace-page__header h1 { font-size: var(--workspace-text-display); font-weight: 600; letter-spacing: -.025em; line-height: 1.2; }
+.workspace-app .workspace-page__header p { color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); }
+
+
+/* Settings: navigation in the same language as the sidebar (neutral active state). */
+
+/* Sidebar: the active item is a raised badge on the tinted frame. */
+.app-sidebar [data-sidebar="menu-button"][data-active="true"],
+.app-sidebar [data-sidebar="menu-sub-button"][data-active="true"] { background: var(--workspace-sidebar-active); box-shadow: var(--workspace-shadow-card); }

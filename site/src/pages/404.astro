@@ -1,0 +1,65 @@
+---
+// The page Cloudflare Pages serves for an address that does not exist (it serves /404.html).
+// It speaks the language of the address (/fr/…, /de/…), else the browser's, else English.
+import '@fontsource/inter/400.css';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/dm-mono/400.css';
+import { LANGS } from '../i18n/index.js';
+
+const TEXTS = {
+  en: { title: 'Page not found', line: 'This page doesn’t exist, or it has moved.', home: 'Back to home' },
+  fr: { title: 'Page introuvable', line: 'Cette page n’existe pas, ou elle a changé d’adresse.', home: 'Retour à l’accueil' },
+  es: { title: 'Página no encontrada', line: 'Esta página no existe o ha cambiado de dirección.', home: 'Volver al inicio' },
+  de: { title: 'Seite nicht gefunden', line: 'Diese Seite gibt es nicht, oder sie ist umgezogen.', home: 'Zur Startseite' },
+  'pt-BR': { title: 'Página não encontrada', line: 'Esta página não existe ou mudou de endereço.', home: 'Voltar ao início' },
+  it: { title: 'Pagina non trovata', line: 'Questa pagina non esiste, o ha cambiato indirizzo.', home: 'Torna alla home' },
+};
+const paths = Object.fromEntries(Object.entries(LANGS).map(([code, l]) => [code, l.path]));
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{TEXTS.en.title} · Humcase</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style is:global>
+  :root { color-scheme: dark; --ink: #f3efe8; --ink-3: rgba(243, 239, 232, .56); --line: rgba(243, 239, 232, .16); --copper: #e78a53; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; background: #000; color: var(--ink-3); font: 400 17px/1.6 "Inter", "Segoe UI", system-ui, sans-serif; text-align: center; -webkit-font-smoothing: antialiased; }
+  main { max-width: 520px; }
+  .logo { display: block; width: 72px; height: 72px; margin: 0 auto 36px; }
+  .code { margin: 0 0 8px; color: var(--copper); font: 400 13px/1 "DM Mono", ui-monospace, monospace; letter-spacing: .2em; }
+  h1 { margin: 0 0 14px; color: var(--ink); font: 400 clamp(40px, 8vw, 60px)/1.05 "Instrument Serif", Georgia, serif; }
+  p { margin: 0 0 32px; }
+  a.home { display: inline-block; padding: 12px 22px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); font: 400 14px/1 "DM Mono", ui-monospace, monospace; text-decoration: none; transition: border-color .15s; }
+  a.home:hover { border-color: var(--copper); }
+</style>
+</head>
+<body>
+<main>
+  <a href="/" aria-label="Humcase"><img class="logo" src="/favicon.svg" alt=""></a>
+  <p class="code">404</p>
+  <h1 id="t">{TEXTS.en.title}</h1>
+  <p id="l">{TEXTS.en.line}</p>
+  <a class="home" id="h" href="/">{TEXTS.en.home}</a>
+</main>
+<script is:inline define:vars={{ TEXTS, paths }}>
+  const seg = location.pathname.split('/')[1]?.toLowerCase();
+  let lang = Object.keys(paths).find(code => code !== 'en' && paths[code] === `/${seg}/`);
+  if (!lang) {
+    const nav = (navigator.language || '').toLowerCase();
+    lang = Object.keys(TEXTS).find(code => code.toLowerCase() === nav) || Object.keys(TEXTS).find(code => nav.startsWith(code.slice(0, 2).toLowerCase())) || 'en';
+  }
+  const text = TEXTS[lang];
+  document.documentElement.lang = lang;
+  document.title = `${text.title} · Humcase`;
+  document.getElementById('t').textContent = text.title;
+  document.getElementById('l').textContent = text.line;
+  const home = document.getElementById('h');
+  home.textContent = text.home;
+  home.href = paths[lang];
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "cancel": "Cancelar",
+  "untitled": "Sin título",
+  "space": {
+    "work": "Trabajo",
+    "private": "Personal"
+  },
+  "inboxOf": "Bandeja de entrada · {{space}}",
+  "close": "Cerrar",
+  "save": "Guardar",
+  "delete": "Eliminar",
+  "retry": "Reintentar",
+  "copy": "Copiar",
+  "dueTitle": "Fecha límite: {{date}}",
+  "keys": {
+    "control": "Ctrl",
+    "shift": "Mayús",
+    "alt": "Alt",
+    "meta": "Win"
+  }
+}

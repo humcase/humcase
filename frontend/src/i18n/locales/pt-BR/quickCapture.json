@@ -1,0 +1,20 @@
+{
+  "heading": "Captura rápida",
+  "windowTitle": "Humcase · Captura rápida",
+  "closeHint": "Esc para fechar",
+  "textLabel": "Texto da captura",
+  "saving": "Salvando…",
+  "placeholder": "Preciso…",
+  "storageUnavailable": "O armazenamento local não está disponível: este rascunho não será mantido (ao fechar ou reiniciar).",
+  "destinationLabel": "Destino do caso",
+  "openNoteOption": "Caso aberto · {{title}}",
+  "typeLabel": "Natureza do caso",
+  "typeLockedTitle": "O texto é adicionado ao caso aberto, cuja natureza não muda",
+  "loadError": "Não foi possível ler os projetos: banco de dados indisponível.",
+  "chooseDestination": "Escolha um destino para este caso.",
+  "noOpenNote": "Nenhum caso está aberto no Humcase.",
+  "appendFailed": "Não foi possível adicionar: {{message}} O texto foi mantido.",
+  "createFailed": "Não foi possível criar: {{error}}",
+  "noteNoAnswer": "O caso aberto não respondeu.",
+  "appendRefused": "O caso aberto recusou a adição."
+}

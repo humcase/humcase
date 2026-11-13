@@ -1,0 +1,17 @@
+.ui-caption { color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+/* Removable tag (tags field): kit badge + removal button. */
+.workspace-app .ui-tag--removable { gap: 2px; padding-right: 2px; }
+.workspace-app .ui-tag--removable .ui-badge__label { display: inline-flex; align-items: center; gap: 2px; overflow: visible; }
+.ui-tag-remove { display: inline-grid; place-items: center; width: var(--workspace-target-small); height: var(--workspace-target-small); border-radius: var(--workspace-radius-small); color: inherit; }
+.ui-tag-remove:hover { background: var(--workspace-state-hover); color: var(--workspace-ink); }
+
+.tag-suggestion { width: 100%; min-height: var(--workspace-control-compact); padding: 6px 12px; color: var(--workspace-ink); font-size: var(--workspace-text-ui); text-align: left; }
+/* Tags field: same frame as the kit fields; suggestions in a kit menu. */
+.workspace-app .ui-tag-field { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: var(--workspace-control-height); padding: 5px 8px; border: 1px solid var(--workspace-input-border); border-radius: var(--workspace-radius-control); background: var(--workspace-surface); transition: border-color 140ms ease; }
+.workspace-app .ui-tag-field:hover { border-color: var(--workspace-card-hover-border); }
+.workspace-app .ui-tag-field:focus-within { border-color: var(--workspace-action); box-shadow: 0 0 0 1px var(--workspace-action); }
+.workspace-app .ui-tag-field__input { flex: 1; min-width: 100px; border: 0; outline: 0; background: transparent; color: var(--workspace-ink); font-size: var(--workspace-text-ui); }
+.workspace-app .ui-tag-field__input::placeholder { color: var(--workspace-text-muted); }
+.workspace-app .ui-tag-field__suggestions { position: absolute; top: calc(100% + 4px); left: 0; width: 100%; max-height: 160px; overflow-y: auto; list-style: none; margin: 0; }
+.workspace-app .tag-suggestion { width: 100%; border: 0; background: transparent; text-align: left; }
+.workspace-app .tag-suggestion:hover { background: var(--workspace-state-hover); }

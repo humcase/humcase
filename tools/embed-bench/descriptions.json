@@ -1,0 +1,102 @@
+{
+  "nature": {
+    "todo": [
+      "A task: something I have to do, such as send, call, book, fix or finish something, often before a deadline.",
+      "Une tâche : quelque chose à faire, comme envoyer, appeler, réserver, corriger ou terminer, souvent avant une échéance.",
+      "Una tarea: algo que tengo que hacer, como enviar, llamar, reservar, arreglar o terminar algo, a menudo antes de una fecha.",
+      "Eine Aufgabe: etwas, das ich erledigen muss, etwa schicken, anrufen, buchen, reparieren oder fertig machen, oft bis zu einem Termin.",
+      "Un compito: qualcosa da fare, come mandare, chiamare, prenotare, sistemare o finire, spesso entro una scadenza.",
+      "Uma tarefa: algo que preciso fazer, como enviar, ligar, marcar, corrigir ou terminar, muitas vezes até um prazo."
+    ],
+    "idea": [
+      "An idea: a proposal or a possibility, what if we tried something new, it could be nice to.",
+      "Une idée : une proposition ou une piste, et si on essayait quelque chose de nouveau, ce serait bien de.",
+      "Una idea: una propuesta o una posibilidad, y si probáramos algo nuevo, estaría bien.",
+      "Eine Idee: ein Vorschlag oder eine Möglichkeit, was wäre, wenn wir etwas Neues ausprobieren, es wäre schön.",
+      "Un'idea: una proposta o una possibilità, e se provassimo qualcosa di nuovo, sarebbe bello.",
+      "Uma ideia: uma proposta ou possibilidade, e se a gente tentasse algo novo, seria legal."
+    ],
+    "question": [
+      "A question: something I do not know yet and want answered, should we, how do, why does, which one.",
+      "Une question : quelque chose que je ne sais pas encore, faut-il, comment, pourquoi, lequel choisir.",
+      "Una pregunta: algo que todavía no sé, deberíamos, cómo, por qué, cuál elegir.",
+      "Eine Frage: etwas, das ich noch nicht weiß, sollen wir, wie, warum, welches.",
+      "Una domanda: qualcosa che non so ancora, dovremmo, come, perché, quale scegliere.",
+      "Uma pergunta: algo que ainda não sei, será que devemos, como, por que, qual escolher."
+    ],
+    "decision": [
+      "A decision: a choice that has been made, we decided, we chose, we are going with, it is settled.",
+      "Une décision : un choix qui a été fait, on a décidé, on a choisi, on part sur, c'est tranché.",
+      "Una decisión: una elección ya hecha, decidimos, elegimos, vamos con, queda decidido.",
+      "Eine Entscheidung: eine getroffene Wahl, wir haben entschieden, wir nehmen, es ist beschlossen.",
+      "Una decisione: una scelta già fatta, abbiamo deciso, abbiamo scelto, andiamo con, è deciso.",
+      "Uma decisão: uma escolha já feita, decidimos, escolhemos, vamos com, ficou definido."
+    ],
+    "bug": [
+      "An incident: something is broken or does not work as expected, an error, a crash, a failure, a leak.",
+      "Un incident : quelque chose est cassé ou ne marche pas comme prévu, une erreur, un plantage, une panne, une fuite.",
+      "Un incidente: algo está roto o no funciona como debería, un error, un fallo, una avería, una fuga.",
+      "Ein Problem: etwas ist kaputt oder funktioniert nicht wie erwartet, ein Fehler, ein Absturz, ein Defekt.",
+      "Un guasto: qualcosa è rotto o non funziona come previsto, un errore, un crash, una perdita.",
+      "Um problema: algo quebrou ou não funciona como deveria, um erro, um travamento, um vazamento."
+    ],
+    "research": [
+      "Research: what I found while reading, comparing or studying sources, results, data and references.",
+      "Une recherche : ce que j'ai trouvé en lisant, en comparant ou en étudiant des sources, des résultats, des données.",
+      "Una investigación: lo que encontré leyendo, comparando o estudiando fuentes, resultados y datos.",
+      "Eine Recherche: was ich beim Lesen, Vergleichen oder Untersuchen von Quellen, Ergebnissen und Daten gefunden habe.",
+      "Una ricerca: quello che ho trovato leggendo, confrontando o studiando fonti, risultati e dati.",
+      "Uma pesquisa: o que encontrei lendo, comparando ou estudando fontes, resultados e dados."
+    ],
+    "note": [
+      "A thought or a remark to keep, a reference or a memo, with nothing to do and nothing to decide.",
+      "Une pensée ou une remarque à garder, une référence ou un mémo, sans rien à faire ni à décider.",
+      "Un pensamiento o una nota para guardar, una referencia, sin nada que hacer ni decidir.",
+      "Ein Gedanke oder eine Notiz zum Behalten, eine Referenz, ohne etwas zu tun oder zu entscheiden.",
+      "Un pensiero o un appunto da tenere, un riferimento, senza nulla da fare né da decidere.",
+      "Um pensamento ou uma anotação para guardar, uma referência, sem nada a fazer nem decidir."
+    ]
+  },
+  "line": {
+    "dev": [
+      "Software development: code, API, database, deployment, server, tests, bugs, pull requests.",
+      "Développement logiciel : code, API, base de données, déploiement, serveur, tests, bugs.",
+      "Desarrollo de software: código, API, base de datos, despliegue, servidor, pruebas.",
+      "Softwareentwicklung: Code, API, Datenbank, Deployment, Server, Tests.",
+      "Sviluppo software: codice, API, database, deploy, server, test.",
+      "Desenvolvimento de software: código, API, banco de dados, deploy, servidor, testes."
+    ],
+    "marketing": [
+      "Marketing: campaign, newsletter, social media, audience, brand, ads, launch, conversion.",
+      "Marketing : campagne, newsletter, réseaux sociaux, audience, marque, publicité, lancement.",
+      "Marketing: campaña, newsletter, redes sociales, público, marca, anuncios, lanzamiento.",
+      "Marketing: Kampagne, Newsletter, soziale Medien, Zielgruppe, Marke, Werbung, Launch.",
+      "Marketing: campagna, newsletter, social, pubblico, brand, pubblicità, lancio.",
+      "Marketing: campanha, newsletter, redes sociais, público, marca, anúncios, lançamento."
+    ],
+    "research": [
+      "Academic research: study, survey, sample, interviews, thesis, literature, data analysis, method.",
+      "Recherche académique : étude, enquête, échantillon, entretiens, thèse, littérature, analyse des données.",
+      "Investigación académica: estudio, encuesta, muestra, entrevistas, tesis, literatura, análisis de datos.",
+      "Wissenschaftliche Forschung: Studie, Umfrage, Stichprobe, Interviews, Abschlussarbeit, Literatur, Datenanalyse.",
+      "Ricerca accademica: studio, questionario, campione, interviste, tesi, letteratura, analisi dei dati.",
+      "Pesquisa acadêmica: estudo, questionário, amostra, entrevistas, tese, literatura, análise de dados."
+    ],
+    "reflection": [
+      "Personal reflection on work and life: career, motivation, priorities, doubts, what matters to me.",
+      "Réflexion personnelle sur le travail et la vie : carrière, motivation, priorités, doutes, ce qui compte pour moi.",
+      "Reflexión personal sobre el trabajo y la vida: carrera, motivación, prioridades, dudas, lo que me importa.",
+      "Persönliche Reflexion über Arbeit und Leben: Karriere, Motivation, Prioritäten, Zweifel, was mir wichtig ist.",
+      "Riflessione personale su lavoro e vita: carriera, motivazione, priorità, dubbi, ciò che conta per me.",
+      "Reflexão pessoal sobre trabalho e vida: carreira, motivação, prioridades, dúvidas, o que importa para mim."
+    ],
+    "personal": [
+      "Personal life and home: family, health, doctor, house, rent, groceries, holidays, car, taxes.",
+      "Vie personnelle et maison : famille, santé, médecin, logement, loyer, courses, vacances, voiture, impôts.",
+      "Vida personal y casa: familia, salud, médico, piso, alquiler, compras, vacaciones, coche, impuestos.",
+      "Privatleben und Haushalt: Familie, Gesundheit, Arzt, Wohnung, Miete, Einkaufen, Urlaub, Auto, Steuern.",
+      "Vita privata e casa: famiglia, salute, medico, affitto, spesa, vacanze, auto, tasse.",
+      "Vida pessoal e casa: família, saúde, médico, aluguel, mercado, férias, carro, impostos."
+    ]
+  }
+}

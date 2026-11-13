@@ -1,0 +1,115 @@
+# Runs on every push to master and every pull request: GitHub-hosted runners are free for a public
+# repository, so the full suite runs here instead of loading the maintainer's machine (decision of
+# 09/10/2026). Also runnable by hand (Actions → CI → Run workflow).
+# Windows runner: Humcase ships on Windows first and part of the Rust code is Windows-specific.
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Agent packaging (manifests, skills): Node only, so a light Linux runner is enough.
+  plugins:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Check plugin packaging
+        run: node scripts/check-plugins.mjs
+
+  # The website (Astro, static): every language has every text, and the pages build.
+  site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Install
+        run: npm ci --prefix site
+
+      - name: Texts of every language
+        run: npm run check-i18n --prefix site
+
+      - name: Build
+        run: npm run build --prefix site
+
+  frontend:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        run: npm ci --prefix frontend
+
+      - name: Test
+        run: npm test --prefix frontend
+
+      - name: Lint
+        run: npm run lint --prefix frontend -- --deny-warnings
+
+      - name: Build
+        run: npm run build --prefix frontend
+
+  rust:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      # The version and components come from src-tauri/rust-toolchain.toml.
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            src-tauri
+            sense
+
+      - name: Format
+        working-directory: src-tauri
+        run: cargo fmt --check
+
+      - name: Clippy
+        working-directory: src-tauri
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Test
+        working-directory: src-tauri
+        run: cargo test --locked
+
+      # The meaning worker is its own crate (ONNX Runtime stays out of Humcase.exe).
+      - name: Meaning worker (format, clippy)
+        working-directory: sense
+        run: |
+          cargo fmt --check
+          cargo clippy --locked -- -D warnings

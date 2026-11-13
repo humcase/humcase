@@ -1,0 +1,11 @@
+/* Shortcut by nature: one column, the cases of one nature across the space. */
+.nature-view__filters { display: flex; flex-wrap: wrap; align-items: center; gap: var(--workspace-space-3); margin-bottom: var(--workspace-space-4); }
+.nature-view__search { flex: 0 1 320px; min-width: 200px; }
+.nature-view__drawings { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.nature-view__drawing { display: flex; flex-direction: column; width: 100%; overflow: hidden; padding: 0; border: 1px solid var(--workspace-card-border); border-radius: var(--workspace-radius-card); background: var(--workspace-surface); color: inherit; font: inherit; text-align: left; cursor: pointer; box-shadow: var(--workspace-shadow-card); }
+.nature-view__drawing:hover { border-color: var(--workspace-card-hover-border); }
+.nature-view__drawing:focus-visible { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+.nature-view__picture { display: grid; place-items: center; aspect-ratio: 4 / 3; overflow: hidden; border-bottom: 1px solid var(--workspace-line); background: var(--workspace-muted-surface); }
+.nature-view__picture img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.nature-view__drawing-text { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; }
+.nature-view__drawing-text strong { color: var(--workspace-ink); font-size: var(--workspace-text-ui); font-weight: 600; }

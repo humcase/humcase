@@ -1,0 +1,15 @@
+# Line-ending normalization: LF in the repository and in the working tree.
+# Avoids "LF will be replaced by CRLF" warnings and noisy diffs.
+* text=auto eol=lf
+
+# Binary files: no conversion
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.exe binary
+*.msi binary
+*.db binary
+*.db-wal binary
+*.db-shm binary

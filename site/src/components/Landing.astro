@@ -1,0 +1,331 @@
+---
+// The landing page, written once in English and rendered for each language (src/i18n).
+// Visual direction "the night maple" (internal decision of 4 Oct 2026), from the mockup v6.
+import ShotImg from './ShotImg.astro';
+import { versioned } from '../versioned';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/instrument-serif/400-italic.css';
+import '@fontsource/dm-mono/400.css';
+import '@fontsource/dm-mono/500.css';
+import '../styles/landing.css';
+// the hero's fonts, preloaded: found late, they arrived after the first paint and the headline jumped
+import serifUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-normal.woff2?url';
+import serifItalicUrl from '@fontsource/instrument-serif/files/instrument-serif-latin-400-italic.woff2?url';
+import interUrl from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
+import { LANGS, useLang } from '../i18n';
+
+interface Props { lang: keyof typeof LANGS }
+const { lang } = Astro.props;
+const { t, h, alt, runtime } = useLang(lang);
+const site = Astro.site ?? new URL('https://humcase.com');
+const plus = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+const copyIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+const faq = [
+  ['Is it free?', 'Yes. Humcase is free and open source, under AGPL-3.0.'],
+  ['Is it a note app or a task manager?', 'Both. A case can be an idea, a task, a question or a decision, and cases grow inside each other. Each one keeps where it came from.'],
+  ['Which agents work with it?', 'Claude Code, Codex, Cursor, opencode, and any agent that supports MCP. They write under their own name and can’t change your text unless you allow it.'],
+  ['Mac or Linux?', 'Windows 10 and 11.'],
+];
+// the home screen comes first, right under the hero; the other two stay in "Inside a case"
+const home = { name: 'home', caption: '<span class="mono">Home · example data</span>Your day at a glance: what you changed, what your agents wrote, what waits for you.',
+  alt: 'Humcase home, work space: your day on a timeline of cases and agent writes, and a result from Claude Code waiting for your decision' };
+const shots = [
+  { name: 'canvas', caption: '<span class="mono">Canvas · example data</span>A case and its sub-cases, laid out by hand.',
+    alt: 'The canvas of the case “Redesign the online shop”: its sub-cases laid out by hand, each with its nature and status' },
+  { name: 'agent', b: true, caption: '<span class="mono">A result from an agent · example data</span>Claude Code hands in a comparison. You accept it, or ask for a rework.',
+    alt: 'A research case written by Claude Code comparing payment providers: a comparison table and the buttons Accept and Ask for a rework' },
+];
+// Shown only once Humcase is published on winget; until then the command would not work.
+const WINGET = false;
+// Links to the repository, shown once it is public; until then they would lead to a 404.
+const GITHUB = true;
+// The installer of the latest GitHub release (release.yml publishes it under this fixed name);
+// until the repository is public, the buttons say the download isn't open yet (world.js).
+const DOWNLOAD = GITHUB ? 'https://github.com/humcase/humcase/releases/latest/download/Humcase-setup-x64.exe' : '#download';
+// The legal pages exist in English and French; the other languages link to the English ones.
+const LEGAL = lang === 'fr' ? '/fr/legal/' : '/legal/';
+const description = t('Track your ideas, tasks and decisions, and the work your agents hand in.');
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{t('Humcase: every decision has roots')}</title>
+<meta name="description" content={description}>
+<meta name="theme-color" content="#000000">
+<link rel="preload" href={serifUrl} as="font" type="font/woff2" crossorigin>
+<link rel="preload" href={serifItalicUrl} as="font" type="font/woff2" crossorigin>
+<link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="canonical" href={new URL(LANGS[lang].path, site).href}>
+{Object.entries(LANGS).map(([code, l]) => <link rel="alternate" hreflang={code} href={new URL(l.path, site).href}>)}
+<link rel="alternate" hreflang="x-default" href={new URL('/', site).href}>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Humcase">
+<meta property="og:description" content={description}>
+<meta property="og:image" content={new URL(versioned(`/shots/app-home-${LANGS[lang].shots}.jpg`), site).href}>
+<meta property="og:locale" content={LANGS[lang].locale}>
+<script is:inline>document.documentElement.classList.add('js')</script>
+<script is:inline set:html={runtime}></script>
+</head>
+<body>
+
+<canvas id="world" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div id="tags"></div>
+
+<header class="nav" aria-label={t('Site')}>
+  <a class="brand" href="#top" aria-label={t('Humcase, home')}>
+    <img src="/favicon.svg" alt="" width="30" height="30">
+    <span class="brand__name"><b>HUM</b>CASE</span>
+  </a>
+  <ul class="nav__links">
+    <li><a href="#cycle">{t('The cycle')}</a></li>
+    <li><a href="#agents">{t('Agents')}</a></li>
+    <li><a href="#app">{t('The app')}</a></li>
+    <li><a href="#trust">{t('Privacy')}</a></li>
+    <li><a href="#faq">{t('Questions')}</a></li>
+  </ul>
+  <div class="langmenu">
+    <button type="button" class="langmenu__btn" aria-haspopup="menu" aria-expanded="false" aria-controls="langmenu-list" aria-label={`${t('Language:')} ${LANGS[lang].name}`}>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></svg>
+      <span class="langmenu__name">{LANGS[lang].name}</span><span class="langmenu__code">{lang.toUpperCase()}</span>
+      <svg class="langmenu__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg>
+    </button>
+    <ul class="langmenu__list" id="langmenu-list" role="menu" hidden>
+      {Object.entries(LANGS).map(([code, l]) => (
+        <li role="none"><a role="menuitemradio" lang={code} hreflang={code} href={l.path} aria-checked={String(code === lang)}>{l.name}{l.beta && <span class="langmenu__beta">{t('beta')}</span>}</a></li>
+      ))}
+    </ul>
+  </div>
+  {GITHUB &&   <a class="nav__gh" href="https://github.com/humcase/humcase" aria-label={t('Humcase on GitHub')} title="GitHub"><Fragment set:html={'<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.39-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>'} /></a>}
+  <a class="key key--action key--sm" href={DOWNLOAD} data-shake>{t('Download')}</a>
+</header>
+
+<main id="top">
+
+  <!-- Hero: the tree grows full-bleed behind the offer -->
+  <section class="hero" id="hero" data-scene="hero">
+    <h1 class="display h-hero" data-reveal="load" set:html={h('Every decision has <em>roots</em>.')}></h1>
+    <div class="hero__foot">
+    <p class="lede rise">{description}</p>
+    <div class="keys rise" id="download">
+      <a class="key key--action key--lg" href={DOWNLOAD} data-shake set:html={h('Download for Windows')}></a>
+      {WINGET && (
+        <button class="key key--lg" type="button" data-copy="winget install Humcase" aria-describedby="winget-note">
+        <span class="key__prompt" aria-hidden="true">&gt;</span><span class="copy-state">winget install Humcase</span>
+        <Fragment set:html={copyIcon} />
+        </button>
+      )}
+    </div>
+    <p class="small rise" id="winget-note" >{t('Free · Open source')}</p>
+    </div>
+  </section>
+
+  <!-- The real app, first thing under the hero -->
+  <section class="peek" id="peek" aria-label={t('The app')}>
+    <figure class="shot rise">
+      <div class="shot__frame"><ShotImg name={home.name} lang={LANGS[lang].shots} alt={alt(home.alt)} sizes="(max-width: 1300px) 92vw, 1200px" /></div>
+      <figcaption set:html={h(home.caption)}></figcaption>
+    </figure>
+  </section>
+
+  <!-- Why: the problem, before the tree shows the answer -->
+  <section class="sec why" id="why" aria-labelledby="why-title">
+    <div class="sec__head">
+      <h2 class="display h-sec" id="why-title" data-reveal set:html={h('Why <em>Humcase</em>?')}></h2>
+      <p class="lede rise">{t('Working with agents leaves a trail of Markdown files, chats and folders. To find out why something was decided, you search, open and reread.')}</p>
+      <p class="lede rise">{t('In Humcase, every idea, decision, task and proof sits in one place you read at a glance, next to what led to it.')}</p>
+    </div>
+  </section>
+
+  <!-- The cycle: four chapters, the tree sticks and changes with scroll -->
+  <section class="cycle" id="cycle" aria-label={t('The cycle of an idea')}>
+    <div class="cycle__intro">
+      <h2 class="display h-sec" data-reveal set:html={h('Watch one idea <em>grow</em>.')}></h2>
+      <p class="lede rise">{t('Our example: redesigning a client’s online shop. Each leaf is a case: an idea, a task, a question or a decision.')}</p>
+    </div>
+    <article class="chapter" data-chapter="0" id="ch-bare">
+      <div class="copy">
+        <h3 class="display h-sec" data-reveal set:html={h('It starts <em>bare</em>.')}></h3>
+        <p class="lede rise">{t('One line, typed between two meetings: redesign the online shop. That is already a case. No setup, no AI needed.')}</p>
+      </div>
+    </article>
+    <article class="chapter" data-chapter="1" id="ch-grows">
+      <div class="copy">
+        <h3 class="display h-sec" data-reveal set:html={h('Then it <em>grows</em>.')}></h3>
+        <p class="lede rise">{t('Each branch is a sub-case. With an AI service, Humcase suggests next steps from your words and creates only the ones you keep. Your agents add theirs, under their own name.')}</p>
+        <span class="hint rise"><i aria-hidden="true"></i><span class="hint-desk">{t('Point at a framed leaf to read it')}</span><span class="hint-touch">{t('Tap a framed leaf to read it')}</span></span>
+      </div>
+    </article>
+    <article class="chapter" data-chapter="2" id="ch-falls">
+      <div class="copy">
+        <h3 class="display h-sec" data-reveal set:html={h('Old leaves fall, and <em>stay</em>.')}></h3>
+        <p class="lede rise">{t('When a case is done, Humcase can suggest archiving it, and waits for your yes. An archived case stays readable: months later, you still see what was decided, and why.')}</p>
+      </div>
+    </article>
+    <article class="chapter" data-chapter="3" id="ch-flowers">
+      <div class="copy">
+        <h3 class="display h-sec" data-reveal set:html={h('Then it <em>flowers</em> again.')}></h3>
+        <p class="lede rise">{t('New ideas grow from what the old ones taught you, and each one remembers where it came from.')}</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- You and your agents -->
+  <section class="sec agents" id="agents" data-scene="agents">
+    <div class="agents__copy">
+      <h2 class="display h-sec" data-reveal set:html={h('Work with your <em>agents</em>.')}></h2>
+      <p class="lede rise" style="margin-top:24px">{t('Claude Code, Codex and other agents connect to Humcase and write in the same cases as you, under their own name.')}</p>
+      <div class="term rise" id="term" role="group" aria-label={t('Example: Claude Code files research into Humcase')}>
+        <div class="term__bar">
+          <div class="term__tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 7 5 5-5 5M12 18h7"/></svg><span>{t('Claude Code · shop')}</span></div>
+          <span class="term__sp"></span>
+          <button class="key key--xs" type="button" id="term-replay" hidden>{t('Replay')}</button>
+          <span class="term__win" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 6h10"/></svg>
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><rect x="1.5" y="1.5" width="9" height="9" rx="1"/></svg>
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="m1.5 1.5 9 9m0-9-9 9"/></svg>
+          </span>
+        </div>
+        <div class="term__body" id="term-body" aria-hidden="true"></div>
+        <p class="sr-only">{t('Claude Code, asked to compare payment providers, writes a research case “Compare payment providers” into the Humcase case “Redesign the online shop” through Humcase’s MCP server. It then waits for your review.')}</p>
+      </div>
+      <p class="lede rise" style="margin-top:24px">{t('An agent can’t accept its own work. It hands you a result: you accept it, or ask for a rework with a reason.')}</p>
+
+      <div class="journal rise" aria-label={t('Example journal of a case')}>
+        <div class="journal__head"><span>{t('Resize the product photos')}</span><span>{t('History')}</span></div>
+        <ol id="journal-rows">
+          <li><b><i></i>{t('You')}</b><span>{t('created this task under “Redesign the online shop”')}</span><time>{t('4 Oct 18:05')}</time></li>
+          <li><b><i data-by="codex"></i>Codex</b><span>{t('set it in progress')}</span><time>{t('4 Oct 18:12')}</time></li>
+          <li><b><i data-by="codex"></i>Codex</b><span>{t('added a result: 48 photos resized, originals kept')}</span><time>{t('5 Oct 09:02')}</time></li>
+        </ol>
+        <div class="journal__decide">
+          <p class="journal__status" id="journal-status" aria-live="polite" set:html={h('Result ready, waiting for your decision<small>Codex cannot accept it for you</small>')}></p>
+          <button class="key key--sm key--action" type="button" id="j-accept">{t('Accept')}</button>
+          <button class="key key--sm" type="button" id="j-rework">{t('Ask for a rework')}</button>
+        </div>
+        <div class="journal__foot"><span class="small mono" style="font-size:11px">{t('Example data')}</span><button class="linklike" type="button" id="j-reset" hidden>{t('Replay')}</button></div>
+      </div>
+      <p class="small rise" style="margin-top:18px">{t('Humcase doesn’t run your agents. It keeps what they hand in.')}</p>
+    </div>
+  </section>
+
+  <!-- The app itself -->
+  <section class="sec app" id="app" data-scene="app">
+    <div class="sec__head">
+      <h2 class="display h-sec" data-reveal set:html={h('Inside a <em>case</em>.')}></h2>
+      <p class="lede rise">{t('Write, dictate, sketch, add images. Arrange your cases on a canvas, or see them as cards, a list or a board. Work and personal stay apart.')}</p>
+    </div>
+    <div class="shots">
+      {shots.map(s => (
+        <figure class:list={['shot', 'rise', { 'shot--wide': s.wide, 'shot--b': s.b }]}>
+          <div class="shot__frame"><ShotImg name={s.name} lang={LANGS[lang].shots} alt={alt(s.alt)} sizes="(max-width: 860px) 92vw, min(46vw, 768px)" lazy /></div>
+          <figcaption set:html={h(s.caption)}></figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+
+  <!-- Trust -->
+  <section class="sec trust" id="trust" data-scene="trust">
+    <div class="sec__head">
+      <h2 class="display h-sec" data-reveal set:html={h('Your work stays <em>yours</em>.')}></h2>
+    </div>
+    <div class="trust__grid">
+      <div class="rise"><h3>{t('On your computer')}</h3><p>{t('Your cases stay on your computer and work offline. Dictation and AI services with an API key need the internet.')}</p></div>
+      <div class="rise"><h3>{t('Open source')}</h3><p>{GITHUB ? <>{t('Licensed under AGPL-3.0.')} <a href="https://github.com/humcase/humcase">{t('Source on GitHub')}</a></> : t('Licensed under AGPL-3.0. Source code on request.')}</p></div>
+      <div class="rise"><h3>{t('AI when you want it')}</h3><p>{t('Humcase works without AI. To add it: an API key or a local model.')}</p></div>
+    </div>
+  </section>
+
+  <!-- Your turn: a night desk; the visitor is the person at it -->
+  <section class="play" id="play" data-scene="play" aria-labelledby="play-title">
+    <div class="play__head">
+      <h2 class="display h-sec" id="play-title" data-reveal set:html={h('Your <em>turn</em>.')}></h2>
+      <p class="play__hint rise"><span class="hint-desk" set:html={h('Press <kbd>I</kbd> <kbd>T</kbd> <kbd>Q</kbd> <kbd>D</kbd> <kbd>R</kbd> to add a case · <kbd>Enter</kbd> suggests next steps · <kbd>Esc</kbd> starts over')}></span><span class="hint-touch">{t('Tap a key to add a case.')}</span></p>
+      <p class="small rise">{t('An example: nothing is saved.')}</p>
+    </div>
+    <div class="play__desk" id="desk"><canvas id="kb" aria-hidden="true"></canvas></div>
+    <div class="play__keys" role="group" aria-label={t('Add a case to the example idea')}>
+      <div class="pkeys">
+        <button class="pkey" type="button" data-act="idea"><b>I</b><span>{t('Idea')}</span></button>
+        <button class="pkey" type="button" data-act="task"><b>T</b><span>{t('Task')}</span></button>
+        <button class="pkey" type="button" data-act="question"><b>Q</b><span>{t('Question')}</span></button>
+        <button class="pkey" type="button" data-act="decision"><b>D</b><span>{t('Decision')}</span></button>
+        <button class="pkey" type="button" data-act="research"><b>R</b><span>{t('Research')}</span></button>
+      </div>
+      <div class="pkeys2">
+        <button class="key key--sm" type="button" data-act="sprout">{t('Enter · Suggest')}</button>
+        <button class="key key--sm" type="button" data-act="empty">{t('Esc · Start over')}</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="sec faq" id="faq" data-scene="faq">
+    <div class="sec__head"><h2 class="display h-sec" data-reveal><em>{t('Questions')}</em></h2></div>
+    <div class="faq__list rise">
+      {faq.map(([q, a]) => (
+        <details>
+          <summary>{t(q)}<Fragment set:html={plus} /></summary>
+          <div class="answer"><p>{t(a)}</p></div>
+        </details>
+      ))}
+      <details id="faq-smartscreen">
+        <summary>{t('Windows warns me when I install it. Why?')}<Fragment set:html={plus} /></summary>
+        <div class="answer"><p set:html={h(WINGET
+          ? 'The installer isn’t signed yet, so Microsoft Defender SmartScreen shows a warning. Click <kbd>More info</kbd>, then <kbd>Run anyway</kbd>. Installing with <code>winget install Humcase</code> avoids the warning.'
+          : 'The installer isn’t signed yet, so Microsoft Defender SmartScreen shows a warning. Click <kbd>More info</kbd>, then <kbd>Run anyway</kbd>.')}></p></div>
+      </details>
+    </div>
+  </section>
+
+  <!-- Final call: the tree flowers -->
+  <section class="sec final" id="final" data-scene="final">
+    <h2 class="display h-hero" data-reveal set:html={h('Plant your first <em>idea</em>.')}></h2>
+    <p class="lede rise">{t('Windows 10 and 11.')}</p>
+    <div class="keys rise">
+      <a class="key key--action key--lg" href={DOWNLOAD} data-shake set:html={h('Download for Windows')}></a>
+      {WINGET && (
+        <button class="key key--lg" type="button" data-copy="winget install Humcase">
+        <span class="key__prompt" aria-hidden="true">&gt;</span><span class="copy-state">winget install Humcase</span>
+        <Fragment set:html={copyIcon} />
+        </button>
+      )}
+    </div>
+    <form class="news rise" id="news" novalidate>
+      <label class="sr-only" for="news-email">{t('Email for release news')}</label>
+      <input id="news-email" type="email" placeholder={t('you@example.com')} autocomplete="email">
+      <input class="news-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <button class="key" type="submit">{t('Get release news')}</button>
+    </form>
+    <p class="small news-note rise" id="news-note" aria-live="polite">{t('Only release news. Unsubscribe in one click.')}</p>
+  </section>
+</main>
+
+<nav class="chapbar" id="chapbar" aria-label={t('Chapters of the cycle')}>
+  <button type="button" data-go="0">{t('Bare')}<span class="fill"></span></button>
+  <button type="button" data-go="1">{t('Grows')}<span class="fill"></span></button>
+  <button type="button" data-go="2">{t('Falls')}<span class="fill"></span></button>
+  <button type="button" data-go="3">{t('Flowers')}<span class="fill"></span></button>
+</nav>
+
+<footer class="site-foot">
+  <span set:html={h('<span class="brand__name" style="font-size:12px"><b>HUM</b>CASE</span> · open source under AGPL-3.0')}></span>
+  <nav aria-label={t('Footer')}>{GITHUB && <a href="https://github.com/humcase/humcase">{t('Source on GitHub')}</a>}<a href="#faq">{t('Questions')}</a><a href="mailto:contact@humcase.com">{t('Contact')}</a><a href={`${LEGAL}privacy/`}>{t('Privacy')}</a><a href={`${LEGAL}terms/`}>{t('Terms')}</a><a href={`${LEGAL}notice/`}>{t('Legal notice')}</a></nav>
+</footer>
+
+<script is:inline src={versioned('/js/langmenu.js')}></script>
+<script is:inline src={versioned('/maple/maple-data.js')}></script>
+<script is:inline src={versioned('/js/world.js')}></script>
+<script is:inline src={versioned('/js/play.js')}></script>
+<script src="../scripts/keyboard.js"></script>
+</body>
+</html>

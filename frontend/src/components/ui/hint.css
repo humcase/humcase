@@ -1,0 +1,48 @@
+/* Humcase kit — tooltip (0.9.66). Small raised label: the action name, then its
+   shortcut as keyboard keys in the design of the app's keys (face, edge, bevel). */
+
+.workspace-app .ui-hint {
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(320px, calc(100vw - 20px));
+  padding: 6px 8px 6px 10px;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: 7px;
+  background: var(--workspace-raised);
+  color: var(--workspace-ink);
+  font-size: var(--workspace-text-caption);
+  font-weight: 500;
+  line-height: 1.3;
+  box-shadow: var(--workspace-shadow-raised), 0 2px 0 var(--key-edge);
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+  pointer-events: none;
+}
+.workspace-app .ui-hint[data-state='delayed-open'] { animation: ui-hint-in 120ms var(--workspace-ease-out, ease-out); }
+@keyframes ui-hint-in { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .workspace-app .ui-hint { animation: none !important; } }
+
+.workspace-app .ui-hint__keys { display: inline-flex; gap: 3px; }
+
+.ui-kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: 1px solid var(--workspace-control-border);
+  border-radius: 4px;
+  background: var(--workspace-control);
+  color: var(--workspace-text-secondary);
+  font-family: var(--workspace-font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1;
+  box-shadow: inset 0 1px 0 #ffffff14, 0 1.5px 0 var(--key-edge);
+}
+.workspace-app[data-theme='light'] .ui-kbd { box-shadow: inset 0 1px 0 #ffffffcc, 0 1.5px 0 var(--key-edge); }
+
+/* Permanently displayed shortcut (navigation): more discreet keys, right-aligned. */
+.ui-kbd-group { display: inline-flex; gap: 3px; margin-left: auto; }
+.ui-kbd-group .ui-kbd { min-width: 18px; height: 18px; padding: 0 4px; font-size: 10px; color: var(--workspace-text-muted); }

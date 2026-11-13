@@ -1,0 +1,21 @@
+{
+  "name": "humcase-site",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "images": "node scripts/images.mjs",
+    "check-i18n": "node scripts/check-i18n.mjs"
+  },
+  "dependencies": {
+    "@fontsource/dm-mono": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "astro": "^7.3.5",
+    "three": "0.170.0"
+  }
+}

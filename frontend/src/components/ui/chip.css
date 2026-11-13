@@ -1,0 +1,34 @@
+/* Humcase kit — Chip: a filter in one click. At rest a light outline; chosen, a raised key with
+   the ink color, as in SegmentedControl; sizes from the spacing scale. States: theme tokens. */
+
+.workspace-app .ui-chips { display: flex; flex-wrap: wrap; gap: var(--workspace-space-2); }
+
+.workspace-app .ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--workspace-space-2);
+  min-height: var(--workspace-space-8);
+  padding: 0 var(--workspace-space-3);
+  border: 1px solid var(--workspace-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--workspace-text-secondary);
+  font-family: var(--workspace-font-ui);
+  font-size: var(--workspace-text-ui);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+.workspace-app .ui-chip svg { width: 15px; height: 15px; flex: none; color: var(--case-nature, currentColor); }
+.workspace-app .ui-chip:hover { background: var(--workspace-control-hover); color: var(--workspace-ink); }
+.workspace-app .ui-chip:active { background: var(--workspace-control); }
+.workspace-app .ui-chip:focus-visible { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+.workspace-app .ui-chip[aria-pressed='true'] {
+  border-color: var(--workspace-card-border);
+  background: var(--workspace-surface);
+  color: var(--workspace-ink);
+  font-weight: 600;
+  box-shadow: 0 1px 0 var(--key-edge), 0 2px 4px -2px #0000004d;
+}
+.workspace-app .ui-chip:disabled { opacity: .5; cursor: default; }

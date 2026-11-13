@@ -1,0 +1,13 @@
+---
+// An app screenshot in AVIF, then WebP, then JPEG, each at 960 and 1600 px (built by npm run images).
+import { versioned } from '../versioned';
+interface Props { name: string; lang: string; alt: string; sizes: string; lazy?: boolean }
+const { name, lang, alt, sizes, lazy = false } = Astro.props;
+const base = `/shots/app-${name}-${lang}`;
+const set = (ext: string) => `${versioned(`${base}-960.${ext}`)} 960w, ${versioned(`${base}.${ext}`)} 1600w`;
+---
+<picture>
+  <source type="image/avif" srcset={set('avif')} sizes={sizes}>
+  <source type="image/webp" srcset={set('webp')} sizes={sizes}>
+  <img src={versioned(`${base}.jpg`)} srcset={set('jpg')} sizes={sizes} alt={alt} width="1600" height="1178" decoding="async" loading={lazy ? 'lazy' : undefined}>
+</picture>

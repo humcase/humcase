@@ -1,0 +1,70 @@
+# Humcase - .gitignore
+
+# Rust / Cargo
+/src-tauri/target/
+/tools/*/target/
+# Bench data: models and the person's own notes stay local.
+/tools/embed-bench/data/
+**/*.rs.bk
+# Cargo.lock is tracked on purpose: it pins the Rust dependencies for reproducible builds.
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# SQLite local databases
+*.db
+*.db-shm
+*.db-wal
+humcase.db
+devnotes.db
+
+# IDE & OS
+# Claude Code: local permissions, worktrees and launch settings
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Executables
+Humcase.exe
+
+# Environment Variables
+.env
+.env.*
+# The example file documents variable NAMES (no values) and stays tracked.
+!.env.example
+
+# Local npm cache
+.npm-cache/
+
+# Local reference research
+.firecrawl/
+
+# Local captures, traces and inspection profiles
+.playwright-cli/
+/output/
+
+# Local studies kept out of the repository (prices and SDKs go stale)
+docs/research/
+/internal/
+/PRODUCT.md
+
+# Linux build output (AppImage, .deb, screenshots), see tools/linux/build.sh
+/tools/linux/out/
+
+# Meaning worker build and its delivered folder (runtime, model): built, never committed.
+/sense/target/
+/meaning/
+/sense/vendor/

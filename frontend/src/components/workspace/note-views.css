@@ -1,0 +1,27 @@
+/* List and table share the surfaces and typography of the cards. */
+.workspace-note-list { background: var(--workspace-canvas); }
+.workspace-note-list > div:first-child:not(.workspace-list-items) { padding: 24px; }
+.workspace-list-toolbar { display: flex; align-items: center; gap: 16px; }
+.workspace-list-search { flex: 1; min-width: 0; }
+.workspace-note-list:not(.workspace-note-list--mini) > div:first-child:not(.workspace-list-items) { width: 100%; max-width: 1248px; margin-inline: auto; }
+.workspace-list-items { padding-bottom: 24px; }
+/* Rows: kit List; the list keeps its reading width. */
+.workspace-list { width: calc(100% - 48px); max-width: 1200px; margin: 0 auto 24px; }
+.workspace-list-row__tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.workspace-note-list--mini .workspace-list { width: calc(100% - 24px); }
+.workspace-kanban__columns { flex: 1; min-height: 0; display: flex; gap: var(--workspace-grid-gap); padding: 24px; overflow: auto; }
+.workspace-kanban__column { flex: 1; min-width: 260px; display: flex; flex-direction: column; min-height: 0; padding: 14px; }
+.workspace-kanban__heading { display: flex; align-items: center; justify-content: space-between; margin: 0 0 18px; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); font-weight: 600; }
+/* Surface, hover, focus and selection: kit Card. */
+.workspace-kanban__card { padding: 20px; cursor: pointer; }
+.workspace-kanban__card-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 10px; }
+.workspace-kanban__card h4 { margin-top: 12px; color: var(--workspace-ink); font-size: var(--workspace-text-lead); line-height: 1.4; font-weight: 600; overflow-wrap: anywhere; }
+.workspace-kanban__card-title { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.workspace-kanban__preview { margin-top: 8px; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); line-height: 1.55; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.workspace-kanban__date { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--workspace-line); color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-kanban__card--dragging { cursor: grabbing; }
+@media (min-width: 2240px) { .workspace-kanban__columns { padding: 28px; } .workspace-kanban__card { padding: 24px; } }
+@media (max-width: 850px) { .workspace-list { width: calc(100% - 24px); } .workspace-kanban__columns { padding: 16px; } }
+
+@media (max-width: 560px) { .workspace-list-toolbar { flex-wrap: wrap; gap: 12px; } .workspace-list-search { flex-basis: 100%; } .workspace-note-list > div:first-child:not(.workspace-list-items) { padding: 16px 12px; } }
+.workspace-kanban__error { margin: 12px 16px 0; }

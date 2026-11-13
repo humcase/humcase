@@ -1,0 +1,60 @@
+---
+// Where the release news confirmation link lands (functions/api/confirm.js redirects here with
+// ?state=confirmed|expired|invalid|error&lang=..). Speaks the language of the sign-up.
+import '@fontsource/inter/400.css';
+import '@fontsource/instrument-serif/400.css';
+import '@fontsource/dm-mono/400.css';
+import { LANGS } from '../i18n/index.js';
+
+const TEXTS = {
+  en: { confirmed: ['You’re subscribed', 'You’ll get an email when a new version is out.'], expired: ['This link has expired', 'Sign up again from the home page.'], error: ['That didn’t work', 'Try the link again in a moment.'], home: 'Back to humcase.com' },
+  fr: { confirmed: ['C’est confirmé', 'Vous recevrez un e-mail à chaque nouvelle version.'], expired: ['Ce lien a expiré', 'Réinscrivez-vous depuis l’accueil.'], error: ['Ça n’a pas marché', 'Réessayez le lien dans un instant.'], home: 'Retour à humcase.com' },
+  es: { confirmed: ['Suscripción confirmada', 'Recibirás un correo cada vez que salga una nueva versión.'], expired: ['Este enlace ha caducado', 'Vuelve a suscribirte desde la página de inicio.'], error: ['No ha funcionado', 'Vuelve a probar el enlace en un momento.'], home: 'Volver a humcase.com' },
+  de: { confirmed: ['Du bist angemeldet', 'Du bekommst eine E-Mail, wenn eine neue Version erscheint.'], expired: ['Dieser Link ist abgelaufen', 'Melde dich auf der Startseite neu an.'], error: ['Das hat nicht geklappt', 'Versuch den Link gleich noch einmal.'], home: 'Zurück zu humcase.com' },
+  'pt-BR': { confirmed: ['Inscrição confirmada', 'Você vai receber um e-mail a cada nova versão.'], expired: ['Este link expirou', 'Inscreva-se de novo pela página inicial.'], error: ['Não deu certo', 'Tente o link de novo em instantes.'], home: 'Voltar para humcase.com' },
+  it: { confirmed: ['Iscrizione confermata', 'Riceverai un’email a ogni nuova versione.'], expired: ['Questo link è scaduto', 'Iscriviti di nuovo dalla home.'], error: ['Non ha funzionato', 'Riprova il link tra un momento.'], home: 'Torna a humcase.com' },
+};
+const paths = Object.fromEntries(Object.entries(LANGS).map(([code, l]) => [code, l.path]));
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Humcase</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style is:global>
+  :root { color-scheme: dark; --ink: #f3efe8; --ink-3: rgba(243, 239, 232, .56); --line: rgba(243, 239, 232, .16); --copper: #e78a53; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; background: #000; color: var(--ink-3); font: 400 17px/1.6 "Inter", "Segoe UI", system-ui, sans-serif; text-align: center; -webkit-font-smoothing: antialiased; }
+  main { max-width: 520px; }
+  .logo { display: block; width: 72px; height: 72px; margin: 0 auto 36px; }
+  h1 { margin: 0 0 14px; color: var(--ink); font: 400 clamp(40px, 8vw, 56px)/1.05 "Instrument Serif", Georgia, serif; text-wrap: balance; }
+  p { margin: 0 0 32px; }
+  a.home { display: inline-block; padding: 12px 22px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); font: 400 14px/1 "DM Mono", ui-monospace, monospace; text-decoration: none; transition: border-color .15s; }
+  a.home:hover { border-color: var(--copper); }
+</style>
+</head>
+<body>
+<main>
+  <a href="/" aria-label="Humcase"><img class="logo" src="/favicon.svg" alt=""></a>
+  <h1 id="t">{TEXTS.en.confirmed[0]}</h1>
+  <p id="l">{TEXTS.en.confirmed[1]}</p>
+  <a class="home" id="h" href="/">{TEXTS.en.home}</a>
+</main>
+<script is:inline define:vars={{ TEXTS, paths }}>
+  const q = new URLSearchParams(location.search);
+  const lang = TEXTS[q.get('lang')] ? q.get('lang') : 'en';
+  const state = { confirmed: 'confirmed', expired: 'expired', invalid: 'expired' }[q.get('state')] || 'error';
+  const text = TEXTS[lang], [title, line] = text[state];
+  document.documentElement.lang = lang;
+  document.title = `${title} · Humcase`;
+  document.getElementById('t').textContent = title;
+  document.getElementById('l').textContent = line;
+  const home = document.getElementById('h');
+  home.textContent = text.home;
+  home.href = paths[lang];
+</script>
+</body>
+</html>

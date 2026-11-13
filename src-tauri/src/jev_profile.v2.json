@@ -1,0 +1,11 @@
+{
+  "version": "profile.v2",
+  "model": "jev-1.13.0",
+  "rule": {
+    "instructions": "`decision` is a decision in force in one person's notes. Is it a lasting rule about how they work, one that should guide their future work and the agents that help them?",
+    "criteria": {
+      "true": "The decision as a whole states one habit, preference, principle or standing rule that applies again and again: to all their work, their team, their business, a whole product or every case of a kind (\"always\", \"never\", \"every time\", \"from now on\", a way of doing things), such as a day kept free, a house style for every document, or something a product or a person must never show, sell or accept.",
+      "false": "It sets up how one technical system, service or feature runs: when its jobs run, how long it keeps data, its defaults, formats, settings or technical behaviour, even when one of its points says \"always\" or \"never\". Or it gathers several separate decisions (answers to questions, the decisions of a round or of a mockup, decisions still to validate). Or it settles one choice for one piece of work: a tool, a supplier, a date, a purchase, a place, a font, a colour, a logo or an option picked once, even when it is kept for a long time."
+    }
+  }
+}

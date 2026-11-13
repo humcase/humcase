@@ -1,0 +1,14 @@
+{
+  "version": "nature.v2",
+  "model": "jev-1.13.0",
+  "instructions": "What is this case, judging by its `title` and `text`? Pick the one nature that fits the case as a whole: what the case is mainly for, not the words of one of its parts.",
+  "options": [
+    { "nature": "note", "criteria": "A thought, a reference, a procedure or a report kept for later: notes, observations, explanations, links, how-to steps, or an account of what happened or was done (results, figures, what went live), even when it mentions a choice made along the way. It asks nothing, plans no action to carry out, reports no defect and is not mainly the record of a choice." },
+    { "nature": "idea", "criteria": "A proposal of something that could be made or changed: a feature, an improvement, a direction, a what-if, levers or options kept for later. It is not decided as a whole and not yet a concrete action." },
+    { "nature": "todo", "criteria": "A concrete action someone has to carry out: an imperative, a to-do item, steps to do, a step or batch (lot, phase) of a plan to deliver, a deliverable, with or without a deadline. A case that mainly describes work to build (its approach, its scope, what it changes, the points to settle, what was built and checked) stays a todo even when it first recalls the decision it implements." },
+    { "nature": "question", "criteria": "An open question the author wants answered: they do not know something and ask it." },
+    { "nature": "research", "criteria": "An investigation of information: studying, comparing or collecting options, sources, benchmarks, prices or prior work to learn something." },
+    { "nature": "decision", "criteria": "A choice that was made, recorded for itself: what was chosen, often with why, the options rejected and the consequences or next step. A short choice followed by what it implies is a decision; a case that mainly lays out the work to carry out a choice is a todo." },
+    { "nature": "bug", "criteria": "Something that does not work as expected: a defect, an error, a crash, a regression or an incident to fix." }
+  ]
+}

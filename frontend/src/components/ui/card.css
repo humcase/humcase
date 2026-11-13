@@ -1,0 +1,94 @@
+/* Humcase kit — cards and lists (0.9.67). Surface, hover and focus are only defined here. */
+
+.workspace-app .ui-card {
+  position: relative;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: var(--workspace-radius-card);
+  background: var(--workspace-surface);
+  color: var(--workspace-ink);
+  box-shadow: var(--workspace-shadow-card);
+}
+.workspace-app button.ui-card { display: block; width: 100%; font: inherit; text-align: left; cursor: pointer; }
+/* Dimensions and inner margins: default values with no weight (`:where`); the screen sets its
+   layout (a Kanban column keeps its minimum width). */
+:where(.workspace-app .ui-card) { min-width: 0; }
+:where(.workspace-app .ui-card[data-padding='none']) { padding: 0; }
+:where(.workspace-app .ui-card[data-padding='sm']) { padding: 14px 16px; }
+:where(.workspace-app .ui-card[data-padding='md']) { padding: 20px; }
+:where(.workspace-app .ui-card[data-padding='lg']) { padding: 22px var(--workspace-padding); }
+.workspace-app .ui-card[data-tone='sunken'] { border-color: var(--workspace-line); background: var(--workspace-muted-surface); box-shadow: none; }
+.workspace-app .ui-card[data-tone='dashed'] { border-style: dashed; background: transparent; box-shadow: none; color: var(--workspace-text-secondary); }
+
+.workspace-app .ui-card[data-interactive] { cursor: pointer; }
+.workspace-app .ui-card[data-interactive]:is(:focus-visible, :has(:focus-visible)),
+.workspace-app .ui-card[data-active] { outline: 2px solid var(--workspace-action); outline-offset: 2px; }
+@media (hover: hover) and (pointer: fine) {
+  .workspace-app .ui-card[data-interactive] { transition: border-color 160ms ease, box-shadow 200ms var(--workspace-ease-out); }
+  .workspace-app .ui-card[data-interactive]:hover { border-color: var(--workspace-card-hover-border); box-shadow: var(--workspace-shadow-card-hover); }
+}
+
+/* Icon tile: row or card head. `data-tinted` + `--ui-tile-tint`: identity tint
+   (a project's color), lightened in the dark theme to stay readable. */
+.workspace-app .ui-icon-tile { display: grid; flex: none; place-items: center; width: 32px; height: 32px; border: 1px solid transparent; border-radius: 8px; background: var(--workspace-muted-surface); color: var(--workspace-text-secondary); }
+.workspace-app .ui-icon-tile[data-tinted] { width: 34px; height: 34px; border-color: color-mix(in srgb, var(--ui-tile-tint) 28%, var(--workspace-line)); background: color-mix(in srgb, var(--ui-tile-tint) 18%, var(--workspace-surface)); color: var(--ui-tile-tint); }
+.workspace-app[data-theme='dark'] .ui-icon-tile[data-tinted] { color: color-mix(in srgb, var(--ui-tile-tint) 45%, var(--workspace-ink)); }
+
+/* Listes */
+:where(.workspace-app .ui-list) { margin: 0; padding: 0; list-style: none; }
+.workspace-app .ui-list[data-variant='boxed'] {
+  overflow: hidden;
+  border: 1px solid var(--workspace-card-border);
+  border-radius: var(--workspace-radius-card);
+  background: var(--workspace-surface);
+  box-shadow: var(--workspace-shadow-card);
+}
+.workspace-app .ui-list[data-variant='boxed'] > .ui-list-row + .ui-list-row { border-top: 1px solid var(--workspace-line); }
+:where(.workspace-app .ui-list:is([data-variant='plain'], [data-variant='divided'])) { margin-inline: -10px; }
+.workspace-app .ui-list:is([data-variant='plain'], [data-variant='divided']) > .ui-list-row { padding-inline: 10px; border-radius: 7px; }
+.workspace-app .ui-list[data-variant='divided'] > .ui-list-row + .ui-list-row { border-top: 1px solid var(--workspace-line); border-radius: 0; }
+
+.workspace-app .ui-list-row { position: relative; display: flex; align-items: flex-start; gap: 12px; min-width: 0; padding: 14px 16px; }
+.workspace-app .ui-list-row[data-size='sm'] { gap: 10px; padding: 9px 10px; }
+.workspace-app .ui-list-row[data-size='lg'] { gap: 14px; padding: 20px 24px; }
+.workspace-app .ui-list-row__action {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.workspace-app .ui-list-row__action:focus-visible { outline: 2px solid var(--workspace-action); outline-offset: -2px; }
+/* The content lets clicks through to the row action; its own buttons stay active. */
+.workspace-app .ui-list-row > :not(.ui-list-row__action) { position: relative; z-index: 1; pointer-events: none; }
+.workspace-app .ui-list-row > :not(.ui-list-row__action) :is(button, a, input) { pointer-events: auto; }
+.workspace-app .ui-list-row:has(> .ui-list-row__action) { transition: background-color 120ms ease; }
+/* Hover carried by the action: the row does not light up when the pointer is on a tag. */
+.workspace-app .ui-list-row:has(> .ui-list-row__action:hover) { background: var(--workspace-state-hover); }
+.workspace-app .ui-list-row[data-active] { background: var(--workspace-accent-soft); box-shadow: inset 3px 0 var(--workspace-action); }
+
+.workspace-app .ui-list-row__leading { display: grid; flex: none; place-items: center; min-height: 20px; color: var(--workspace-text-secondary); }
+.workspace-app .ui-list-row__body { display: grid; flex: 1; gap: 3px; min-width: 0; }
+.workspace-app .ui-list-row__overline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 5px; }
+.workspace-app .ui-list-row__title { display: block; min-width: 0; margin: 0; color: var(--workspace-ink); font-size: var(--workspace-text-ui); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.workspace-app .ui-list-row[data-size='lg'] .ui-list-row__title { font-size: var(--workspace-text-lead); }
+.workspace-app .ui-list-row[data-size='sm'] .ui-list-row__title { font-weight: 500; }
+.workspace-app .ui-list-row__description {
+  display: -webkit-box;
+  max-width: 90ch;
+  overflow: hidden;
+  color: var(--workspace-text-secondary);
+  font-size: var(--workspace-text-ui);
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.workspace-app .ui-list-row__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-width: 0; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-app .ui-list-row__trailing { display: grid; flex: none; align-self: center; place-items: center; color: var(--workspace-text-muted); transition: color 120ms ease; }
+.workspace-app .ui-list-row:has(> .ui-list-row__action:hover) .ui-list-row__trailing { color: var(--workspace-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-app :is(.ui-card, .ui-list-row, .ui-list-row__trailing) { transition: none !important; }
+}

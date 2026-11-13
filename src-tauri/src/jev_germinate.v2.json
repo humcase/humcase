@@ -1,0 +1,18 @@
+{
+  "version": "germinate.v2",
+  "model": "jev-1.13.0",
+  "follows": {
+    "instructions": "The `case` is a note someone wrote. Humcase proposes to add the `proposal` as a sub-case of it, citing the `passage` of the case it comes from. The `context` is the passage with the line before it: what the passage refers to (\"it\", \"the two\") is named there. Does the proposal follow from that passage?",
+    "criteria": {
+      "true": "The passage itself raises this step: the same action, question, research, decision or idea, without a goal, a tool, a fact or a step the passage does not state; naming what the passage refers to, as its context names it, adds nothing.",
+      "false": "The passage does not raise this step: the proposal adds something the passage does not say, changes what it asks, or answers a question the passage leaves open."
+    }
+  },
+  "covers": {
+    "instructions": "Humcase proposes to add the `proposal` as a new sub-case. It comes from the `passage` of the case, which tells what the proposal is about. The `existing` case is already in the person's notes. Does the existing case already cover the proposal?",
+    "criteria": {
+      "true": "The existing case is about the same subject and the same aim: creating the proposal would duplicate it.",
+      "false": "The existing case is about another subject, or about the same subject with another aim: the proposal adds a new step."
+    }
+  }
+}

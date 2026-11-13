@@ -1,0 +1,4 @@
+/* Note sort: layout only; the trigger and the menu come from the kit. */
+.workspace-sort { display: inline-flex; align-items: center; gap: 9px; margin-left: 12px; color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); }
+.workspace-app .workspace-sort__trigger { justify-content: space-between; gap: 12px; min-width: 156px; }
+@media (max-width: 520px) { .workspace-sort { margin-left: 0; } .workspace-sort__caption { display: none; } .workspace-app .workspace-sort__trigger { min-width: 142px; } }

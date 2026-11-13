@@ -1,0 +1,24 @@
+/* Layout of the kit showcase (development only). No rule touches a component. */
+body { margin: 0; }
+.kit-showcase { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 100vh; }
+@media (max-width: 1100px) { .kit-showcase { grid-template-columns: minmax(0, 1fr); } }
+.kit-panel { position: relative; min-width: 0; padding: 32px; background: var(--workspace-canvas); color: var(--workspace-ink); font-family: var(--workspace-font, 'DM Sans', sans-serif); }
+.kit-panel__title { margin: 0 0 24px; font-size: var(--workspace-text-display); font-weight: 600; letter-spacing: -.02em; }
+.kit-section { display: grid; gap: 16px; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--workspace-line); }
+.kit-section > header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.kit-section h2 { margin: 0; font-size: var(--workspace-text-card); font-weight: 600; }
+.kit-section code { color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 11.5px; }
+.kit-row { display: grid; grid-template-columns: 90px minmax(0, 1fr); align-items: center; gap: 12px; }
+.kit-row__label, .kit-state__label { color: var(--workspace-text-muted); font-family: var(--workspace-font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+.kit-states { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 18px; }
+.kit-state { display: grid; justify-items: start; gap: 6px; }
+.kit-forced { display: contents; }
+.kit-inline { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.kit-card { width: 200px; }
+.kit-card p { margin: 6px 0 0; color: var(--workspace-text-secondary); font-size: var(--workspace-text-ui); }
+.kit-cards { align-items: stretch; }
+.kit-toasts { display: grid; gap: 12px; justify-items: center; }
+.kit-toasts .ui-toast { position: static; transform: none; animation: none; }
+.kit-notices > * { flex: 1 1 200px; }
+/* Ring frozen mid-way to show the "remaining time" state. */
+.kit-toasts .ui-toast__timer circle { animation-delay: -4s !important; animation-play-state: paused !important; }

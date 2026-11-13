@@ -1,0 +1,18 @@
+/* "Project" window and "Archived" section of the sidebar (0.9.76). */
+.workspace-project-colors { margin: 0 0 12px; }
+.workspace-project-colors__list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.workspace-project-colors__swatch {
+  position: relative; display: grid; place-items: center; width: 28px; height: 28px;
+  border-radius: 8px; background: var(--swatch); cursor: pointer;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #000 18%, transparent);
+}
+.workspace-project-colors__swatch input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+.workspace-project-colors__swatch:has(input:checked) { outline: 2px solid var(--workspace-ink); outline-offset: 2px; }
+.workspace-project-colors__swatch:has(input:focus-visible) { outline: 2px solid var(--workspace-ink); outline-offset: 3px; }
+.workspace-project-settings__secondary { display: flex; gap: 8px; margin-right: auto; }
+.workspace-archived-projects { margin-top: 4px; }
+.workspace-archived-projects > summary {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px; cursor: pointer;
+  color: var(--workspace-text-muted); font-size: var(--workspace-text-caption); list-style: none;
+}
+.workspace-archived-projects > summary::-webkit-details-marker { display: none; }
