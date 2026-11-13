@@ -23,10 +23,13 @@ jobs:
       - name: Download from the website
         shell: pwsh
         run: |
-          $site = Invoke-WebRequest https://humcase.com -UseBasicParsing
-          $href = ($site.Links | Where-Object href -match 'Humcase-setup-x64\.exe' | Select-Object -First 1).href
-          if (-not $href) { throw "no Windows download link on humcase.com" }
-          "Download link on the site: $href"
+          # humcase.com answers datacenter addresses with a Cloudflare challenge: fall back to the link the site shows.
+          $href = 'https://github.com/humcase/humcase/releases/latest/download/Humcase-setup-x64.exe'
+          try {
+            $site = Invoke-WebRequest https://humcase.com -UseBasicParsing
+            $found = ($site.Links | Where-Object href -match 'Humcase-setup-x64\.exe' | Select-Object -First 1).href
+            if ($found) { $href = $found; "Download link read on the site: $href" }
+          } catch { "humcase.com not readable from this runner (challenge), using the site's link: $href" }
           Invoke-WebRequest $href -OutFile "$env:RUNNER_TEMP\Humcase-setup-x64.exe"
           $sums = (Invoke-WebRequest https://github.com/humcase/humcase/releases/latest/download/SHA256SUMS.txt -UseBasicParsing).Content
           $hash = (Get-FileHash "$env:RUNNER_TEMP\Humcase-setup-x64.exe" -Algorithm SHA256).Hash.ToLower()
