@@ -51,6 +51,9 @@ jobs:
       - name: Texts of every language
         run: npm run check-i18n --prefix site
 
+      - name: Release news guard (Turnstile)
+        run: npm test --prefix site
+
       - name: Build
         run: npm run build --prefix site
 
