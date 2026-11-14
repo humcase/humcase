@@ -1,6 +1,6 @@
 ; Hooks of the NSIS installer (tauri.conf.json, bundle.windows.nsis.installerHooks).
 ;
-; The template (Tauri CLI 2.12 and later) closes, through the Windows Restart Manager, only the
+; The template (Tauri CLI 2.12, read on 2.12.4) closes, through the Windows Restart Manager, only the
 ; processes running $INSTDIR\humcase.exe: the copy being replaced, its interface and the MCP servers
 ; started from it. A copy run from another folder (the repository's Humcase.exe) is left alone.
 ; The search-by-meaning workers, $INSTDIR\meaning\humcase-sense.exe, are separate programs that hold
