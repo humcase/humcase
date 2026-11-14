@@ -11,6 +11,7 @@ npm run images    # rebuilds the AVIF/WebP copies after a screenshot or a maple 
 ```
 
 - `src/components/Landing.astro`: the page, written once in English.
+- `npm test`: the release news guard (`functions-lib/news.test.mjs`, Node's test runner): no email leaves without a Turnstile token Siteverify accepts.
 - `src/i18n/<language>.js`: each language's texts, keyed by the English ones; a missing text stays in English. The page's scripts translate what they build with the same table (`window.TR`). `npm run check-i18n` checks that every language translates every text of `fr.js` (which also lists the words French writes as English) with the same markup. The screenshots stay English for the beta languages.
 - `public/js/`: the scripts of the night maple (`world.js`), the "Your turn" keys and the terminal (`play.js`), the language menu. `src/scripts/keyboard.js`: the 3D keyboard (three.js, bundled; pinned to 0.170.0, whose soft shadows the design uses).
 - `public/maple/`: the maple frames rendered in Blender and drawn as pixels; `public/shots/`: the app screenshots, one per language, with example data. The JPEG and the WebP frames are the sources; `npm run images` makes the lighter copies the page serves first. `public/_headers`: cache rules for Cloudflare.
