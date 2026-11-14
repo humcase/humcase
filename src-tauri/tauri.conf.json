@@ -76,6 +76,11 @@
       "icons/icon.ico"
     ],
     "category": "Productivity",
+    "windows": {
+      "nsis": {
+        "installerHooks": "windows/installer-hooks.nsh"
+      }
+    },
     "shortDescription": "Local-first notes and task tracking for people and agents",
     "linux": {
       "deb": {

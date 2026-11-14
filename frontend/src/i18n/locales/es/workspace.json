@@ -906,6 +906,7 @@
     "downloading": "Descargando la actualización: {{percent}} %",
     "downloadingNoSize": "Descargando la actualización…",
     "installing": "Instalando… Humcase se reiniciará.",
-    "failed": "La actualización falló: {{error}}"
+    "failed": "La actualización falló: {{error}}",
+    "notSaved": "sus últimos cambios aún no se han guardado"
   }
 }

@@ -853,6 +853,7 @@
     "downloading": "Downloading the update: {{percent}}%",
     "downloadingNoSize": "Downloading the update…",
     "installing": "Installing… Humcase will restart.",
-    "failed": "The update failed: {{error}}"
+    "failed": "The update failed: {{error}}",
+    "notSaved": "your latest changes are not saved yet"
   }
 }

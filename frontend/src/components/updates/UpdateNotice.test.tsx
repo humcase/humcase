@@ -4,13 +4,14 @@ import { useAppUpdate, UPDATE_CHECK_DELAY_MS } from '../../hooks/useAppUpdate';
 import { UpdateNotice } from './UpdateNotice';
 
 const calls: string[] = [];
+const saved = { value: true };
 const api = vi.hoisted(() => ({
   checkForUpdate: vi.fn(),
   downloadUpdate: vi.fn(),
   installUpdate: vi.fn(),
 }));
 vi.mock('../../services/tauriApi', () => ({ api }));
-vi.mock('../../utils/beforeExit', () => ({ saveBeforeExit: vi.fn(async () => { calls.push('save'); }) }));
+vi.mock('../../utils/beforeExit', () => ({ saveBeforeExit: vi.fn(async () => { calls.push('save'); return saved.value; }) }));
 
 function Harness() {
   const { update, install, dismiss } = useAppUpdate();
@@ -57,6 +58,17 @@ describe('update message', () => {
     expect(screen.getByRole('alert').textContent).toContain('La mise à jour a échoué : signature mismatch');
     expect(api.installUpdate).not.toHaveBeenCalled();
     expect(screen.getByRole('button', { name: 'Réessayer' })).toBeTruthy();
+  });
+
+  it('never installs while a write is still under way', async () => {
+    saved.value = false;
+    api.downloadUpdate.mockImplementation(async () => {});
+    api.installUpdate.mockClear();
+    await showAvailable();
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Installer et redémarrer' })); });
+    expect(api.installUpdate).not.toHaveBeenCalled();
+    expect(screen.getByRole('alert').textContent).toContain('vos dernières modifications ne sont pas encore enregistrées');
+    saved.value = true;
   });
 
   it('puts the update off until the next launch', async () => {

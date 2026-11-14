@@ -10,6 +10,7 @@ import { Button } from './ui/Button';
 import { Count } from './ui/Badge';
 import { EmptyState } from './ui/EmptyState';
 import './NoteRelations.css';
+import { onBeforeExit } from '../utils/beforeExit';
 
 interface NoteRelationsProps {
   note: Note;
@@ -63,18 +64,21 @@ export default function NoteRelations({ note, allNotes, onOpenNote, onChanged, s
   useEffect(() => {
     let unlisten: (() => void) | null = null;
     let disposed = false;
+    const escrow = () => {
+      const { title: draftTitle, content: draftContent, open } = draftRef.current;
+      if (open) saveTaskDraft(note.id, draftTitle, draftContent, space, note.project_id);
+    };
+    // An update quits Humcase without closing the window nor unmounting: escrow there too.
+    const stopBeforeExit = onBeforeExit(escrow);
     try {
       void getCurrentWindow()
-        .onCloseRequested(() => {
-          const { title: draftTitle, content: draftContent, open } = draftRef.current;
-          if (open) saveTaskDraft(note.id, draftTitle, draftContent, space, note.project_id);
-        })
+        .onCloseRequested(escrow)
         .then(stop => { if (disposed) stop(); else unlisten = stop; })
         .catch(() => { /* Window API unavailable (outside Tauri): unmounting stays the safety net. */ });
     } catch {
       /* Window API unavailable (outside Tauri): unmounting stays the safety net. */
     }
-    return () => { disposed = true; unlisten?.(); };
+    return () => { disposed = true; stopBeforeExit(); unlisten?.(); };
   }, [note.id, space, note.project_id]);
 
   const refresh = useCallback(async () => {

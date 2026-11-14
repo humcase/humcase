@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../services/tauriApi';
 import { saveBeforeExit } from '../utils/beforeExit';
+import i18n from '../i18n';
 
 /** Delay before the check: the startup reads (cases, search by meaning) go first. */
 export const UPDATE_CHECK_DELAY_MS = 8000;
@@ -38,7 +39,11 @@ export function useAppUpdate(): { update: AppUpdate; install: () => void; dismis
       try {
         await api.downloadUpdate(percent => setUpdate({ phase: 'downloading', version, percent }));
         setUpdate({ phase: 'installing', version });
-        await saveBeforeExit();
+        // Quitting while a write is still under way would lose it: the update waits for a retry.
+        if (!(await saveBeforeExit())) {
+          setUpdate({ phase: 'failed', version, error: i18n.t('workspace.updates.notSaved') });
+          return;
+        }
         await api.installUpdate();
       } catch (e) {
         setUpdate({ phase: 'failed', version, error: String(e) });

@@ -3,6 +3,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { Note } from '../types';
 import NoteRelations from './NoteRelations';
 import { readPendingWrites, clearPendingWrites } from '../utils/pendingWrites';
+import { saveBeforeExit } from '../utils/beforeExit';
 
 vi.mock('../services/tauriApi', () => ({ api: {
   getNoteRelations: vi.fn(),
@@ -191,6 +192,19 @@ describe('NoteRelations', () => {
     await act(async () => { winBus.handlers.forEach(handler => handler()); });
     expect(readPendingWrites()).toEqual([
       expect.objectContaining({ kind: 'task-draft', noteId: 'source', titre: 'À la fermeture', contenu: 'Ne pas perdre' }),
+    ]);
+  });
+
+  it('escrows the draft before Humcase quits for an update, without close nor unmount', async () => {
+    render(<NoteRelations key="source" note={source} allNotes={[source]} onOpenNote={() => {}} onChanged={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: /Tâches liées/ }));
+    await waitFor(() => expect(screen.getByText('Aucune tâche liée.')).toBeTruthy());
+    fireEvent.click(screen.getByRole('button', { name: 'Créer une tâche' }));
+    fireEvent.change(screen.getByLabelText('Titre de la tâche'), { target: { value: 'Avant la mise à jour' } });
+
+    await act(async () => { await saveBeforeExit(); });
+    expect(readPendingWrites()).toEqual([
+      expect.objectContaining({ kind: 'task-draft', noteId: 'source', titre: 'Avant la mise à jour' }),
     ]);
   });
 });

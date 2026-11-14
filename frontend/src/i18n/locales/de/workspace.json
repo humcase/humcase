@@ -853,6 +853,7 @@
     "downloading": "Update wird heruntergeladen: {{percent}} %",
     "downloadingNoSize": "Update wird heruntergeladen…",
     "installing": "Wird installiert… Humcase startet neu.",
-    "failed": "Das Update ist fehlgeschlagen: {{error}}"
+    "failed": "Das Update ist fehlgeschlagen: {{error}}",
+    "notSaved": "Ihre letzten Änderungen sind noch nicht gespeichert"
   }
 }

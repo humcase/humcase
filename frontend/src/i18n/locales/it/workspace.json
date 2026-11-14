@@ -906,6 +906,7 @@
     "downloading": "Download dell’aggiornamento: {{percent}}%",
     "downloadingNoSize": "Download dell’aggiornamento…",
     "installing": "Installazione… Humcase si riavvierà.",
-    "failed": "L’aggiornamento non è riuscito: {{error}}"
+    "failed": "L’aggiornamento non è riuscito: {{error}}",
+    "notSaved": "le sue ultime modifiche non sono ancora salvate"
   }
 }

@@ -6,11 +6,12 @@
 //! network for this and never offers to replace itself with an installed copy. The person can
 //! also turn the check off in Settings (`update_check` = `"0"` in `app_settings`).
 //!
-//! The update is the NSIS installer of the release, signed with the project's updater key:
-//! the plugin refuses an installer whose signature does not match the public key in
-//! `tauri.conf.json`, or whose signed version differs from the announced one
-//! (`requireSignedVersion`). On Windows the installer closes every running `Humcase.exe`
-//! (interface and MCP servers) through the Restart Manager, installs, then starts Humcase again.
+//! The update is the installer of the release (NSIS, or MSI for a copy the MSI installed), signed
+//! with the project's updater key: the plugin refuses an installer whose signature does not match
+//! the public key in `tauri.conf.json`, or whose signed version differs from the announced one
+//! (`requireSignedVersion`). On Windows the installer stops the meaning workers of its folder
+//! (`windows/installer-hooks.nsh`), closes the `Humcase.exe` of its folder (interface and MCP
+//! servers) through the Restart Manager, installs, then starts Humcase again.
 
 use std::sync::Mutex;
 

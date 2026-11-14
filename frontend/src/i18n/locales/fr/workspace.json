@@ -906,6 +906,7 @@
     "downloading": "Téléchargement de la mise à jour : {{percent}} %",
     "downloadingNoSize": "Téléchargement de la mise à jour…",
     "installing": "Installation… Humcase va redémarrer.",
-    "failed": "La mise à jour a échoué : {{error}}"
+    "failed": "La mise à jour a échoué : {{error}}",
+    "notSaved": "vos dernières modifications ne sont pas encore enregistrées"
   }
 }
