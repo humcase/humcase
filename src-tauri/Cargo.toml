@@ -1,6 +1,6 @@
 [package]
 name = "humcase"
-version = "0.10.1"
+version = "0.10.2"
 description = "Humcase: local-first notes and task tracking for people and agents"
 authors = ["Humcase"]
 license = "AGPL-3.0-only"
