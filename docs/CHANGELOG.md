@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.10.1] - 2026-11-14
+
+The first update delivered by Humcase itself: a copy of 0.10.0 offers this version at startup and installs it on your click. No change in the app.
+
 ## [0.10.0] - 2026-11-14
 
 Humcase now updates itself: from this version on, an installed copy finds the next release and installs it on your click. Also fixed: the assistant's menu.
