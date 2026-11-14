@@ -392,6 +392,8 @@ kbd { font: 500 12px/1 var(--mono); padding: 3px 7px 4px; border-radius: 5px; ba
 .news input::placeholder { color: var(--ink-3); }
 .news input:focus-visible { outline: 2px solid var(--copper-ink); outline-offset: 2px; }
 .news-note { margin-top: 12px; }
+/* Turnstile shows here only when it needs the visitor (appearance: interaction-only). */
+.news-check:not(:empty) { margin-top: 12px; }
 
 .site-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; padding: 28px var(--gutter) 34px; border-top: 1px solid var(--line); background: #000; font-size: 13px; color: var(--ink-3); }
 .site-foot nav { display: flex; gap: 22px; flex-wrap: wrap; }

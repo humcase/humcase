@@ -1,6 +1,6 @@
 // Release news: sign-up with a confirmation email (double opt-in), shared by the Pages Functions
 // `functions/api/subscribe.js` and `functions/api/confirm.js`. Secrets come from the Pages project
-// (RESEND_API_KEY, CONFIRM_SECRET), never from the repository.
+// (RESEND_API_KEY, CONFIRM_SECRET, TURNSTILE_SECRET), never from the repository.
 
 export const SITE = 'https://humcase.com';
 export const FROM = 'Humcase <news@humcase.com>';
@@ -69,6 +69,37 @@ export function confirmationMail(lang, link) {
 </body></html>`;
   const text = `${t.line}\n\n${t.button}: ${link}\n\n${t.ignore}\n\nhumcase.com`;
   return { subject: t.subject, html, text };
+}
+
+/** The Turnstile action of the sign-up form (public/js/world.js renders the widget with it). */
+export const TURNSTILE_ACTION = 'news';
+/** Pages whose Turnstile tokens the site accepts: production, its preview deployments, and local
+ *  development only when the request itself is local (a production check never accepts localhost). */
+const PUBLIC_HOST = /^((www\.)?humcase\.com|[a-z0-9-]+\.humcase-site\.pages\.dev)$/;
+const LOCAL_HOST = /^(localhost|127\.0\.0\.1)$/;
+export const turnstileHostOk = (hostname, requestHost) =>
+  typeof hostname === 'string' && (PUBLIC_HOST.test(hostname) || (LOCAL_HOST.test(requestHost) && LOCAL_HOST.test(hostname)));
+
+/** Whether Cloudflare Turnstile vouches for this sign-up: a fresh token (single use) for the form's
+ *  action, issued on one of the site's pages. Fails closed: no secret, no token or no answer is a no. */
+export async function verifyHuman(secret, token, ip, requestHost, fetcher = fetch) {
+  if (!secret || typeof token !== 'string' || token.length === 0 || token.length > 2048) return false;
+  const form = new URLSearchParams({ secret, response: token });
+  if (ip) form.set('remoteip', ip);
+  let result;
+  try {
+    const res = await fetcher('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: form,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return false;
+    result = await res.json();
+  } catch {
+    return false;
+  }
+  return result?.success === true && result.action === TURNSTILE_ACTION && turnstileHostOk(result.hostname, requestHost);
 }
 
 /** One call to the Resend API. */

@@ -1,6 +1,8 @@
-// POST /api/subscribe {email, lang, website}: sends the confirmation email. Nothing is stored until the
-// person clicks the link (confirm.js). The answer is the same whether or not the address is known.
-import { FROM, isEmail, langOf, makeToken, confirmationMail, resend } from '../../functions-lib/news.js';
+// POST /api/subscribe {email, lang, website, turnstile}: sends the confirmation email once Cloudflare
+// Turnstile vouches for the visitor (without it, a script could send our emails to any address).
+// Nothing is stored until the person clicks the link (confirm.js). The answer is the same whether or
+// not the address is known.
+import { FROM, isEmail, langOf, makeToken, confirmationMail, resend, verifyHuman } from '../../functions-lib/news.js';
 
 /** Pages that may post here: the site itself, its preview deployments and local development. */
 const allowedOrigin = origin => /^https:\/\/((www\.)?humcase\.com|[a-z0-9-]+\.humcase-site\.pages\.dev)$/.test(origin) || /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
@@ -15,6 +17,8 @@ export async function onRequestPost({ request, env }) {
   if (body.website) return json(200, { ok: true });
   const email = String(body.email || '').trim().toLowerCase();
   if (!isEmail(email)) return json(400, { error: 'email' });
+  const human = await verifyHuman(env.TURNSTILE_SECRET, body.turnstile, request.headers.get('CF-Connecting-IP'), new URL(request.url).hostname);
+  if (!human) return json(403, { error: 'check' });
   const lang = langOf(body.lang);
   const token = await makeToken(env.CONFIRM_SECRET, email, lang);
   // The link returns to the deployment that sent it (humcase.com, or a preview while testing).

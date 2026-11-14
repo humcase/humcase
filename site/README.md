@@ -14,7 +14,7 @@ npm run images    # rebuilds the AVIF/WebP copies after a screenshot or a maple 
 - `src/i18n/<language>.js`: each language's texts, keyed by the English ones; a missing text stays in English. The page's scripts translate what they build with the same table (`window.TR`). `npm run check-i18n` checks that every language translates every text of `fr.js` (which also lists the words French writes as English) with the same markup. The screenshots stay English for the beta languages.
 - `public/js/`: the scripts of the night maple (`world.js`), the "Your turn" keys and the terminal (`play.js`), the language menu. `src/scripts/keyboard.js`: the 3D keyboard (three.js, bundled; pinned to 0.170.0, whose soft shadows the design uses).
 - `public/maple/`: the maple frames rendered in Blender and drawn as pixels; `public/shots/`: the app screenshots, one per language, with example data. The JPEG and the WebP frames are the sources; `npm run images` makes the lighter copies the page serves first. `public/_headers`: cache rules for Cloudflare.
-- No third-party request at runtime: fonts and three.js are served by the site itself.
+- No third-party request at runtime: fonts and three.js are served by the site itself. One exception: once a visitor turns to the release news form, it loads Cloudflare Turnstile (below).
 
 Download: the buttons point to `releases/latest/download/Humcase-setup-x64.exe` on GitHub (`release.yml` publishes the installer under that name) once `GITHUB = true` in `Landing.astro`; until the repository is public they say the download isn't open yet.
 
@@ -22,4 +22,6 @@ Download: the buttons point to `releases/latest/download/Humcase-setup-x64.exe` 
 
 The sign-up form posts to the Pages Functions in `functions/api/` (shared code in `functions-lib/news.js`): `subscribe` sends a confirmation email through Resend (sender `news@humcase.com`, domain verified in the EU region), `confirm` adds the address to the Resend segment "Humcase release news" and redirects to `/news/`. Nothing is stored before the confirmation; the link is a signed token valid 7 days.
 
-Secrets live in the Pages project (`npx wrangler pages secret put RESEND_API_KEY|CONFIRM_SECRET --project-name humcase-site`, value read from a file or stdin), never in the repository. To try it locally: put both in `site/.dev.vars` (git-ignored), build, then `npx wrangler pages dev dist --port 8788` from `site`.
+Cloudflare Turnstile guards the form (widget "humcase.com release news form", managed, action `news`, appearance interaction-only): `world.js` loads it when the visitor focuses or touches the form, and `subscribe` sends nothing unless Siteverify accepts the token for that action and for a page of the site (humcase.com, a preview `*.humcase-site.pages.dev`, or localhost only for a local request). The public sitekey is in `Landing.astro`.
+
+Secrets live in the Pages project (`npx wrangler pages secret put RESEND_API_KEY|CONFIRM_SECRET|TURNSTILE_SECRET --project-name humcase-site`, value read from a file or stdin), never in the repository. To try it locally: put the three in `site/.dev.vars` (`TURNSTILE_SECRET`: the widget's own secret, from the Cloudflare dashboard; Cloudflare's testing keys answer with a fixed hostname that the check refuses) (git-ignored), build, then `npx wrangler pages dev dist --port 8788` from `site`.
