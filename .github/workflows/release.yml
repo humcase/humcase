@@ -138,6 +138,8 @@ jobs:
             $info.RedirectStandardOutput = $true
             [System.Diagnostics.Process]::Start($info)
           }
+          trap { Write-Host "FAILED: $($_ | Out-String)"; exit 1 }
+          "Starting the copies"
           $other = Join-Path $env:RUNNER_TEMP 'humcase-other'
           Copy-Item $dir $other -Recurse
           $ownMcp = Start-Held $exe 'mcp'
@@ -145,6 +147,7 @@ jobs:
           $otherMcp = Start-Held (Join-Path $other 'Humcase.exe') 'mcp'
           $otherWorker = Start-Held (Join-Path $other 'meaning/humcase-sense.exe') ''
           Start-Sleep -Seconds 3
+          "Copies started, updating"
           foreach ($p in $ownMcp, $ownWorker, $otherMcp, $otherWorker) { if ($p.HasExited) { throw "$($p.StartInfo.FileName) $($p.StartInfo.Arguments) exited before the update (code $($p.ExitCode))" } }
           $update = Start-Process dist/Humcase-setup-x64.exe -ArgumentList '/S', "/D=$dir" -Wait -PassThru
           if ($update.ExitCode -ne 0) { throw "update installer exit code $($update.ExitCode)" }
