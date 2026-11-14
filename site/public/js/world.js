@@ -823,14 +823,16 @@
   let check = null;
   const startCheck = () => {
     if (check) return check;
-    let widget = null, token = '';
+    let widget = null, token = '', blocked = false;
     const waiters = [];
     const settle = value => { token = value; while (waiters.length) waiters.shift()(value); };
     check = {
-      // A token for one sign-up: the one ready, or the next one (empty after 30 s or an error).
-      token: () => token ? Promise.resolve(token) : new Promise(r => { waiters.push(r); setTimeout(() => r(token), 30000); }),
-      // Tokens are single use: after each attempt, ask for a new one.
-      reset: () => { token = ''; if (widget !== null) window.turnstile.reset(widget); },
+      // A token for one sign-up: the one ready, or the next one. Empty at once if the script could not
+      // load, and after 2 minutes otherwise (time to solve a challenge; Turnstile retries its own errors).
+      token: () => token || blocked ? Promise.resolve(token) : new Promise(r => { waiters.push(r); setTimeout(() => r(token), 120000); }),
+      // Tokens are single use: once one was sent, ask for a new one. Without a token, nothing was spent,
+      // and a challenge the visitor is solving stays as it is.
+      spent: () => { token = ''; if (widget !== null) window.turnstile.reset(widget); },
     };
     window.humTurnstile = () => {
       widget = window.turnstile.render('#news-check', {
@@ -838,13 +840,13 @@
         language: window.HUM_LANG || 'auto',
         callback: settle,
         'expired-callback': () => { token = ''; },
-        'error-callback': () => { settle(''); return true; },
+        'error-callback': () => true,
       });
     };
     const script = document.createElement('script');
     script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=humTurnstile';
     script.async = true;
-    script.onerror = () => settle('');
+    script.onerror = () => { blocked = true; settle(''); };
     document.head.append(script);
     return check;
   };
@@ -857,12 +859,13 @@
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { newsNote.textContent = TR('This email address doesn’t look right.'); input.focus(); return; }
     button.disabled = true; newsNote.textContent = TR('Sending…');
     const human = startCheck();
+    let turnstile = '';
     try {
-      const turnstile = await human.token();
+      turnstile = await human.token();
       const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang: window.HUM_LANG || 'en', website: news.querySelector('.news-trap').value, turnstile }) });
       if (res.ok) { newsNote.textContent = TR('Almost there: open the email we sent and confirm.'); input.value = ''; }
       else newsNote.textContent = TR(res.status === 400 ? 'This email address doesn’t look right.' : 'That didn’t work. Try again in a moment.');
     } catch { newsNote.textContent = TR('That didn’t work. Try again in a moment.'); }
-    finally { human.reset(); button.disabled = false; }
+    finally { if (turnstile) human.spent(); button.disabled = false; }
   });
 })();
