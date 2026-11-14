@@ -11,6 +11,16 @@ export interface Recognition {
   nature: { value: NoteType; confidence: number } | null;
   line_of_work: { value: 'dev' | 'marketing' | 'research' | 'reflection' | 'personal'; confidence: number } | null;
 }
+/** Whether this copy can update itself and whether the person leaves the check on (Rust `updates::UpdateSettings`). */
+export interface UpdateSettings {
+  supported: boolean;
+  enabled: boolean;
+}
+/** A newer release found at startup (Rust `updates::AvailableUpdate`). */
+export interface AvailableUpdate {
+  version: string;
+  current_version: string;
+}
 /** Where the reading of the cases for search by meaning stands (Rust `meaning::Status`). */
 export interface MeaningStatus {
   state: 'off' | 'unavailable' | 'reading' | 'ready';

@@ -43,6 +43,8 @@ vi.mock('./services/tauriApi', () => ({
     restoreFromTrash: vi.fn(),
     notesChangeMarker: vi.fn(async () => 'stable'),
     meaningStatus: vi.fn(async () => ({ state: 'ready', done: 0, total: 0, error: null })),
+    getUpdateSettings: vi.fn(async () => ({ supported: false, enabled: true })),
+    checkForUpdate: vi.fn(async () => null),
     searchByMeaning: vi.fn(async () => []),
     assistantStatus: vi.fn(async () => ({ model_label: 'Claude Haiku 5.5', cases: 3, to_decide: 0, conflicts: 0, to_tidy: 0 })),
     assistantReply: vi.fn(),

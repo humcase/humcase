@@ -48,6 +48,7 @@ import { StructureDialog } from './noteEditor/StructureDialog';
 import { GerminatePanel } from './noteEditor/GerminatePanel';
 import { DecisionHistory } from './noteEditor/DecisionHistory';
 import { useGermination } from './noteEditor/useGermination';
+import { onBeforeExit } from '../utils/beforeExit';
 
 interface NoteEditorProps {
   note: Note | null;
@@ -715,6 +716,11 @@ export default function NoteEditor({ note, onNoteUpdated, isMiniMode, onBackToLi
     };
 
     window.addEventListener('beforeunload', flushBeforeClose);
+    // An update quits Humcase without closing the window: it waits for these writes.
+    const stopBeforeExit = onBeforeExit(() => {
+      persistRemainderForSession();
+      return flushDraft();
+    });
     let unlisten: (() => void) | null = null;
     let disposed = false;
     void getCurrentWindow()
@@ -734,6 +740,7 @@ export default function NoteEditor({ note, onNoteUpdated, isMiniMode, onBackToLi
     return () => {
       disposed = true;
       window.removeEventListener('beforeunload', flushBeforeClose);
+      stopBeforeExit();
       unlisten?.();
     };
   }, [flushDraft, persistRemainderForSession]);

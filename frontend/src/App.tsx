@@ -79,6 +79,8 @@ import { meaningRows } from './utils/meaningRows';
 import { searchRank as rankSearch } from './utils/searchRank';
 import { useSupersededIds } from './hooks/useTidy';
 import { currentDateLocale } from './i18n';
+import { useAppUpdate } from './hooks/useAppUpdate';
+import { UpdateNotice } from './components/updates/UpdateNotice';
 
 /** Where a case was opened from: "Back" leads there and the sidebar keeps it highlighted. */
 interface ReturnPoint {
@@ -183,6 +185,7 @@ function App() {
   const creationEnCoursRef = useRef(false);
   // Error of a one-off action (Handoff, Standup, creation): visible and non-blocking.
   const { actionError, toneAction, reportAction } = useActionToast();
+  const appUpdate = useAppUpdate();
   // Is a modal open? Global shortcuts must not act behind it.
   const modalOpenRef = useRef(false);
 
@@ -665,6 +668,7 @@ function App() {
       {actionError && (
         <Toast tone={toneAction}>{actionError}</Toast>
       )}
+      <UpdateNotice update={appUpdate.update} onInstall={appUpdate.install} onDismiss={appUpdate.dismiss} />
       {!isMiniMode && (
         <WorkspaceSidebar
           projects={visibleProjects}

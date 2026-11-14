@@ -375,5 +375,9 @@
   "ask": {
     "unreadable": "Unreadable answer from the AI: {{error}}",
     "deadline": "The AI took too long to answer (over {{seconds}} seconds). Try again."
+  },
+  "updates": {
+    "noneFound": "No update found",
+    "notDownloaded": "The update is not downloaded yet"
   }
 }

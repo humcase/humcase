@@ -10,6 +10,7 @@ import { addPendingWrite, pendingWritesPersistent, removePendingWrite } from '..
 import { MAX_SKETCH_BYTES, excalidrawLanguage, sketchScene, webAddress } from '../../utils/caseContent';
 import { spaceOfNote } from '../noteEditor/editableState';
 import { loadExcalidraw } from './loadExcalidraw';
+import { onBeforeExit } from '../../utils/beforeExit';
 import './sketch.css';
 
 type ExcalidrawModule = Awaited<ReturnType<typeof loadExcalidraw>>;
@@ -150,6 +151,8 @@ export default function SketchEditor({ note, theme, projects, onNoteUpdated, onR
   useEffect(() => {
     const flushBeforeClose = () => { void flush(); };
     window.addEventListener('beforeunload', flushBeforeClose);
+    // An update quits Humcase without closing the window: it waits for this write.
+    const stopBeforeExit = onBeforeExit(flush);
     let unlisten: (() => void) | null = null;
     let disposed = false;
     void getCurrentWindow()
@@ -159,6 +162,7 @@ export default function SketchEditor({ note, theme, projects, onNoteUpdated, onR
     return () => {
       disposed = true;
       window.removeEventListener('beforeunload', flushBeforeClose);
+      stopBeforeExit();
       unlisten?.();
     };
   }, [flush]);

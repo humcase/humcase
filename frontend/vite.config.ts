@@ -44,6 +44,10 @@ export default defineConfig({
     strictPort: true,
   },
   build: {
+    // Vite's 500 kB warning is about download time on the web. The app reads its files from disk
+    // (Tauri), and the heavy parts (Excalidraw, Mermaid) are already loaded only when used.
+    // A chunk above 2 MB still warns: it would be worth splitting.
+    chunkSizeWarningLimit: 2048,
     rollupOptions: {
       input: {
         main: './index.html',

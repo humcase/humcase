@@ -16,6 +16,7 @@ mod profile;
 mod projects;
 mod tidy;
 mod transcription;
+mod updates;
 
 pub use agents::*;
 pub use ai::*;
@@ -32,6 +33,7 @@ pub use profile::*;
 pub use projects::*;
 pub use tidy::*;
 pub use transcription::*;
+pub use updates::*;
 
 use backup::{blocked_after_restore, quit_and_restart};
 

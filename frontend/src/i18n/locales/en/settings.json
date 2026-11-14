@@ -356,5 +356,13 @@
   "proposals": {
     "description": "Humcase suggests, you decide.",
     "review": "Suggestions reviewed by TypeSafe (its model: Jev) send the title and start of the cases involved, without keys or emails. Without a TypeSafe key, they stay off."
+  },
+  "updates": {
+    "heading": "Updates",
+    "description": "At startup, Humcase asks GitHub whether a new version exists. None of your cases is sent.",
+    "enable": "Check for updates at startup",
+    "unsupported": "This copy was built on this computer: it does not update itself.",
+    "loading": "Reading the setting…",
+    "error": "The setting could not be saved: {{error}}"
   }
 }

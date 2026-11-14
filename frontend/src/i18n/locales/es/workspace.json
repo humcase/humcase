@@ -898,5 +898,15 @@
     "windowLabel": "Ventana",
     "stayOnTop": "Quedarse delante cuando Humcase pasa detrás",
     "stayOnTopDetail": "La ventana se convierte en Mini Humcase y se queda en tu pantalla"
+  },
+  "updates": {
+    "available": "Humcase {{version}} está disponible.",
+    "install": "Instalar y reiniciar",
+    "later": "Más tarde",
+    "downloading": "Descargando la actualización: {{percent}} %",
+    "downloadingNoSize": "Descargando la actualización…",
+    "installing": "Instalando… Humcase se reiniciará.",
+    "failed": "La actualización falló: {{error}}",
+    "notSaved": "sus últimos cambios aún no se han guardado"
   }
 }

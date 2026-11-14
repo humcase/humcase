@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Updates: at startup, an installed Humcase asks GitHub whether a newer version exists and says so at the bottom of the window ("Humcase 0.10.0 is available", Install and restart, Later). Install downloads the installer, checks its signature against the project's key (and that it was signed for the announced version), saves what the editors hold (and waits for it: an unfinished write puts the install off), then the installer closes Humcase, including the MCP servers agents started and their search-by-meaning workers, installs and starts it again. Settings → General → Updates turns the check off. Only copies built by the release workflow look for updates; a copy built locally (`npm run update-exe`) never does. Windows only for now. The privacy policy says what GitHub receives.
+
 ### Fixed
 - The assistant's menu ("Keep as a case", "New conversation", "Stay on top") did nothing on click: the menu is drawn outside the window, the press reached the window's header, which took it for the start of a move and kept the pointer. The header now moves the window only for a press on itself.
 
