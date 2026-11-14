@@ -23,10 +23,10 @@ const fail = message => {
 const version = tag.replace(/^v/, '');
 if (!/^\d+\.\d+\.\d+$/.test(version)) fail(`tag "${tag}" is not v<major>.<minor>.<patch>.`);
 
-const installers = readdirSync(bundleDir).filter(name => name.endsWith('-setup.exe'));
-if (installers.length !== 1) fail(`expected one NSIS installer in ${bundleDir}, found ${installers.length}.`);
+// A local bundle folder keeps the installers of earlier builds: take the one of this version.
+const installers = readdirSync(bundleDir).filter(name => name.endsWith('-setup.exe') && name.includes(`_${version}_`));
+if (installers.length !== 1) fail(`expected one NSIS installer of ${version} in ${bundleDir}, found ${installers.length}.`);
 const installer = installers[0];
-if (!installer.includes(`_${version}_`)) fail(`installer ${installer} does not carry version ${version}.`);
 
 let signature;
 try {
