@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.10.2] - 2026-11-14
+
+An update closes only the Humcase it replaces.
+
 ### Fixed
 - Updates: the installer stopped the search-by-meaning workers of every Humcase of the user, also those of a copy run from another folder. It now closes only the workers of the copy it replaces, by their path, after that copy. Uninstalling closes them too, so `meaning\` is removed.
 
