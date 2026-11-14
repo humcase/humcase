@@ -111,6 +111,7 @@ export const T = {
     'Almost there: open the email we sent and confirm.': 'Quase lá: abra o e-mail que enviamos e confirme.',
     'This email address doesn’t look right.': 'Este endereço de e-mail não parece correto.',
     'That didn’t work. Try again in a moment.': 'Não deu certo. Tente de novo em instantes.',
+    'The robot check couldn’t load. Turn off your blocker for humcase.com, then try again.': 'A verificação anti-robô não carregou. Desative seu bloqueador para humcase.com e tente de novo.',
     'Sending…': 'Enviando…',
     'The download isn’t open yet. Windows 10 and 11 · unsigned preview': 'O download ainda não está aberto. Windows 10 e 11 · prévia não assinada',
     'Humcase: every decision has roots': 'Humcase: toda decisão tem suas raízes', 'Humcase, home': 'Humcase, início', 'Site': 'Site', 'Footer': 'Rodapé', 'The cycle of an idea': 'O ciclo de uma ideia',

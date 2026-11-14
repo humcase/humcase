@@ -832,6 +832,7 @@
       token: () => token || blocked ? Promise.resolve(token) : new Promise(r => { waiters.push(r); setTimeout(() => r(token), 120000); }),
       // Tokens are single use: once one was sent, ask for a new one. Without a token, nothing was spent,
       // and a challenge the visitor is solving stays as it is.
+      blocked: () => blocked,
       spent: () => { token = ''; if (widget !== null) window.turnstile.reset(widget); },
     };
     window.humTurnstile = () => {
@@ -862,6 +863,7 @@
     let turnstile = '';
     try {
       turnstile = await human.token();
+      if (human.blocked()) { newsNote.textContent = TR('The robot check couldn’t load. Turn off your blocker for humcase.com, then try again.'); return; }
       const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang: window.HUM_LANG || 'en', website: news.querySelector('.news-trap').value, turnstile }) });
       if (res.ok) { newsNote.textContent = TR('Almost there: open the email we sent and confirm.'); input.value = ''; }
       else newsNote.textContent = TR(res.status === 400 ? 'This email address doesn’t look right.' : 'That didn’t work. Try again in a moment.');
