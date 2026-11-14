@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Updates: the installer stopped the search-by-meaning workers of every Humcase of the user, also those of a copy run from another folder. It now closes only the workers of the copy it replaces, by their path, after that copy. Uninstalling closes them too, so `meaning\` is removed.
+
 ## [0.10.1] - 2026-11-14
 
 The first update delivered by Humcase itself: a copy of 0.10.0 offers this version at startup and installs it on your click. No change in the app.

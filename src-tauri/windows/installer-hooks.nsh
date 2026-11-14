@@ -1,10 +1,19 @@
 ; Hooks of the NSIS installer (tauri.conf.json, bundle.windows.nsis.installerHooks).
+;
+; The template (Tauri CLI 2.12 and later) closes, through the Windows Restart Manager, only the
+; processes running $INSTDIR\humcase.exe: the copy being replaced, its interface and the MCP servers
+; started from it. A copy run from another folder (the repository's Humcase.exe) is left alone.
+; The search-by-meaning workers, $INSTDIR\meaning\humcase-sense.exe, are separate programs that hold
+; meaning\: close them the same way, by their path, after their Humcase (which would start them
+; again), so that meaning\ can be replaced or removed. The template's own check after this hook
+; then finds nothing left.
 
-; Before files are copied. Right after this hook, the installer kills by name every Humcase.exe
-; of the current user (the interface and the MCP servers agents started, whatever their folder);
-; their search-by-meaning workers, humcase-sense.exe, are separate programs that hold meaning\.
-; Stop them the same way, with the installer's own plugin, so that meaning\ can be replaced.
 !macro NSIS_HOOK_PREINSTALL
-  nsis_tauri_utils::KillProcessCurrentUser "humcase-sense.exe"
-  Pop $R0
+  !insertmacro CheckIfAppIsRunning "$INSTDIR\${MAINBINARYNAME}.exe" "${PRODUCTNAME}"
+  !insertmacro CheckIfAppIsRunning "$INSTDIR\meaning\humcase-sense.exe" "${PRODUCTNAME}"
+!macroend
+
+!macro NSIS_HOOK_PREUNINSTALL
+  !insertmacro CheckIfAppIsRunning "$INSTDIR\${MAINBINARYNAME}.exe" "${PRODUCTNAME}"
+  !insertmacro CheckIfAppIsRunning "$INSTDIR\meaning\humcase-sense.exe" "${PRODUCTNAME}"
 !macroend
