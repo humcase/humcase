@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../services/tauriApi';
 import { saveBeforeExit } from '../utils/beforeExit';
+import { pendingWritesPersistent, readPendingWrites } from '../utils/pendingWrites';
 import i18n from '../i18n';
 
 /** Delay before the check: the startup reads (cases, search by meaning) go first. */
@@ -42,8 +43,10 @@ export function useAppUpdate(): { update: AppUpdate; install: () => void; dismis
       try {
         await api.downloadUpdate(percent => setUpdate({ phase: 'downloading', version, percent }));
         setUpdate({ phase: 'installing', version });
-        // Quitting while a write is still under way would lose it: the update waits for a retry.
-        if (!(await saveBeforeExit())) {
+        // Quitting while a write is still under way would lose it, and so would quitting with a
+        // failed write kept only in memory (no local storage): the update waits for a retry.
+        const saved = await saveBeforeExit();
+        if (!saved || (!pendingWritesPersistent() && readPendingWrites().length > 0)) {
           setUpdate({ phase: 'failed', version, error: i18n.t('workspace.updates.notSaved') });
           return;
         }

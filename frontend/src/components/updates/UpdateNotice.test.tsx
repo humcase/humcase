@@ -11,6 +11,8 @@ const api = vi.hoisted(() => ({
   installUpdate: vi.fn(),
 }));
 vi.mock('../../services/tauriApi', () => ({ api }));
+const escrow = vi.hoisted(() => ({ persistent: true, entries: [] as unknown[] }));
+vi.mock('../../utils/pendingWrites', () => ({ pendingWritesPersistent: () => escrow.persistent, readPendingWrites: () => escrow.entries }));
 vi.mock('../../utils/beforeExit', () => ({ saveBeforeExit: vi.fn(async () => { calls.push('save'); return saved.value; }) }));
 
 function Harness() {
@@ -69,6 +71,18 @@ describe('update message', () => {
     expect(api.installUpdate).not.toHaveBeenCalled();
     expect(screen.getByRole('alert').textContent).toContain('vos dernières modifications ne sont pas encore enregistrées');
     saved.value = true;
+  });
+
+  it('never installs while a failed write is kept only in memory', async () => {
+    escrow.persistent = false;
+    escrow.entries = [{ kind: 'draft' }];
+    api.downloadUpdate.mockImplementation(async () => {});
+    api.installUpdate.mockClear();
+    await showAvailable();
+    await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Installer et redémarrer' })); });
+    expect(api.installUpdate).not.toHaveBeenCalled();
+    escrow.persistent = true;
+    escrow.entries = [];
   });
 
   it('puts the update off until the next launch', async () => {
