@@ -12,7 +12,10 @@ rust-version = "1.89"
 
 [lib]
 name = "humcase_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+# Desktop only: `staticlib` and `cdylib` serve the mobile builds (iOS, Android), which Humcase does
+# not have. On Windows they made the linker write the import library of each, a line cargo shows as
+# a warning when MSVC speaks another language than English. Add them back with a mobile target.
+crate-type = ["rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2.6.3", features = [] }
