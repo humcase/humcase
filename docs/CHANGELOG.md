@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-14
+
+Humcase now updates itself: from this version on, an installed copy finds the next release and installs it on your click. Also fixed: the assistant's menu.
+
 ### Added
 - Updates: at startup, an installed Humcase asks GitHub whether a newer version exists and says so at the bottom of the window ("Humcase 0.10.0 is available", Install and restart, Later). Install downloads the installer, checks its signature against the project's key (and that it was signed for the announced version), saves what the editors hold (and waits for it: an unfinished write puts the install off), then the installer closes Humcase, including the MCP servers agents started and their search-by-meaning workers, installs and starts it again. Settings → General → Updates turns the check off. Only copies built by the release workflow look for updates; a copy built locally (`npm run update-exe`) never does. Windows only for now. The privacy policy says what GitHub receives.
 
