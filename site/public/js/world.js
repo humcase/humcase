@@ -817,18 +817,52 @@
   reset.addEventListener('click', () => { rows.innerHTML = initial.rows; status.innerHTML = initial.status; accept.disabled = rework.disabled = false; reset.hidden = true; });
 
   // Release news: the server sends a confirmation email; the address joins the list only once confirmed.
+  // Cloudflare Turnstile vouches that a person asks (the server checks its token): its script loads only
+  // once the visitor turns to the form, so a visit that never does makes no request to Cloudflare.
   const news = document.getElementById('news'), newsNote = document.getElementById('news-note');
+  let check = null;
+  const startCheck = () => {
+    if (check) return check;
+    let widget = null, token = '';
+    const waiters = [];
+    const settle = value => { token = value; while (waiters.length) waiters.shift()(value); };
+    check = {
+      // A token for one sign-up: the one ready, or the next one (empty after 30 s or an error).
+      token: () => token ? Promise.resolve(token) : new Promise(r => { waiters.push(r); setTimeout(() => r(token), 30000); }),
+      // Tokens are single use: after each attempt, ask for a new one.
+      reset: () => { token = ''; if (widget !== null) window.turnstile.reset(widget); },
+    };
+    window.humTurnstile = () => {
+      widget = window.turnstile.render('#news-check', {
+        sitekey: news.dataset.sitekey, action: 'news', appearance: 'interaction-only', size: 'flexible',
+        language: window.HUM_LANG || 'auto',
+        callback: settle,
+        'expired-callback': () => { token = ''; },
+        'error-callback': () => { settle(''); return true; },
+      });
+    };
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=humTurnstile';
+    script.async = true;
+    script.onerror = () => settle('');
+    document.head.append(script);
+    return check;
+  };
+  news.addEventListener('focusin', startCheck, { once: true });
+  news.addEventListener('pointerdown', startCheck, { once: true });
   news.addEventListener('submit', async e => {
     e.preventDefault();
     const input = document.getElementById('news-email'), button = news.querySelector('button[type=submit]');
     const email = input.value.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { newsNote.textContent = TR('This email address doesn’t look right.'); input.focus(); return; }
     button.disabled = true; newsNote.textContent = TR('Sending…');
+    const human = startCheck();
     try {
-      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang: window.HUM_LANG || 'en', website: news.querySelector('.news-trap').value }) });
+      const turnstile = await human.token();
+      const res = await fetch('/api/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, lang: window.HUM_LANG || 'en', website: news.querySelector('.news-trap').value, turnstile }) });
       if (res.ok) { newsNote.textContent = TR('Almost there: open the email we sent and confirm.'); input.value = ''; }
       else newsNote.textContent = TR(res.status === 400 ? 'This email address doesn’t look right.' : 'That didn’t work. Try again in a moment.');
     } catch { newsNote.textContent = TR('That didn’t work. Try again in a moment.'); }
-    finally { button.disabled = false; }
+    finally { human.reset(); button.disabled = false; }
   });
 })();

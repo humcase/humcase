@@ -42,6 +42,8 @@ const shots = [
 const WINGET = false;
 // Links to the repository, shown once it is public; until then they would lead to a 404.
 const GITHUB = true;
+// Public sitekey of the Turnstile widget that guards the release news form (secret: Pages project).
+const TURNSTILE_SITEKEY = '0x4AAAAAAGBEHnb0ycKwKlfg';
 // The installer of the latest GitHub release (release.yml publishes it under this fixed name);
 // until the repository is public, the buttons say the download isn't open yet (world.js).
 const DOWNLOAD = GITHUB ? 'https://github.com/humcase/humcase/releases/latest/download/Humcase-setup-x64.exe' : '#download';
@@ -300,12 +302,13 @@ const description = t('Track your ideas, tasks and decisions, and the work your 
         </button>
       )}
     </div>
-    <form class="news rise" id="news" novalidate>
+    <form class="news rise" id="news" data-sitekey={TURNSTILE_SITEKEY} novalidate>
       <label class="sr-only" for="news-email">{t('Email for release news')}</label>
       <input id="news-email" type="email" placeholder={t('you@example.com')} autocomplete="email">
       <input class="news-trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button class="key" type="submit">{t('Get release news')}</button>
     </form>
+    <div class="news-check" id="news-check"></div>
     <p class="small news-note rise" id="news-note" aria-live="polite">{t('Only release news. Unsubscribe in one click.')}</p>
   </section>
 </main>
