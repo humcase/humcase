@@ -368,5 +368,13 @@
   "proposals": {
     "description": "O Humcase sugere, você decide.",
     "review": "As sugestões revisadas pela TypeSafe (o modelo: Jev) enviam o título e o início dos casos envolvidos, sem chaves nem e-mails. Sem chave TypeSafe, elas ficam desligadas."
+  },
+  "updates": {
+    "heading": "Atualizações",
+    "description": "Ao iniciar, o Humcase pergunta ao GitHub se existe uma nova versão. Nenhum dos seus casos é enviado.",
+    "enable": "Procurar atualizações ao iniciar",
+    "unsupported": "Esta cópia foi compilada neste computador: ela não se atualiza sozinha.",
+    "loading": "Lendo o ajuste…",
+    "error": "Não foi possível salvar o ajuste: {{error}}"
   }
 }

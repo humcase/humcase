@@ -368,5 +368,13 @@
   "proposals": {
     "description": "Humcase propose, vous décidez.",
     "review": "Les propositions relues par TypeSafe (son modèle : Jev) envoient le titre et le début des cases concernées, sans clés ni e-mails. Sans clé TypeSafe, elles restent éteintes."
+  },
+  "updates": {
+    "heading": "Mises à jour",
+    "description": "Au démarrage, Humcase demande à GitHub si une nouvelle version existe. Aucune de vos cases n’est envoyée.",
+    "enable": "Chercher les mises à jour au démarrage",
+    "unsupported": "Cette copie a été compilée sur cet ordinateur : elle ne se met pas à jour seule.",
+    "loading": "Lecture du réglage…",
+    "error": "Le réglage n’a pas pu être enregistré : {{error}}"
   }
 }

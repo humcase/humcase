@@ -375,5 +375,9 @@
   "ask": {
     "unreadable": "Unlesbare Antwort der KI: {{error}}",
     "deadline": "Die KI hat zu lange für die Antwort gebraucht (über {{seconds}} Sekunden). Versuche es erneut."
+  },
+  "updates": {
+    "noneFound": "Kein Update gefunden",
+    "notDownloaded": "Das Update ist noch nicht heruntergeladen"
   }
 }

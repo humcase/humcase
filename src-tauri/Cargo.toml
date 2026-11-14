@@ -46,6 +46,7 @@ tempfile = "3"
 tauri-plugin-single-instance = "2"
 sys-locale = "0.3"
 tauri-plugin-opener = "2"
+tauri-plugin-updater = "2"
 
 # Unix: AI keys are sealed with XChaCha20-Poly1305 (see `ai_settings::keyfile`); Windows uses DPAPI.
 [target.'cfg(unix)'.dependencies]

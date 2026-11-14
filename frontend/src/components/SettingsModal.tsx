@@ -23,6 +23,7 @@ import { MemorySection } from './settings/MemorySection';
 import { ProfileSection } from './settings/ProfileSection';
 import { NaturesSection } from './settings/NaturesSection';
 import { UsageSection } from './settings/UsageSection';
+import { UpdatesSection } from './settings/UpdatesSection';
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -153,6 +154,7 @@ export default function SettingsModal({ onClose, prepareBackup, spacePreferences
               <AppearanceSection theme={theme} onThemeChange={onThemeChange} />
               <SpacesSection spacePreferences={spacePreferences} onSpaceUsage={onSpaceUsage} onCombinedView={onCombinedView}
                 activities={activities} onCreateActivity={onCreateActivity} onRenameActivity={onRenameActivity} onDeleteActivity={onDeleteActivity} activitiesRef={activitySettingsRef} />
+              <UpdatesSection />
             </SettingsGroup>}
             {activeSection === 'dictation' && <DictationSection microphones={microphones} ai={ai} onOpenAiServices={() => go('ai')} />}
             {activeSection === 'ai' && <SettingsGroup title={t('settings.sections.ai')} lead={<p>{t('settings.aiServices.description')}</p>}>

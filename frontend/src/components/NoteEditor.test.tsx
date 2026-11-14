@@ -109,6 +109,7 @@ import i18n from '../i18n';
 import { addPendingWrite, readTaskDraft, readPendingWrites, clearPendingWrites } from '../utils/pendingWrites';
 import { prepareSnapshot, type BackupPreparation } from '../utils/backupBarrier';
 import { deriveTitle } from '../utils/title';
+import { saveBeforeExit } from '../utils/beforeExit';
 
 const mockApi = vi.mocked(api);
 
@@ -1439,6 +1440,16 @@ describe('NoteEditor — data non-regression', () => {
     await waitFor(() =>
       expect(mockApi.updateNote).toHaveBeenCalledWith('n1', { content: 'avant extinction' })
     );
+  });
+
+  it("an update waits for the draft to be written before Humcase quits", async () => {
+    const note = makeNote();
+    render(<NoteEditor note={note} onNoteUpdated={() => {}} />);
+    fireEvent.change(contentField(), { target: { value: 'avant la mise à jour' } });
+
+    await act(async () => { await saveBeforeExit(); });
+
+    expect(mockApi.updateNote).toHaveBeenCalledWith('n1', { content: 'avant la mise à jour' });
   });
 
   it("25. saves the outgoing draft on note change (without unmount)", async () => {

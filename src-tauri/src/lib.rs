@@ -67,6 +67,8 @@ pub fn run() {
     }
     builder
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        // Updates of the installed application (`commands/updates.rs`): only release builds look for one.
+        .plugin(tauri_plugin_updater::Builder::new().build())
         // Remembers window size, position and maximized state between launches.
         // Deliberately without VISIBLE: the quick capture window must stay hidden
         // until the shortcut, otherwise the plugin reopens it at startup.
@@ -132,6 +134,7 @@ pub fn run() {
                 mutation_gate: std::sync::RwLock::new(MutationGate::Open),
             });
             app.manage(commands::TranscriptionState::default());
+            app.manage(commands::UpdateState::default());
             // Search by meaning: the cases are read in the background, by the worker.
             let meaning_state = meaning::MeaningState::default();
             meaning::start_reader(db_path_for_meaning, app_dir.clone(), &meaning_state);
@@ -217,6 +220,11 @@ pub fn run() {
             }
         })
         .invoke_handler(tauri::generate_handler![
+            commands::get_update_settings,
+            commands::set_update_check,
+            commands::check_for_update,
+            commands::download_update,
+            commands::install_update,
             commands::get_projects,
             commands::notes_change_marker,
             commands::integrate_dictation,

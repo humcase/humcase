@@ -1,0 +1,6 @@
+/* The update message sits at the bottom of the window: the top keeps the action messages. */
+.workspace-app .ui-toast.update-notice {
+  top: auto;
+  bottom: 16px;
+}
+.workspace-app .update-notice__actions { display: inline-flex; align-items: center; gap: 2px; }

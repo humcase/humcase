@@ -375,5 +375,9 @@
   "ask": {
     "unreadable": "Respuesta de la IA ilegible: {{error}}",
     "deadline": "La IA tardó demasiado en responder (más de {{seconds}} segundos). Inténtalo de nuevo."
+  },
+  "updates": {
+    "noneFound": "No se encontró ninguna actualización",
+    "notDownloaded": "La actualización aún no se ha descargado"
   }
 }

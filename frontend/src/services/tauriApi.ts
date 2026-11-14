@@ -1,6 +1,6 @@
-import { invoke } from '@tauri-apps/api/core';
+import { Channel, invoke } from '@tauri-apps/api/core';
 import i18n from '../i18n';
-import type { Activity, Brief, CaseEvent, CaseJournal, CaseReview, CaseContext, CasePosition, ContentKind, NoteType, Project, ProjectSpace, Note, NoteRelations, NoteRevision, CreateNoteInput, UpdateNoteInput, AiProvidersInfo, AiUsageRecord, AgentSeen, Recognition, MeaningHit, MeaningStatus, NatureReview, NatureReadingStatus, Germination, Proposal, ProposalAnswer, ProposalOutcome, TidyItem, TidyAnswer, TidyOutcome, TidySettings, Supersession, ProjectSummary, ProfileView, ProfileAnswer, ProfileOutcome, ProfileSettings, Nudge, NudgeAnswer } from '../types';
+import type { Activity, Brief, CaseEvent, CaseJournal, CaseReview, CaseContext, CasePosition, ContentKind, NoteType, Project, ProjectSpace, Note, NoteRelations, NoteRevision, CreateNoteInput, UpdateNoteInput, AiProvidersInfo, AiUsageRecord, AgentSeen, Recognition, MeaningHit, MeaningStatus, UpdateSettings, AvailableUpdate, NatureReview, NatureReadingStatus, Germination, Proposal, ProposalAnswer, ProposalOutcome, TidyItem, TidyAnswer, TidyOutcome, TidySettings, Supersession, ProjectSummary, ProfileView, ProfileAnswer, ProfileOutcome, ProfileSettings, Nudge, NudgeAnswer } from '../types';
 import type { AssistantPreviousTurnV2, AssistantReply, AssistantStatus } from '../types/assistant';
 
 export interface BackupArchivePreview {
@@ -259,6 +259,20 @@ export const api = {
   recognizeCase: async (text: string): Promise<Recognition> => {
     return await invoke('recognize_case', { text });
   },
+
+  /** Updates: whether this copy can update itself and whether the check is on. */
+  getUpdateSettings: async (): Promise<UpdateSettings> => await invoke('get_update_settings'),
+  setUpdateCheck: async (enabled: boolean): Promise<void> => { await invoke('set_update_check', { enabled }); },
+  /** A newer release, or null (local build, check turned off, up to date). */
+  checkForUpdate: async (): Promise<AvailableUpdate | null> => await invoke('check_for_update'),
+  /** Downloads and verifies the update found by the check; `onProgress` gets 0 to 100. */
+  downloadUpdate: async (onProgress: (percent: number) => void): Promise<void> => {
+    const progress = new Channel<number>();
+    progress.onmessage = onProgress;
+    await invoke('download_update', { progress });
+  },
+  /** Runs the installer: Humcase closes, installs and starts again. */
+  installUpdate: async (): Promise<void> => { await invoke('install_update'); },
 
   /** Search by meaning: where the reading of the cases stands. */
   meaningStatus: async (): Promise<MeaningStatus> => {

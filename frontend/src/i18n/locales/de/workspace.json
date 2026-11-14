@@ -845,5 +845,14 @@
     "windowLabel": "Fenster",
     "stayOnTop": "Im Vordergrund bleiben, wenn Humcase in den Hintergrund geht",
     "stayOnTopDetail": "Das Fenster wird zu Mini Humcase und bleibt auf deinem Bildschirm"
+  },
+  "updates": {
+    "available": "Humcase {{version}} ist verfügbar.",
+    "install": "Installieren und neu starten",
+    "later": "Später",
+    "downloading": "Update wird heruntergeladen: {{percent}} %",
+    "downloadingNoSize": "Update wird heruntergeladen…",
+    "installing": "Wird installiert… Humcase startet neu.",
+    "failed": "Das Update ist fehlgeschlagen: {{error}}"
   }
 }

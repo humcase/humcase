@@ -19,6 +19,7 @@ vi.mock('../services/tauriApi', () => ({
     readAiUsage: vi.fn(async () => []),
     recheckNatureReading: vi.fn(async () => undefined),
     meaningStatus: vi.fn(() => new Promise(() => {})),
+    getUpdateSettings: vi.fn(() => new Promise(() => {})),
     tidySettings: vi.fn(() => new Promise(() => {})),
     natureReadingStatus: vi.fn(() => new Promise(() => {})),
     profileSettings: vi.fn(() => new Promise(() => {})),

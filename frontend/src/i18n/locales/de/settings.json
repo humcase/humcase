@@ -356,5 +356,13 @@
   "proposals": {
     "description": "Humcase schlägt vor, du entscheidest.",
     "review": "Von TypeSafe geprüfte Vorschläge (ihr Modell: Jev) senden Titel und Anfang der betroffenen Fälle, ohne Schlüssel oder E-Mails. Ohne TypeSafe-Schlüssel bleiben sie aus."
+  },
+  "updates": {
+    "heading": "Updates",
+    "description": "Beim Start fragt Humcase bei GitHub, ob es eine neue Version gibt. Keiner Ihrer Fälle wird gesendet.",
+    "enable": "Beim Start nach Updates suchen",
+    "unsupported": "Diese Kopie wurde auf diesem Computer gebaut: Sie aktualisiert sich nicht selbst.",
+    "loading": "Einstellung wird gelesen…",
+    "error": "Die Einstellung konnte nicht gespeichert werden: {{error}}"
   }
 }
