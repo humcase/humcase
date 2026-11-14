@@ -66,13 +66,12 @@ jobs:
 
       # HUMCASE_UPDATES=1: this build looks for updates (commands/updates.rs); local builds never do.
       # The updater key signs the NSIS installer (`.sig`): installed copies refuse an update whose
-      # signature does not match the public key of tauri.conf.json. The private key exists only
-      # in this repository's secrets and in the founder's safe: losing it ends updates.
+      # signature does not match the public key of tauri.conf.json. The private key (no password)
+      # exists only in this repository's secrets and in the founder's safe: losing it ends updates.
       - name: Build (tauri build)
         env:
           HUMCASE_UPDATES: '1'
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: npx tauri build --config src-tauri/tauri.meaning.conf.json --config src-tauri/tauri.updater.conf.json
 
       # Installers only: Humcase.exe alone would lack meaning/ (search by meaning), and a person
