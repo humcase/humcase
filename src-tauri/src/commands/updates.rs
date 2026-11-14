@@ -9,9 +9,10 @@
 //! The update is the installer of the release (NSIS, or MSI for a copy the MSI installed), signed
 //! with the project's updater key: the plugin refuses an installer whose signature does not match
 //! the public key in `tauri.conf.json`, or whose signed version differs from the announced one
-//! (`requireSignedVersion`). On Windows the installer stops the meaning workers of its folder
-//! (`windows/installer-hooks.nsh`), closes the `Humcase.exe` of its folder (interface and MCP
-//! servers) through the Restart Manager, installs, then starts Humcase again.
+//! (`requireSignedVersion`). On Windows the NSIS installer kills by name every `humcase-sense.exe`
+//! (`windows/installer-hooks.nsh`) and every `Humcase.exe` of the current user, whatever their
+//! folder (interface and MCP servers; a copy built elsewhere too, without its savers), installs,
+//! then starts Humcase again.
 
 use std::sync::Mutex;
 

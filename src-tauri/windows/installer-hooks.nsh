@@ -1,12 +1,10 @@
 ; Hooks of the NSIS installer (tauri.conf.json, bundle.windows.nsis.installerHooks).
 
-; Before files are copied: a running Humcase (the interface, or an MCP server an agent started)
-; keeps its search-by-meaning worker, meaning\humcase-sense.exe, which holds the worker and its
-; runtime. The installer then closes Humcase.exe through the Restart Manager, but that closes only
-; Humcase.exe itself: stop the workers of this folder first so that meaning\ can be replaced.
-; Workers of another folder (a copy built elsewhere) are left alone. A worker stopped this way is
-; started again by the next search of a Humcase still running.
+; Before files are copied. Right after this hook, the installer kills by name every Humcase.exe
+; of the current user (the interface and the MCP servers agents started, whatever their folder);
+; their search-by-meaning workers, humcase-sense.exe, are separate programs that hold meaning\.
+; Stop them the same way, with the installer's own plugin, so that meaning\ can be replaced.
 !macro NSIS_HOOK_PREINSTALL
-  nsExec::Exec `powershell -NoProfile -NonInteractive -Command "Get-Process humcase-sense -ErrorAction SilentlyContinue | Where-Object { $$_.Path -like '$INSTDIR\*' } | Stop-Process -Force"`
-  Pop $0
+  nsis_tauri_utils::KillProcessCurrentUser "humcase-sense.exe"
+  Pop $R0
 !macroend

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from '../services/tauriApi';
 import { saveBeforeExit } from '../utils/beforeExit';
 import i18n from '../i18n';
@@ -20,6 +20,8 @@ export type AppUpdate =
  */
 export function useAppUpdate(): { update: AppUpdate; install: () => void; dismiss: () => void } {
   const [update, setUpdate] = useState<AppUpdate>({ phase: 'idle' });
+  // A second click before the re-render must not start a second download.
+  const busy = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -32,7 +34,8 @@ export function useAppUpdate(): { update: AppUpdate; install: () => void; dismis
   }, []);
 
   const install = useCallback(() => {
-    if (update.phase !== 'available' && update.phase !== 'failed') return;
+    if (busy.current || (update.phase !== 'available' && update.phase !== 'failed')) return;
+    busy.current = true;
     const { version } = update;
     setUpdate({ phase: 'downloading', version, percent: null });
     void (async () => {
@@ -47,6 +50,8 @@ export function useAppUpdate(): { update: AppUpdate; install: () => void; dismis
         await api.installUpdate();
       } catch (e) {
         setUpdate({ phase: 'failed', version, error: String(e) });
+      } finally {
+        busy.current = false;
       }
     })();
   }, [update]);
