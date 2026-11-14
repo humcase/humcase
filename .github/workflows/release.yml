@@ -136,6 +136,9 @@ jobs:
             $info.UseShellExecute = $false
             $info.RedirectStandardInput = $true
             $info.RedirectStandardOutput = $true
+            # Without a console of their own, like the worker Humcase starts (CREATE_NO_WINDOW): the
+            # Restart Manager closes a console program with its whole console, this shell included.
+            $info.CreateNoWindow = $true
             [System.Diagnostics.Process]::Start($info)
           }
           trap { Write-Host "FAILED: $($_ | Out-String)"; exit 1 }
