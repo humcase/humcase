@@ -78,3 +78,16 @@ Migration trials: on temporary databases or dedicated copies; make a safety copy
 2. Close `Humcase.exe` (interface and MCP servers that use it), then `npm run update-exe` at the root. The script builds the release, replaces `Humcase.exe`, checks the SHA256 fingerprint and fails explicitly (code 1) otherwise. It stops no process.
 3. Check the new MCP server with a direct call or through the client used for the task, and only then resolve the Humcase note.
 4. GitHub release: pushing a `v*` tag equal to the latest dated CHANGELOG version runs `release.yml` (version check, tests, build, release marked latest with the installer also named `Humcase-setup-x64.exe`, the file the website links to). Only maintainers push tags.
+
+## Voice dictation and AI calls
+
+Humcase includes a voice dictation feature (Deepgram) and multi-provider LLM cleanup (Cerebras by default).
+- Voice cleanup must add **no fact or code absent from the original dictation**.
+- Preserve the raw content. Any modification of the system prompt `CLEANUP_SYSTEM_PROMPT` in `src-tauri/src/commands/ai.rs` must be verified on representative examples to ensure the AI does not "RolePlay" and does not hallucinate fake code: `prompt_eval` in `commands/ai.rs` (ignored test, real calls) runs the samples of `commands/prompt_eval_cases.json` and can compare with another version of the prompt, model (`PROMPT_EVAL_MODEL`) or reasoning effort (`PROMPT_EVAL_REASONING`), with tokens and estimated cost per sample.
+- Every AI call and dictation session records what it consumed (`ai_usage.rs`, `ai-usage.jsonl` next to the database: provider, model, tokens, audio seconds, estimated cost, numbers only). A new AI call or provider records its usage too, and its prices are added to the dated table from the provider's official pricing page.
+
+---
+
+## Languages
+
+The repository is in English (decision of 30/09/2026, open source publication). Remaining French in tracked files is a bug: translate it. Exceptions: the locale files of other languages, the glossary's columns of other languages, test fixtures, the code of migrations already applied (never modified), and names stored on disk or in local storage, such as `cles` in `ai-config.json` or the escrowed drafts' fields, which are renamed only with a migration. A new interface key goes into `en` and `fr` at the same time, and into `es`, `de`, `pt-BR` and `it` as `docs/TRANSLATION.md` says.
