@@ -52,6 +52,7 @@ The user expects to use the final compiled application, not development servers 
 
 ### Rule 4: Delivery documentation (CHANGELOG, AGENTS, README, internal docs)
 Documentation is part of delivery: a batch is only "good and up to date" if the code **and** the docs reflect it. Before any `commit`/`push` (and at the very least before announcing a batch as finished):
+- **Where it is committed**: documentation and decision records are committed directly on `master`, without a branch or PR; code goes through one PR per implementation lot.
 - **`docs/CHANGELOG.md`**: describe the delivered changes (fixes, features, window, quality) under `## [Unreleased]`; a release renames that section to a dated `## [x.y.z] - date` entry. It is the reference for changes.
 - **`internal/PROGRESS.md`** (maintainers): update the date and the corresponding phase milestone. It remains a **presentation of milestones** — task tracking remains exclusively in Humcase (Rule 1).
 - **`AGENTS.md`**: keep a short, operational guide. Lasting decisions, invariants not to break and verification lessons are recorded in **`internal/DECISIONS.md`** (dated journal) and simply pointed to from `AGENTS.md`. Do not duplicate there the detail of changes or decisions.
